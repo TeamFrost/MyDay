@@ -1,11 +1,12 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
+import Icon from '../assets/icon.svg'
 
 export default function LandingScreen() {
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/icon.png')} />
+            <Icon height="250" width="250" />
             <Text style={styles.text}>My Day</Text>
             <StatusBar style="auto" />
         </View>
@@ -20,8 +21,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     text: {
-        fontSize: 44,
+        fontSize: 48,
         padding: 30,
-        fontWeight: 'bold'
+        letterSpacing: -2.5,
     }
 });
