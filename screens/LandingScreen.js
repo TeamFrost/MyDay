@@ -1,7 +1,8 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import Icon from '../assets/icon.svg'
+import { StyleSheet, Text, View } from 'react-native';
+
+import Icon from '../assets/icon'
 
 import { colors } from '../helpers/style';
 

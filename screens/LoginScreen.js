@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TextInput } from 'react-native';
-import Background from '../assets/loginBackground.svg';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Background from '../assets/loginBackground';
 import { colors } from '../helpers/style.js';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const theme = colors.light
 
@@ -26,10 +27,7 @@ export default function LoginScreen() {
                     onChangeText={text => setText(text)}
                     style={{ width: "90%", backgroundColor: theme.backgroundColor, marginTop: 30, borderRadius: 30, height: 50, paddingLeft: 10 }}
                 />
-                <Icon
-                    name='md-checkmark'
-                    size={30}
-                />
+                <Icon name="rocket" size={30} />
             </View>
             <StatusBar style="auto" />
         </View>
