@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import userIcon from '../assets/userIcon';
+import lockIcon from '../assets/lockIcon';
+import eyeIcon from '../assets/eyeIcon'
 import Background from '../assets/loginBackground';
 import { colors } from '../helpers/style.js';
 
@@ -26,7 +29,6 @@ export default function LoginScreen() {
                     onChangeText={text => setText(text)}
                     style={{ width: "90%", backgroundColor: theme.backgroundColor, marginTop: 30, borderRadius: 30, height: 50, paddingLeft: 10 }}
                 />
-                <Icon name="rocket" size={30} />
             </View>
             <StatusBar style="auto" />
         </View>
