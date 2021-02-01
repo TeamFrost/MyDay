@@ -18,7 +18,6 @@ export default function LoginScreen() {
     return (
         <View style={styles.container}>
             <Background style={styles.background} width={screenWidth / 0.95} height={screenHeight / 1.37} />
-
             <View style={styles.loginContainter}>
                 <Text style={styles.loginText}>Login</Text>
                 <TextInput
