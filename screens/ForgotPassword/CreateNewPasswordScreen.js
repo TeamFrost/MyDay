@@ -2,6 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { colors } from '../helpers/style';
+
+const theme = colors.light;
+
 export default function CreateNewPasswordScreen() {
     return (
         <View style={styles.container}>
@@ -14,7 +18,7 @@ export default function CreateNewPasswordScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.backgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },

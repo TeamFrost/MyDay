@@ -6,10 +6,10 @@ import { colors } from '../helpers/style';
 
 const theme = colors.light;
 
-export default function RegisterScreen() {
+export default function CreateActivityScreen() {
     return (
         <View style={styles.container}>
-            <Text>Register</Text>
+            <Text>Create Activity</Text>
             <StatusBar style="auto" />
         </View>
     );
