@@ -34,7 +34,10 @@ const ProfileStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 
 export const HomeStackScreen = () =>
-    <HomeStack.Navigator>
+    <HomeStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <HomeStack.Screen name="Home" component={HomeScreen} />
         <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
         <HomeStack.Screen name="Calendar" component={CalendarScreen} />
@@ -43,19 +46,28 @@ export const HomeStackScreen = () =>
     </HomeStack.Navigator>
 
 export const CalendarStackScreen = () =>
-    <CalendarStack.Navigator>
+    <CalendarStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <CalendarStack.Screen name="Calendar" component={CalendarScreen} />
         <CalendarStack.Screen name="CreateActivity" component={CreateActivityScreen} />
         <CalendarStack.Screen name="Goals" component={GoalsScreen} />
     </CalendarStack.Navigator>
 
 export const GoalsStackScreen = () =>
-    <GoalsStack.Navigator>
+    <GoalsStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <GoalsStack.Screen name="Goals" component={GoalsScreen} />
     </GoalsStack.Navigator>
 
 export const ProfileStackScreen = () =>
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <ProfileStack.Screen name="Profile" component={ProfileScreen} />
         <ProfileStack.Screen name="Statistics" component={StatisticsScreen} />
         <ProfileStack.Screen name="Friends" component={FriendsScreen} />
@@ -63,7 +75,10 @@ export const ProfileStackScreen = () =>
     </ProfileStack.Navigator>
 
 export const SettingsStackScreen = () =>
-    <SettingsStack.Navigator>
+    <SettingsStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <SettingsStack.Screen name="Settings" component={SettingsScreen} />
         <SettingsStack.Screen name="EditProfilePicture" component={EditProfilePictureScreen} />
         <SettingsStack.Screen name="ChangeName" component={ChangeNameScreen} />
@@ -72,7 +87,10 @@ export const SettingsStackScreen = () =>
     </SettingsStack.Navigator>
 
 export const HomeTabs = () =>
-    <Tab.Navigator>
+    <Tab.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <Tab.Screen name="HomeStack" component={HomeStackScreen} />
         <Tab.Screen name="CalendarStack" component={CalendarStackScreen} />
         <Tab.Screen name="GoalsStack" component={GoalsStackScreen} />
@@ -80,14 +98,20 @@ export const HomeTabs = () =>
     </Tab.Navigator>
 
 export const ForgotPasswordStackScreen = () =>
-    <ForgotPasswordStack.Navigator>
+    <ForgotPasswordStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <ForgotPasswordStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <ForgotPasswordStack.Screen name="CreateNewPassword" component={CreateNewPasswordScreen} />
         <ForgotPasswordStack.Screen name="EmailSent" component={EmailSentScreen} />
     </ForgotPasswordStack.Navigator>
 
 export const LoginStackScreen = () =>
-    <LoginStack.Navigator>
+    <LoginStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
         <LoginStack.Screen name="Login" component={LoginScreen} />
         <LoginStack.Screen name="Register" component={RegisterScreen} />
         <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
