@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import userIcon from '../assets/userIcon';
-import lockIcon from '../assets/lockIcon';
-import eyeIcon from '../assets/eyeIcon'
+import userIcon from '../assets/icons/userIcon';
+import lockIcon from '../assets/icons/lockIcon';
+import eyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/loginBackground';
 import { colors } from '../helpers/style.js';
 
