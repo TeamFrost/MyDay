@@ -1,17 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Dimensions, TextInput } from 'react-native';
 import Background from '../assets/loginBackground.svg';
+import { colors } from '../helpers/style.js';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+const theme = colors.light
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
-console.log(screenWidth)
-console.log(screenHeight)
 
 export default function LoginScreen() {
+
+    const [text, setText] = useState('')
+
     return (
         <View style={styles.container}>
-            <Background style={{ flex: 1 }} width={screenWidth / 0.95} height={screenHeight / 1.37} />
+            <Background style={styles.background} width={screenWidth / 0.95} height={screenHeight / 1.37} />
+
+            <View style={styles.loginContainter}>
+                <Text style={styles.loginText}>Login</Text>
+                <TextInput
+                    placeholder="Email"
+                    value={text}
+                    onChangeText={text => setText(text)}
+                    style={{ width: "90%", backgroundColor: theme.backgroundColor, marginTop: 30, borderRadius: 30, height: 50, paddingLeft: 10 }}
+                />
+                <Icon
+                    name='md-checkmark'
+                    size={30}
+                />
+            </View>
             <StatusBar style="auto" />
         </View>
     );
@@ -21,9 +40,26 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        backgroundColor: '#fff',
+        height: screenHeight,
+        backgroundColor: theme.backgroundColor,
         alignItems: 'center',
-        // justifyContent: 'center',
-        backgroundColor: 'pink'
+        justifyContent: 'flex-start'
     },
+    background: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+    },
+    loginContainter: {
+        width: '90%',
+        height: screenHeight / 2,
+        alignSelf: 'center',
+        marginTop: '20%',
+        alignItems: 'center',
+    },
+    loginText: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: theme.backgroundColor,
+    }
 });
