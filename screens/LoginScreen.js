@@ -5,9 +5,9 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { Divider } from 'react-native-elements';
 
-import userIcon from '../assets/icons/userIcon';
-import lockIcon from '../assets/icons/lockIcon';
-import eyeIcon from '../assets/icons/eyeIcon'
+import UserIcon from '../assets/icons/userIcon';
+import LockIcon from '../assets/icons/lockIcon';
+import EyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
 
@@ -16,10 +16,12 @@ const theme = colors.light
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
+
 export default function LoginScreen() {
 
     const [name, setName] = useState('');
     const [pass, setPass] = useState('');
+    const [invisible, setInvisible] = useState(true);
 
     return (
         <View style={styles.container}>
@@ -31,7 +33,6 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.inputView}>
-                    <Icon name="user" size={25} color={theme.textGray} style={styles.leftIconInput} />
                     <TextInput
                         placeholder="Email"
                         keyboardType={'email-address'}
@@ -39,17 +40,19 @@ export default function LoginScreen() {
                         onChangeText={name => setName(name)}
                         style={styles.input}
                     />
+                    <UserIcon style={styles.leftIconInput} />
                 </View>
 
                 <View style={styles.inputView}>
-                    <Icon name="lock" size={25} color={theme.textGray} style={styles.leftIconInput} />
                     <TextInput
                         placeholder="Password"
-                        secureTextEntry
+                        secureTextEntry={invisible}
                         value={pass}
                         onChangeText={pass => setPass(pass)}
                         style={styles.input}
                     />
+                    <LockIcon style={styles.leftIconInput} />
+                    <EyeIcon onPress={() => setInvisible(!invisible)} style={styles.rightIconInput} />
                 </View>
 
                 <View style={styles.loginTextView}>
@@ -150,12 +153,17 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         height: 50,
         paddingLeft: 55,
-        elevation: 5
+        // elevation: 5
     },
     leftIconInput: {
         position: "absolute",
         left: 20,
-        elevation: 6
+        // elevation: 6
+    },
+    rightIconInput: {
+        position: "absolute",
+        right: 20,
+        // elevation: 6
     },
     loginButton: {
         backgroundColor: theme.button,
