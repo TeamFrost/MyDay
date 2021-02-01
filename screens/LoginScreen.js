@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import userIcon from '../assets/icons/userIcon';
 import lockIcon from '../assets/icons/lockIcon';
 import eyeIcon from '../assets/icons/eyeIcon'
-import Background from '../assets/loginBackground';
+import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
 
 const theme = colors.light
