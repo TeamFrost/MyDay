@@ -100,7 +100,7 @@ export const LandingStackScreen = () =>
             headerShown: false,
             gestureEnabled: false
         }}>
-        <LandingStack.Screen name="HomeTabs" component={HomeTabs} />
-        <LandingStack.Screen name="Landing" component={LandingScreen} />
         <LandingStack.Screen name="LoginStack" component={LoginStackScreen} />
+        <LandingStack.Screen name="Landing" component={LandingScreen} />
+        <LandingStack.Screen name="HomeTabs" component={HomeTabs} />
     </LandingStack.Navigator>
