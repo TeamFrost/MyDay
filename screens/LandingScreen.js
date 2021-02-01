@@ -3,6 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import Icon from '../assets/icon.svg'
 
+import { colors } from '../helpers/style';
+
+const theme = colors.light;
+
 export default function LandingScreen() {
     return (
         <View style={styles.container}>
@@ -16,7 +20,7 @@ export default function LandingScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.backgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },

@@ -2,10 +2,14 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ForgotPasswordScreen() {
+import { colors } from '../helpers/style';
+
+const theme = colors.light;
+
+export default function ChangePasswordScreen() {
     return (
         <View style={styles.container}>
-            <Text>ForgotPassword</Text>
+            <Text>Change Password</Text>
             <StatusBar style="auto" />
         </View>
     );
@@ -14,7 +18,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.backgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },

@@ -3,15 +3,15 @@ import React from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import Background from '../assets/loginBackground.svg';
 
-const screenWidth = Dimensions.get('screen').width + 10;
+const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
-// console.log(screenWidth)
+console.log(screenWidth)
 console.log(screenHeight)
 
 export default function LoginScreen() {
     return (
         <View style={styles.container}>
-            <Background style={{ flex: 1 }} width={screenWidth} height={screenHeight / 1.37} />
+            <Background style={{ flex: 1 }} width={screenWidth / 0.95} height={screenHeight / 1.37} />
             <StatusBar style="auto" />
         </View>
     );
