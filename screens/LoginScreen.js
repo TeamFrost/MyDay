@@ -5,7 +5,10 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { Divider } from 'react-native-elements';
 
-import Background from '../assets/loginBackground';
+import userIcon from '../assets/icons/userIcon';
+import lockIcon from '../assets/icons/lockIcon';
+import eyeIcon from '../assets/icons/eyeIcon'
+import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
 
 const theme = colors.light
@@ -21,7 +24,6 @@ export default function LoginScreen() {
     return (
         <View style={styles.container}>
             <Background style={styles.background} width={screenWidth / 0.95} height={screenHeight / 1.37} />
-
             <View style={styles.loginContainter}>
 
                 <View style={styles.loginTextView}>
