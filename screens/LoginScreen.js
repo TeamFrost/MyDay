@@ -10,6 +10,7 @@ import LockIcon from '../assets/icons/lockIcon';
 import EyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
+import { useNavigation } from '@react-navigation/native';
 
 const theme = colors.light
 
@@ -19,9 +20,18 @@ const screenHeight = Dimensions.get('screen').height;
 
 export default function LoginScreen() {
 
+    const navigation = useNavigation();
     const [name, setName] = useState('');
     const [pass, setPass] = useState('');
     const [invisible, setInvisible] = useState(true);
+
+    const handleSignUpPress = () => {
+        navigation.navigate("Register");
+    }
+
+    const handleForgotLink = () => {
+        navigation.navigate("ForgotPasswordStack");
+    }
 
     return (
         <View style={styles.container}>
@@ -68,7 +78,7 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.forgotPassword}>
-                    <Text onPress={() => alert("Pass")} style={styles.forgotPasswordText}>Forgot your password?</Text>
+                    <Text onPress={handleForgotLink} style={styles.forgotPasswordText}>Forgot your password?</Text>
                 </View>
 
             </View>
@@ -99,7 +109,7 @@ export default function LoginScreen() {
 
                 <View style={{ ...styles.dividerView, height: '40%' }}>
                     <Text>Don’t have an account?  </Text>
-                    <Text style={{ color: theme.linkBlue }} onPress={() => alert(":{")}>Sign Up</Text>
+                    <Text style={{ color: theme.linkBlue }} onPress={handleSignUpPress}>Sign Up</Text>
                 </View>
             </View>
             <StatusBar style="auto" />
