@@ -101,10 +101,11 @@ export const ForgotPasswordStackScreen = () =>
     <ForgotPasswordStack.Navigator
         screenOptions={{
             headerShown: false,
+            initialRouteName: 'ForgotPassword'
         }}>
         <ForgotPasswordStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <ForgotPasswordStack.Screen name="CreateNewPassword" component={CreateNewPasswordScreen} />
         <ForgotPasswordStack.Screen name="EmailSent" component={EmailSentScreen} />
+        <ForgotPasswordStack.Screen name="CreateNewPassword" component={CreateNewPasswordScreen} />
     </ForgotPasswordStack.Navigator>
 
 export const LoginStackScreen = () =>
@@ -113,9 +114,9 @@ export const LoginStackScreen = () =>
             headerShown: false,
         }}>
         <LoginStack.Screen name="Login" component={LoginScreen} />
+        <LoginStack.Screen name="ForgotPasswordStack" component={ForgotPasswordStackScreen} />
         <LoginStack.Screen name="Register" component={RegisterScreen} />
         <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
-        <LoginStack.Screen name="ForgotPasswordStack" component={ForgotPasswordStackScreen} />
     </LoginStack.Navigator>
 
 export const LandingStackScreen = () =>
