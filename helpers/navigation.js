@@ -113,10 +113,10 @@ export const LoginStackScreen = () =>
         screenOptions={{
             headerShown: false,
         }}>
+        <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
         <LoginStack.Screen name="Login" component={LoginScreen} />
         <LoginStack.Screen name="ForgotPasswordStack" component={ForgotPasswordStackScreen} />
         <LoginStack.Screen name="Register" component={RegisterScreen} />
-        <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
     </LoginStack.Navigator>
 
 export const LandingStackScreen = () =>
