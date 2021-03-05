@@ -47,10 +47,12 @@ export default function EmailSentScreen() {
                 </View>
 
             </View >
+
             <View style={styles.redirectView}>
                 <Text>Didn’t receive the link?  </Text>
                 <Text style={{ color: theme.linkBlue }} onPress={handleResendPress}>Resend</Text>
             </View>
+
             <StatusBar style="auto" />
         </View>
     );
