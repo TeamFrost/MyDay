@@ -88,6 +88,7 @@ export const SettingsStackScreen = () =>
 
 export const HomeTabs = () =>
     <Tab.Navigator
+        initialRouteName='HomeStack'
         screenOptions={{
             headerShown: false,
         }}>
@@ -113,10 +114,10 @@ export const LoginStackScreen = () =>
         screenOptions={{
             headerShown: false,
         }}>
-        <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
         <LoginStack.Screen name="Login" component={LoginScreen} />
-        <LoginStack.Screen name="ForgotPasswordStack" component={ForgotPasswordStackScreen} />
+        <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
         <LoginStack.Screen name="Register" component={RegisterScreen} />
+        <LoginStack.Screen name="ForgotPasswordStack" component={ForgotPasswordStackScreen} />
     </LoginStack.Navigator>
 
 export const LandingStackScreen = () =>
@@ -125,7 +126,7 @@ export const LandingStackScreen = () =>
             headerShown: false,
             gestureEnabled: false
         }}>
-        <LandingStack.Screen name="LoginStack" component={LoginStackScreen} />
         <LandingStack.Screen name="Landing" component={LandingScreen} />
+        <LandingStack.Screen name="LoginStack" component={LoginStackScreen} />
         <LandingStack.Screen name="HomeTabs" component={HomeTabs} />
     </LandingStack.Navigator>
