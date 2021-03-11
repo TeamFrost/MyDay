@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight } from 'react-native';
+import { firebase } from '../firebase/config'
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -14,7 +15,22 @@ const theme = colors.light;
 export default function ForgotPasswordScreen() {
 
     const navigation = useNavigation();
-    const [mail, setMail] = useState('');
+    const [email, setEmail] = useState('');
+
+    const handleSendEmail = () => {
+        if (email != '') {
+            var auth = firebase.auth();
+            var emailAddress = email;
+
+            auth.sendPasswordResetEmail(emailAddress).then(function () {
+                navigation.navigate('EmailSent')
+            }).catch(function (error) {
+                alert(error.message)
+            });
+        } else {
+            alert('Please provide an email in the input field!')
+        }
+    }
 
     const handleLoginPress = () => {
         navigation.navigate("Login");
@@ -37,8 +53,9 @@ export default function ForgotPasswordScreen() {
                         <TextInput
                             placeholder="Email"
                             keyboardType={'email-address'}
-                            value={mail}
-                            onChangeText={mail => setMail(mail)}
+                            autoCapitalize="none"
+                            value={email}
+                            onChangeText={email => setEmail(email)}
                             style={styles.input}
                         />
                         <MailIcon style={styles.leftIconInput} />
@@ -47,7 +64,7 @@ export default function ForgotPasswordScreen() {
 
                 <View style={styles.sendTextView}>
                     <TouchableHighlight
-                        onPress={() => navigation.navigate('EmailSent')}
+                        onPress={handleSendEmail}
                         underlayColor="#DDDDDD"
                         style={{ width: '100%', borderRadius: 20 }}
                     >
