@@ -1,29 +1,111 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import * as Google from 'expo-google-app-auth';
+import * as Facebook from 'expo-facebook';
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { Divider } from 'react-native-elements';
 
-import UserIcon from '../assets/icons/userIcon';
+import MailIcon from '../assets/icons/mailIcon';
 import LockIcon from '../assets/icons/lockIcon';
 import EyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
-import { useNavigation } from '@react-navigation/native';
+
+import { connect } from 'react-redux';
+import { loginUser } from '../redux/actions/auth/auth';
+import { loginUserWithGoogle } from '../redux/actions/auth/auth';
+import { loginUserWithFacebook } from '../redux/actions/auth/auth';
+import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 
 const theme = colors.light
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
+const mapStateToProps = (state) => ({
+    doneFetching: state.auth.doneFetching,
+    isFetching: state.auth.isFetching,
+    hasError: state.auth.hasError,
+    errorMessage: state.auth.errorMessage,
+    user: state.auth.user,
+    // theme: state.theme
+});
 
-export default function LoginScreen() {
+const mapDispatchToProps = (dispatch) => ({
+    loginUser: (email, password) => dispatch(loginUser(email, password)),
+    loginUserWithGoogle: (googleUser) => dispatch(loginUserWithGoogle(googleUser)),
+    // loginUserWithFacebook: (token) => dispatch(loginUserWithFacebook(token))
+});
 
-    const navigation = useNavigation();
-    const [name, setName] = useState('');
+function LoginScreen({ ...props }) {
+
+    const { user, doneFetching, navigation, loginUser, loginUserWithGoogle, loginUserWithFacebook } = props
+
+    const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [invisible, setInvisible] = useState(true);
+
+    const signInWithGoogleAsync = async () => {
+        try {
+            const result = await Google.logInAsync({
+                // androidClientId: "YOUR_CLIENT_ID_HERE",
+                iosClientId: '26219097559-2gq1ocfsom0tijd104od359ijsoj29t6.apps.googleusercontent.com',
+                scopes: ['profile', 'email'],
+            });
+
+            if (result.type === 'success') {
+                loginUserWithGoogle(result);
+                return result.accessToken;
+            } else {
+                return { cancelled: true };
+            }
+        } catch (e) {
+            return { error: true };
+        }
+    }
+
+    // const signInWithFacebookAsync = async () => {
+    //     try {
+    //         await Facebook.initializeAsync({
+    //             appId: '734453843941009',
+    //         });
+    //         const {
+    //             type,
+    //             token,
+    //         } = await Facebook.logInWithReadPermissionsAsync({
+    //             permissions: ['public_profile'],
+    //         });
+    //         if (type === 'success') {
+    //             console.log(token)
+    //             loginUserWithFacebook(token)
+    //         } else {
+    //             // type === 'cancel'
+    //         }
+    //     } catch ({ message }) {
+    //         alert(`Facebook Login Error: ${message}`);
+    //     }
+    // }
+
+    const handleLoginPress = () => {
+        console.log("Login")
+        if (email === '' || pass === '') {
+            alert("Please complete all the fields!")
+        } else {
+            loginUser(email, pass)
+        }
+    }
+
+    const handleFacebookLoginPress = () => {
+        console.log("Facebook login")
+        // signInWithFacebookAsync()
+    }
+
+    const handleGmailLoginPress = () => {
+        console.log("Gmail login")
+        signInWithGoogleAsync()
+    }
 
     const handleSignUpPress = () => {
         navigation.navigate("Register");
@@ -32,6 +114,15 @@ export default function LoginScreen() {
     const handleForgotLink = () => {
         navigation.navigate("ForgotPasswordStack");
     }
+
+    useEffect(() => {
+        if (doneFetching) {
+            console.log(user)
+            if (user != null) {
+                navigation.navigate('HomeStack')
+            }
+        }
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -46,11 +137,12 @@ export default function LoginScreen() {
                     <TextInput
                         placeholder="Email"
                         keyboardType={'email-address'}
-                        value={name}
-                        onChangeText={name => setName(name)}
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={email => setEmail(email)}
                         style={styles.input}
                     />
-                    <UserIcon style={styles.leftIconInput} />
+                    <MailIcon style={styles.leftIconInput} />
                 </View>
 
                 <View style={styles.inputView}>
@@ -67,7 +159,7 @@ export default function LoginScreen() {
 
                 <View style={styles.loginTextView}>
                     <TouchableHighlight
-                        onPress={() => alert("Apasat")}
+                        onPress={handleLoginPress}
                         underlayColor="#DDDDDD"
                         style={{ width: '100%', borderRadius: 20 }}
                     >
@@ -93,13 +185,13 @@ export default function LoginScreen() {
 
                 <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '85%' }}>
 
-                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} onPress={() => alert("Facebook :|")} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
+                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} disabled="true" onPress={handleFacebookLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Facebook
                         </Text>
                     </Icon.Button>
 
-                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={() => alert("Google :|")} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
+                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Google
                         </Text>
@@ -212,3 +304,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

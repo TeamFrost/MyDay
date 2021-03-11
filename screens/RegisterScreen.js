@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
 import { Divider } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { signupUser } from '../redux/actions/auth/auth';
+import { loginUserWithGoogle } from '../redux/actions/auth/auth';
 
 import UserIcon from '../assets/icons/userIcon';
 import LockIcon from '../assets/icons/lockIcon';
@@ -11,7 +13,7 @@ import EyeIcon from '../assets/icons/eyeIcon';
 import MailIcon from '../assets/icons/mailIcon';
 import Background from '../assets/backgrounds/registerBackground';
 import { colors } from '../helpers/style.js';
-import { useNavigation } from '@react-navigation/native';
+
 
 
 const theme = colors.light
@@ -20,18 +22,77 @@ const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
 
+const mapStateToProps = (state) => ({
+    doneFetching: state.auth.doneFetching,
+    isFetching: state.auth.isFetching,
+    hasError: state.auth.hasError,
+    errorMessage: state.auth.errorMessage,
+    user: state.auth.user,
+    // theme: state.theme
+});
 
-export default function RegisterScreen() {
+const mapDispatchToProps = (dispatch) => ({
+    signupUser: (email, password, username, profile) => dispatch(signupUser(email, password, username, profile)),
+    loginUserWithGoogle: (googleUser) => dispatch(loginUserWithGoogle(googleUser)),
+    // loginUserWithFacebook: (token) => dispatch(loginUserWithFacebook(token))
+});
 
-    const navigation = useNavigation();
-    const [mail, setMail] = useState('');
+
+function RegisterScreen({ ...props }) {
+
+    const { user, doneFetching, navigation, signupUser, loginUserWithGoogle, loginUserWithFacebook } = props
+
+    const [email, setEmail] = useState('');
     const [name, setName] = useState('');
-    const [pass, setPass] = useState('');
+    const [password, setPassword] = useState('');
     const [invisible, setInvisible] = useState(true);
+
+    const signInWithGoogleAsync = async () => {
+        try {
+            const result = await Google.logInAsync({
+                // androidClientId: "YOUR_CLIENT_ID_HERE",
+                iosClientId: '26219097559-2gq1ocfsom0tijd104od359ijsoj29t6.apps.googleusercontent.com',
+                scopes: ['profile', 'email'],
+            });
+
+            if (result.type === 'success') {
+                loginUserWithGoogle(result);
+                return result.accessToken;
+            } else {
+                return { cancelled: true };
+            }
+        } catch (e) {
+            return { error: true };
+        }
+    }
+
+    const handleRegisterPress = () => {
+        console.log("Register")
+        if (email === '' || name === '' || password === '') {
+            alert("Please complete all the fields!")
+        } else {
+            let profile = "F"
+            signupUser(email, password, name, profile)
+        }
+    }
+
+    const handleGmailLoginPress = () => {
+        console.log("Gmail login")
+        signInWithGoogleAsync()
+    }
 
     const handleLoginPress = () => {
         navigation.navigate("Login");
     }
+
+    useEffect(() => {
+        if (doneFetching) {
+            console.log(user)
+            if (user != null) {
+                navigation.navigate('HomeTabs')
+            }
+        }
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -46,8 +107,9 @@ export default function RegisterScreen() {
                     <TextInput
                         placeholder="Email"
                         keyboardType={'email-address'}
-                        value={mail}
-                        onChangeText={mail => setMail(mail)}
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={email => setEmail(email)}
                         style={styles.input}
                     />
                     <MailIcon style={styles.leftIconInput} />
@@ -56,6 +118,7 @@ export default function RegisterScreen() {
                     <TextInput
                         placeholder="Username"
                         keyboardType={'email-address'}
+                        autoCapitalize="none"
                         value={name}
                         onChangeText={name => setName(name)}
                         style={styles.input}
@@ -67,8 +130,8 @@ export default function RegisterScreen() {
                     <TextInput
                         placeholder="Password"
                         secureTextEntry={invisible}
-                        value={pass}
-                        onChangeText={pass => setPass(pass)}
+                        value={password}
+                        onChangeText={password => setPassword(password)}
                         style={styles.input}
                     />
                     <LockIcon style={styles.leftIconInput} />
@@ -77,7 +140,7 @@ export default function RegisterScreen() {
 
                 <View style={styles.loginTextView}>
                     <TouchableHighlight
-                        onPress={() => alert("Apasat")}
+                        onPress={handleRegisterPress}
                         underlayColor="#DDDDDD"
                         style={{ width: '100%', borderRadius: 20 }}
                     >
@@ -103,13 +166,13 @@ export default function RegisterScreen() {
 
                 <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '85%' }}>
 
-                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} onPress={() => alert("Facebook :|")} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
+                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} disabled="true" onPress={() => alert("Facebook :|")} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Facebook
                         </Text>
                     </Icon.Button>
 
-                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={() => alert("Google :|")} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
+                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Google
                         </Text>
@@ -222,3 +285,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterScreen);
