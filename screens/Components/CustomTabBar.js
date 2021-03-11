@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../helpers/style';
 import Home from '../../assets/tabIcons/home';
@@ -59,12 +59,13 @@ export default function CustomTabBar() {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 60,
+        height: '9%',
         width: '100%',
         backgroundColor: theme.backgroundColor,
         elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingBottom: Platform === 'ios' ? 10 : 0,
     },
     button: {
         flex: 1,
