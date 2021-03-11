@@ -8,6 +8,7 @@ export const colors = {
         facebookButton: "#3B5998",
         linkBlue: "#564B93", // Dark Blue
         textGray: "#B4C5D2", // Gray
+        textGrayDark: "#AEAFB0", //Gray Darker
         lightViolet: "#D4C3FC", // Light Violet
         red: "#F6707B",
         green: "#6ED687",
@@ -26,6 +27,7 @@ export const colors = {
         facebookButton: "",
         linkBlue: "", // Dark Blue
         textGray: "", // Gray
+        textGrayDark: "", //Gray Darker
         lightViolet: "", // Light Violet
         red: "",
         green: "",
