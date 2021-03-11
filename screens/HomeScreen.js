@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
 import { colors } from '../helpers/style';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -7,7 +7,8 @@ import moment from 'moment';
 import Background from '../assets/backgrounds/background'
 import ProfileFemale from '../assets/profiles/profileFemale'
 import ProfileMale from '../assets/profiles/profileMale'
-import NotificationIcon from '../assets/icons/notificationIcon'
+import NotificationOffIcon from '../assets/icons/notificationIcon'
+import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import GoalIcon from '../assets/others/goal'
 
@@ -74,11 +75,18 @@ let todayEventsCards = [
     }
 ];
 
+
 export default function HomeScreen() {
 
     const vacation = { key: 'vacation', color: 'red', selectedDotColor: 'orange' };
     const massage = { key: 'massage', color: 'orange', selectedDotColor: 'yellow' };
     const workout = { key: 'workout', color: 'green' };
+
+    const [notification, setNotification] = useState(false);
+
+    let notificationIcon = (notification) => {
+        return (notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />)
+    }
 
     let dayString = moment().format("dddd, MMMM Do YYYY");
     return (
@@ -94,7 +102,7 @@ export default function HomeScreen() {
                         <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {user}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
-                    <NotificationIcon />
+                    {notificationIcon(notification)}
 
                 </View>
                 <CalendarStrip
@@ -157,6 +165,7 @@ export default function HomeScreen() {
             </View>
             <StatusBar style="auto" />
         </View>
+
     );
 }
 
