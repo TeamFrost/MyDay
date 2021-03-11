@@ -22,6 +22,7 @@ import ChangeNameScreen from '../screens/Settings/ChangeNameScreen';
 import ChangePasswordScreen from '../screens/Settings/ChangePasswordScreen';
 import EditProfilePictureScreen from '../screens/Settings/EditProfilePictureScreen';
 import QuizScreen from '../screens/Settings/QuizScreen';
+import CustomTabBar from '../screens/Components/CustomTabBar';
 
 const Tab = createBottomTabNavigator();
 const LandingStack = createStackNavigator();
@@ -90,7 +91,9 @@ export const HomeTabs = () =>
     <Tab.Navigator
         screenOptions={{
             headerShown: false,
-        }}>
+        }}
+        tabBar={props => <CustomTabBar {...props} />}
+    >
         <Tab.Screen name="HomeStack" component={HomeStackScreen} />
         <Tab.Screen name="CalendarStack" component={CalendarStackScreen} />
         <Tab.Screen name="GoalsStack" component={GoalsStackScreen} />
