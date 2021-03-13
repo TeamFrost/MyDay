@@ -126,7 +126,7 @@ function LoginScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <Background style={styles.background} width={screenWidth / 0.95} height={screenHeight / 1.37} />
+            <Background style={styles.background} width={screenWidth / 0.90} height={screenHeight / 1.37} />
             <View style={styles.loginContainter}>
 
                 <View style={styles.loginTextView}>
@@ -185,7 +185,7 @@ function LoginScreen({ ...props }) {
 
                 <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '85%' }}>
 
-                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} disabled="true" onPress={handleFacebookLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
+                    <Icon.Button name="facebook" backgroundColor="#3b599866" borderRadius={30} disabled="true" onPress={handleFacebookLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Facebook
                         </Text>
@@ -204,7 +204,7 @@ function LoginScreen({ ...props }) {
                     <Text style={{ color: theme.linkBlue }} onPress={handleSignUpPress}>Sign Up</Text>
                 </View>
             </View>
-            <StatusBar style="auto" />
+            <ExpoStatusBar style="auto" />
         </View >
     );
 }
