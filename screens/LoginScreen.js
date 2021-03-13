@@ -119,7 +119,7 @@ function LoginScreen({ ...props }) {
         if (doneFetching) {
             console.log(user)
             if (user != null) {
-                navigation.navigate('HomeStack')
+                navigation.navigate('HomeTabs')
             }
         }
     }, []);
