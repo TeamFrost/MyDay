@@ -241,9 +241,8 @@ const styles = StyleSheet.create({
     },
     paperTitle: {
         fontSize: 18,
-        // fontWeight: 'bold',
         color: theme.button,
-        height: '35%'
+        height: '38%'
     },
     paperTime: {
         color: theme.textColor,
