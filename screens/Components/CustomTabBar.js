@@ -59,7 +59,7 @@ export default function CustomTabBar() {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 60,
+        height: '9%',
         width: '100%',
         backgroundColor: theme.backgroundColor,
         elevation: 5,
