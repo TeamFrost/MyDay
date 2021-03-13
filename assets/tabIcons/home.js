@@ -1,11 +1,14 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
+import { Dimensions } from "react-native"
+
+const screenHeight = Dimensions.get('screen').height;
 
 export default (props) => {
     return (
         <Svg
-            width={24}
-            height={24}
+            width={screenHeight / 32}
+            height={screenHeight / 32}
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
