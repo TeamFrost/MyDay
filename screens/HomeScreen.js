@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
 import { colors } from '../helpers/style';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -17,6 +18,7 @@ import GoalIcon from '../assets/others/goal'
 
 const theme = colors.light;
 let today = moment();
+
 let markedDatesArray = [
     {
         date: today,
@@ -82,6 +84,7 @@ const mapStateToProps = (state) => ({
 function HomeScreen({ ...props }) {
 
     const { user } = props
+    const navigation = useNavigation();
 
     const [profile, setProfile] = useState(user.profile)
 
@@ -136,7 +139,7 @@ function HomeScreen({ ...props }) {
                     upperCaseDays={false}
                     selectedDate={today}
                     markedDates={markedDatesArray}
-                    onDateSelected={() => console.log("Sigur!")}
+                    onDateSelected={() => navigation.navigate("CalendarStack")}
                 />
             </View>
 
