@@ -47,34 +47,18 @@ function RegisterScreen({ ...props }) {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [invisible, setInvisible] = useState(true);
-    const [checked1, setChecked1] = useState(false);
-    const [checked2, setChecked2] = useState(false);
-    const [profile, setProfile] = useState('');
+    const [checked, setChecked] = useState(true);
+    const [profile, setProfile] = useState('M');
 
-    const handleRadioButtonPress1 = () => {
-        if (checked1 === false) {
-            setChecked1(true)
-            setChecked2(false)
+    const handleRadioButtonPress = () => {
+        if (checked) {
             setProfile('M')
+            setChecked(false);
         } else {
-            setChecked1(false)
-            setChecked2(true)
             setProfile('F')
+            setChecked(true);
         }
     }
-
-    const handleRadioButtonPress2 = () => {
-        if (checked2 === false) {
-            setChecked2(true)
-            setChecked1(false)
-            setProfile('F')
-        } else {
-            setChecked2(false)
-            setChecked1(true)
-            setProfile('M')
-        }
-    }
-    console.log(profile)
 
     const signInWithGoogleAsync = async () => {
         try {
@@ -124,7 +108,7 @@ function RegisterScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <Background style={styles.background} width={screenWidth / 0.95} height={screenHeight / 1.37} />
+            <Background style={styles.background} width={screenWidth / 0.90} height={screenHeight / 1.37} />
             <View style={styles.loginContainter}>
 
                 <View style={styles.loginTextView}>
@@ -166,21 +150,15 @@ function RegisterScreen({ ...props }) {
                     <EyeIcon onPress={() => setInvisible(!invisible)} style={styles.rightIconInput} />
                 </View>
 
-                <View style={{
-                    flexDirection: "row",
-                    justifyContent: 'space-around',
-                    alignItems: "center",
-                    // flex: 1,
-                    width: '100%',
-                }}>
-                    <Text style={{ color: theme.backgroundColor, fontSize: 16 }}>Male</Text>
-                    <TouchableOpacity onPress={handleRadioButtonPress1}>
-                        <RadioButton selected={checked1} />
+                <View style={styles.radioButtonDiv}>
+                    <Text style={styles.textRadioButton}>Male</Text>
+                    <TouchableOpacity onPress={handleRadioButtonPress}>
+                        <RadioButton selected={checked} />
                     </TouchableOpacity>
 
-                    <Text style={{ color: theme.backgroundColor, fontSize: 16 }}>Female</Text>
-                    <TouchableOpacity onPress={handleRadioButtonPress2}>
-                        <RadioButton selected={checked2} />
+                    <Text style={styles.textRadioButton}>Female</Text>
+                    <TouchableOpacity onPress={handleRadioButtonPress}>
+                        <RadioButton selected={!checked} />
                     </TouchableOpacity>
                 </View>
 
@@ -210,15 +188,15 @@ function RegisterScreen({ ...props }) {
                     <Divider style={styles.divider} />
                 </View>
 
-                <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '85%' }}>
+                <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '90%', }}>
 
-                    <Icon.Button name="facebook" backgroundColor="#3b5998" borderRadius={30} disabled="true" onPress={() => alert("Facebook :|")} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
+                    <Icon.Button name="facebook" backgroundColor="#3b599866" borderRadius={30} disabled="true" style={styles.altLoginButtons}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Facebook
                         </Text>
                     </Icon.Button>
 
-                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
+                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={styles.altLoginButtons}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Google
                         </Text>
@@ -325,10 +303,26 @@ const styles = StyleSheet.create({
         width: '30%',
     },
     dividerView: {
-        alignSelf: 'center',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignSelf: 'center',
+    },
+    textRadioButton: {
+        color: "#FFF",
+        fontSize: 16
+    },
+    radioButtonDiv: {
+        flexDirection: "row",
+        justifyContent: 'space-around',
+        alignItems: "center",
+        width: '80%',
+        marginTop: 10
+    },
+    altLoginButtons: {
+        width: 150,
+        justifyContent: 'center',
+        elevation: 5,
     }
 });
 
