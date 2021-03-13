@@ -4,6 +4,9 @@ import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableHighlight } fr
 import { colors } from '../helpers/style';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
+import { Avatar } from 'react-native-paper';
+import { connect } from 'react-redux';
+
 import Background from '../assets/backgrounds/background'
 import ProfileFemale from '../assets/profiles/profileFemale'
 import ProfileMale from '../assets/profiles/profileMale'
@@ -11,11 +14,6 @@ import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import GoalIcon from '../assets/others/goal'
-
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-let user = "Simona"
 
 const theme = colors.light;
 let today = moment();
@@ -75,8 +73,28 @@ let todayEventsCards = [
     }
 ];
 
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
 
-export default function HomeScreen() {
+
+function HomeScreen({ ...props }) {
+
+    const { user } = props
+
+    const profile = user.profile
+
+    let profilePicture = () => {
+        if (profile === "M")
+            return <ProfileMale width={45} height={45} />
+        else
+            if (profile === "F")
+                return <ProfileFemale width={45} height={45} />
+            else {
+                return <Avatar.Image size={45} source={{ uri: profile }} />
+            }
+    }
 
     const vacation = { key: 'vacation', color: 'red', selectedDotColor: 'orange' };
     const massage = { key: 'massage', color: 'orange', selectedDotColor: 'yellow' };
@@ -96,10 +114,10 @@ export default function HomeScreen() {
             <View style={styles.topDiv}>
                 <View style={styles.introText}>
                     <View style={styles.introIconArange}>
-                        <ProfileFemale width={45} height={45} />
+                        {profilePicture()}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {user}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {user.username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
@@ -285,6 +303,8 @@ const styles = StyleSheet.create({
     }
 });
 
+
+export default connect(mapStateToProps)(HomeScreen);
 
 
 {/* <Calendar
