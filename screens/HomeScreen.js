@@ -83,7 +83,7 @@ function HomeScreen({ ...props }) {
 
     const { user } = props
 
-    const profile = user.profile
+    const [profile, setProfile] = useState(user.profile)
 
     let profilePicture = () => {
         if (profile === "M")
