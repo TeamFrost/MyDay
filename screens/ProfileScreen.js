@@ -32,7 +32,6 @@ function ProfileScreen({ ...props }) {
 
     useEffect(() => {
         if (doneFetching) {
-            console.log(user)
             if (user === null) {
                 navigation.navigate('LoginStack')
             }
