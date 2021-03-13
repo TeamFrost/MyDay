@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Divider } from 'react-native-elements';
+
 import { connect } from 'react-redux';
 import { signupUser } from '../redux/actions/auth/auth';
 import { loginUserWithGoogle } from '../redux/actions/auth/auth';
+
+import RadioButton from '../screens/Components/RadioButton'
 
 import UserIcon from '../assets/icons/userIcon';
 import LockIcon from '../assets/icons/lockIcon';
@@ -13,8 +16,6 @@ import EyeIcon from '../assets/icons/eyeIcon';
 import MailIcon from '../assets/icons/mailIcon';
 import Background from '../assets/backgrounds/registerBackground';
 import { colors } from '../helpers/style.js';
-
-
 
 const theme = colors.light
 
@@ -46,6 +47,34 @@ function RegisterScreen({ ...props }) {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [invisible, setInvisible] = useState(true);
+    const [checked1, setChecked1] = useState(false);
+    const [checked2, setChecked2] = useState(false);
+    const [profile, setProfile] = useState('');
+
+    const handleRadioButtonPress1 = () => {
+        if (checked1 === false) {
+            setChecked1(true)
+            setChecked2(false)
+            setProfile('M')
+        } else {
+            setChecked1(false)
+            setChecked2(true)
+            setProfile('F')
+        }
+    }
+
+    const handleRadioButtonPress2 = () => {
+        if (checked2 === false) {
+            setChecked2(true)
+            setChecked1(false)
+            setProfile('F')
+        } else {
+            setChecked2(false)
+            setChecked1(true)
+            setProfile('M')
+        }
+    }
+    console.log(profile)
 
     const signInWithGoogleAsync = async () => {
         try {
@@ -68,10 +97,9 @@ function RegisterScreen({ ...props }) {
 
     const handleRegisterPress = () => {
         console.log("Register")
-        if (email === '' || name === '' || password === '') {
+        if (email === '' || name === '' || password === '' || profile === '') {
             alert("Please complete all the fields!")
         } else {
-            let profile = "F"
             signupUser(email, password, name, profile)
         }
     }
@@ -136,6 +164,24 @@ function RegisterScreen({ ...props }) {
                     />
                     <LockIcon style={styles.leftIconInput} />
                     <EyeIcon onPress={() => setInvisible(!invisible)} style={styles.rightIconInput} />
+                </View>
+
+                <View style={{
+                    flexDirection: "row",
+                    justifyContent: 'space-around',
+                    alignItems: "center",
+                    // flex: 1,
+                    width: '100%',
+                }}>
+                    <Text style={{ color: theme.backgroundColor, fontSize: 16 }}>Male</Text>
+                    <TouchableOpacity onPress={handleRadioButtonPress1}>
+                        <RadioButton selected={checked1} />
+                    </TouchableOpacity>
+
+                    <Text style={{ color: theme.backgroundColor, fontSize: 16 }}>Female</Text>
+                    <TouchableOpacity onPress={handleRadioButtonPress2}>
+                        <RadioButton selected={checked2} />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.loginTextView}>
