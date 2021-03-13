@@ -1,12 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 import Background from '../assets/backgrounds/background'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
+import { CalendarList } from 'react-native-calendars';
 import { colors } from '../helpers/style';
+import moment from 'moment';
 
 const theme = colors.light;
+const screenWidth = Dimensions.get('screen').width;
+const screenHeight = Dimensions.get('screen').height;
+
+let today = moment().format('YYYY-MM-DD').toString();
+
+const vacation = { key: 'vacation', color: 'red', selectedDotColor: 'orange' };
+const massage = { key: 'massage', color: 'orange', selectedDotColor: 'yellow' };
+const workout = { key: 'workout', color: 'green' };
+
 
 const DATA = [
     {
@@ -82,7 +92,44 @@ export default function CalendarScreen() {
         <View style={styles.container}>
             <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
             <View style={styles.calendar}>
-                <Text>Aici o sa fie calendarul :D</Text>
+
+                <CalendarList
+                    horizontal
+                    pagingEnabled
+                    pastScrollRange={6}
+                    futureScrollRange={6}
+                    showScrollIndicator
+                    calendarWidth={screenWidth}
+                    calendarHeight={360}
+                    firstDay={1}
+                    style={{ marginTop: 25 }}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                    onDayPress={(day) => { console.log('selected day', day) }}
+                    theme={{
+                        textDayFontSize: 18,
+                        textDayHeaderFontSize: 16,
+                        textMonthFontSize: 20,
+                        textMonthFontWeight: 'bold',
+                        'stylesheet.day.basic': {
+                            today: {
+                                borderRadius: 4,
+                                backgroundColor: theme.lightViolet
+                            },
+                            todayText: {
+                                color: theme.backgroundColor,
+                                fontWeight: 'bold',
+
+                            },
+                        },
+                    }}
+                    markedDates={{
+                        '2021-03-16': { dots: [vacation, massage, workout], selectedColor: theme.violet },
+                        '2021-03-17': { dots: [massage, workout] }
+                    }}
+                    markingType={'multi-dot'}
+
+                />
+
             </View>
 
             <View style={styles.flatListDiv}>
@@ -107,10 +154,11 @@ const styles = StyleSheet.create({
     },
     calendar: {
         width: '100%',
-        height: 300,
-        backgroundColor: 'orange',
+        height: 360,
+        backgroundColor: theme.backgroundColor,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
+        elevation: 5
     },
     flatListDiv: {
         flex: 1,
