@@ -44,7 +44,6 @@ function LandingScreen({ ...props }) {
     }, []);
 
     if (doneFetching) {
-        // navigation.navigate('LoginStack')
         setTimeout(() => {
             if (user != null) {
                 navigation.navigate('HomeTabs')
