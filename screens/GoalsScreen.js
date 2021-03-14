@@ -88,6 +88,7 @@ export default function GoalsScreen() {
             <View style={styles.flatListDiv}>
                 <FlatList
                     data={DATA}
+                    contentContainerStyle={{ padding: '5%' }}
                     renderItem={renderItem}
                     keyExtractor={item => item.title}
                 />
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     },
     flatListDiv: {
         flex: 1,
-        width: '90%'
+        width: '100%'
     },
     card: {
         flex: 1,
