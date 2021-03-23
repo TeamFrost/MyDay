@@ -147,7 +147,7 @@ function HomeScreen({ ...props }) {
 
                 <View style={{ flex: 1.6, justifyContent: 'center', flexDirection: 'row' }}>
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: '5%', flex: 1 }}>Today's Events</Text>
-                    <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => console.log("Edi e cel mai tare")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
                 <ScrollView
                     horizontal
