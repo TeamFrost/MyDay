@@ -1,23 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { connect } from 'react-redux';
+
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
-import { colors } from '../helpers/style';
-import { useNavigation } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import FormClock from '../assets/others/formClock.js';
 import FormMap from '../assets/others/formMap.js';
-
+import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
 
-export default function CreateActivityScreen() {
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
 
-    const navigation = useNavigation();
+function CreateActivityScreen({ ...props }) {
+
+    const { user, navigation } = props
+
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
@@ -177,3 +183,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     }
 });
+
+export default connect(mapStateToProps)(CreateActivityScreen);

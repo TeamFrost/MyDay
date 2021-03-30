@@ -1,12 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
 
 import { colors } from '../helpers/style';
 
 const theme = colors.light;
 
-export default function FriendsScreen() {
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
+
+function FriendsScreen({ ...props }) {
+    const { user, navigation } = props
+
     return (
         <View style={styles.container}>
             <Text>Friends</Text>
@@ -23,3 +31,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+export default connect(mapStateToProps)(FriendsScreen);

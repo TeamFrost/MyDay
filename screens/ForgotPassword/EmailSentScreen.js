@@ -1,16 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { connect } from 'react-redux';
 
 import Icon from '../../assets/forgotPassword/receiveMail';
 import { colors } from '../../helpers/style';
-import { useNavigation } from '@react-navigation/native';
 
 const theme = colors.light;
 
-export default function EmailSentScreen() {
+const mapStateToProps = (state) => ({ theme: state.theme });
 
-    const navigation = useNavigation();
+function EmailSentScreen({ ...props }) {
+
+    const { navigation } = props
 
     const handleLoginPress = () => {
         navigation.navigate("Login");
@@ -138,3 +140,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+export default connect(mapStateToProps)(EmailSentScreen);

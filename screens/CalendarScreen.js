@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
-import Background from '../assets/backgrounds/background'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { CalendarList } from 'react-native-calendars';
-import { colors } from '../helpers/style';
 import moment from 'moment';
+import { connect } from 'react-redux';
+
+import Background from '../assets/backgrounds/background'
+import { colors } from '../helpers/style';
 
 const theme = colors.light;
 const screenWidth = Dimensions.get('screen').width;
@@ -48,7 +50,15 @@ const DATA = [
         location: "Home",
     }
 ]
-export default function CalendarScreen() {
+
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
+
+function CalendarScreen({ ...props }) {
+
+    const { user } = props
 
     const Item = ({ title, description, startTime, endTime, location }) => (
         <View style={styles.item}>
@@ -232,3 +242,5 @@ const styles = StyleSheet.create({
         paddingLeft: 22,
     },
 });
+
+export default connect(mapStateToProps)(CalendarScreen);
