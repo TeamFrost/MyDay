@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Animated, StyleSheet, Text, View, Dimensions, FlatList } from 'react-native';
+import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import GoalIcon from '../assets/others/goal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
