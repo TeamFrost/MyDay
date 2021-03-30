@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 
-import Icon from '../assets/icon'
-import { restoreSession } from '../redux/actions/auth/auth';
 import { getData } from "../helpers/storage"
+import { restoreSession } from '../redux/actions/auth/auth';
 
+import Icon from '../assets/icon'
 import { colors } from '../helpers/style';
 
 const theme = colors.light;

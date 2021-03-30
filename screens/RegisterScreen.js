@@ -3,13 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Divider } from 'react-native-elements';
-
 import { connect } from 'react-redux';
+
 import { signupUser } from '../redux/actions/auth/auth';
 import { loginUserWithGoogle } from '../redux/actions/auth/auth';
 
 import RadioButton from '../screens/Components/RadioButton'
-
 import UserIcon from '../assets/icons/userIcon';
 import LockIcon from '../assets/icons/lockIcon';
 import EyeIcon from '../assets/icons/eyeIcon';
@@ -21,7 +20,6 @@ const theme = colors.light
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
-
 
 const mapStateToProps = (state) => ({
     doneFetching: state.auth.doneFetching,

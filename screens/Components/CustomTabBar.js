@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import { colors } from '../../helpers/style';
+
 import Home from '../../assets/tabIcons/home';
 import Calendar from '../../assets/tabIcons/calendar';
 import Goals from '../../assets/tabIcons/goals';
 import User from '../../assets/tabIcons/user';
+import { colors } from '../../helpers/style';
 
 const theme = colors.light;
 
