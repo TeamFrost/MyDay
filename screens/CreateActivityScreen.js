@@ -26,7 +26,6 @@ function CreateActivityScreen({ ...props }) {
 
     const { user, navigation } = props
 
-    const navigation = useNavigation();
     const [option1, setOption1] = useState("");
     const [option2, setOption2] = useState("");
     const [option3, setOption3] = useState("");
