@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
@@ -84,9 +84,9 @@ function HomeScreen({ ...props }) {
 
     const { user, navigation } = props
 
-    const [profile, setProfile] = useState(user.profile)
+    const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
 
-    let profilePicture = () => {
+    const profilePicture = () => {
         if (profile === "M")
             return <ProfileMale width={45} height={45} />
         else
@@ -108,6 +108,13 @@ function HomeScreen({ ...props }) {
     }
 
     let dayString = moment().format("dddd, MMMM Do YYYY");
+
+    useEffect(() => {
+        if (user) {
+            setProfile(user.profile)
+        }
+    }, [])
+
     return (
         <View style={styles.container}>
             <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
@@ -125,7 +132,7 @@ function HomeScreen({ ...props }) {
 
                 </View>
                 <CalendarStrip
-                    style={{ height: "35%", paddingTop: 10, paddingBottom: 5, width: '100%', borderRadius: 20, elevation: 5 }}
+                    style={styles.calendarStrip}
                     calendarColor={theme.backgroundColor}
                     calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
                     dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
@@ -237,6 +244,13 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: theme.backgroundColor,
         elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         marginRight: 10,
 
     },
@@ -269,8 +283,15 @@ const styles = StyleSheet.create({
         height: '54%',
         backgroundColor: theme.backgroundColor,
         borderRadius: 20,
+        marginBottom: 20,
         elevation: 5,
-        marginBottom: 20
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     viewArangeGoal: {
         flex: 1,
@@ -294,28 +315,36 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 5,
         elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         marginTop: '5%',
         marginRight: '5%',
     },
     plusButton: {
         fontSize: 24,
         color: theme.linkBlue
+    },
+    calendarStrip: {
+        height: "35%",
+        paddingTop: 10,
+        paddingBottom: 5,
+        width: '100%',
+        borderRadius: 20,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     }
 });
 
 
 export default connect(mapStateToProps)(HomeScreen);
-
-
-{/* <Calendar
-                startDay={1}
-                style={{ width: 300, }}
-                onDayPress={(day) => { console.log('selected day', day) }}
-                markingType={'period'}
-                markedDates={{
-                    '2021-02-16': { startingDay: true, color: '#50cebb', textColor: 'white' },
-                    '2021-02-17': { color: '#50cebb', textColor: 'white', marked: true, dotColor: 'white' },
-                    '2021-02-18': { color: '#70d7c7', textColor: 'white', marked: true, dotColor: 'white' },
-                    '2021-02-19': { endingDay: true, color: '#50cebb', textColor: 'white' },
-                }}
-            /> */}
