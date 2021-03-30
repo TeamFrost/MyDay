@@ -2,6 +2,7 @@ import React from "react";
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NativeViewGestureHandler } from "react-native-gesture-handler";
 
 import LandingScreen from '../screens/LandingScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -38,7 +39,8 @@ export const HomeStackScreen = () =>
     <HomeStack.Navigator
         screenOptions={{
             headerShown: false,
-        }}>
+        }}
+    >
         <HomeStack.Screen name="Home" component={HomeScreen} />
         <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
         <HomeStack.Screen name="Calendar" component={CalendarScreen} />
@@ -87,19 +89,23 @@ export const SettingsStackScreen = () =>
         <SettingsStack.Screen name="Quiz" component={QuizScreen} />
     </SettingsStack.Navigator>
 
-export const HomeTabs = () =>
-    <Tab.Navigator
-        initialRouteName='HomeStack'
-        screenOptions={{
-            headerShown: false,
-        }}
-        tabBar={props => <CustomTabBar {...props} />}
-    >
-        <Tab.Screen name="HomeStack" component={HomeStackScreen} />
-        <Tab.Screen name="CalendarStack" component={CalendarStackScreen} />
-        <Tab.Screen name="GoalsStack" component={GoalsStackScreen} />
-        <Tab.Screen name="ProfileStack" component={ProfileStackScreen} />
-    </Tab.Navigator>
+export const HomeTabs = () => {
+    return (
+        <Tab.Navigator
+            initialRouteName='HomeStack'
+            screenOptions={{
+                headerShown: false,
+            }}
+
+            tabBar={props => <CustomTabBar {...props} />}
+        >
+            <Tab.Screen name="HomeStack" component={HomeStackScreen} />
+            <Tab.Screen name="CalendarStack" component={CalendarStackScreen} />
+            <Tab.Screen name="GoalsStack" component={GoalsStackScreen} />
+            <Tab.Screen name="ProfileStack" component={ProfileStackScreen} />
+        </Tab.Navigator>
+    )
+}
 
 export const ForgotPasswordStackScreen = () =>
     <ForgotPasswordStack.Navigator
@@ -131,5 +137,5 @@ export const LandingStackScreen = () =>
         }}>
         <LandingStack.Screen name="Landing" component={LandingScreen} />
         <LandingStack.Screen name="LoginStack" component={LoginStackScreen} />
-        <LandingStack.Screen name="HomeTabs" component={HomeTabs} />
+        <LoginStack.Screen name="HomeTabs" component={HomeTabs} />
     </LandingStack.Navigator>
