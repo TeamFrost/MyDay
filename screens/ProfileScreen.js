@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { connect } from 'react-redux';
 
 import { logoutUser } from '../redux/actions/auth/auth';
+
 import { colors } from '../helpers/style';
 
 const theme = colors.light;

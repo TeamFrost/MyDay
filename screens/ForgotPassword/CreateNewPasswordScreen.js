@@ -1,21 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight } from 'react-native';
-
 import { LinearGradient } from 'expo-linear-gradient';
+import { connect } from 'react-redux';
 
 import Icon from '../../assets/settings/changePassword';
 import LockIcon from '../../assets/icons/lockIcon';
 import EyeIcon from '../../assets/icons/eyeIcon';
-
 import { colors } from '../../helpers/style';
-import { useNavigation } from '@react-navigation/native';
 
 const theme = colors.light;
 
-export default function CreateNewPasswordScreen() {
+const mapStateToProps = (state) => ({ theme: state.theme });
 
-    const navigation = useNavigation();
+function CreateNewPasswordScreen({ ...props }) {
+
+    const { navigation } = props
     const [pass, setPass] = useState('');
     const [passRepeat, setPassRepeat] = useState('');
     const [invisible, setInvisible] = useState(true);
@@ -166,3 +166,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+export default connect(mapStateToProps)(CreateNewPasswordScreen);

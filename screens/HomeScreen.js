@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableHighlight } from 'react-native';
-import { colors } from '../helpers/style';
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
 import { Avatar } from 'react-native-paper';
@@ -15,6 +13,7 @@ import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import GoalIcon from '../assets/others/goal'
+import { colors } from '../helpers/style';
 
 const theme = colors.light;
 let today = moment();
@@ -83,8 +82,7 @@ const mapStateToProps = (state) => ({
 
 function HomeScreen({ ...props }) {
 
-    const { user } = props
-    const navigation = useNavigation();
+    const { user, navigation } = props
 
     const [profile, setProfile] = useState(user.profile)
 

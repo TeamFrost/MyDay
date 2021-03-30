@@ -5,7 +5,10 @@ import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import GoalIcon from '../assets/others/goal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
+import { connect } from 'react-redux';
 
+import HeaderGradient from '../assets/backgrounds/headerGradientPink';
+import GoalIcon from '../assets/others/goal';
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -65,7 +68,14 @@ const DATA = [
 
 ]
 
-export default function GoalsScreen() {
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
+
+function GoalsScreen({ ...props }) {
+
+    const { user, navigation } = props
 
     const Item = ({ title, time, index }) => {
         const inputRange = [-1, 0, 100 * (index), 100 * (index + 2)]
@@ -171,3 +181,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
 });
+
+
+export default connect(mapStateToProps)(GoalsScreen);

@@ -1,21 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
-import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { connect } from 'react-redux';
+
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
-import { colors } from '../helpers/style';
-import { useNavigation } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import FormClock from '../assets/others/formClock.js';
 import FormMap from '../assets/others/formMap.js';
+import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
+
+import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
 
-export default function CreateActivityScreen() {
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+    theme: state.theme
+});
+
+function CreateActivityScreen({ ...props }) {
+
+    const { user, navigation } = props
 
     const navigation = useNavigation();
     const [option1, setOption1] = useState("");
@@ -255,3 +264,5 @@ const styles = StyleSheet.create({
         color: theme.backgroundColor
     }
 });
+
+export default connect(mapStateToProps)(CreateActivityScreen);

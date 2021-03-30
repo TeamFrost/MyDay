@@ -1,20 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableHighlight } from 'react-native';
-import { firebase } from '../firebase/config'
-
 import { LinearGradient } from 'expo-linear-gradient';
+import { connect } from 'react-redux';
+
+import { firebase } from '../firebase/config'
 
 import Icon from '../assets/forgotPassword/sendMail';
 import MailIcon from '../assets/icons/mailIcon';
 import { colors } from '../helpers/style';
-import { useNavigation } from '@react-navigation/native';
 
 const theme = colors.light;
 
-export default function ForgotPasswordScreen() {
+const mapStateToProps = (state) => ({ theme: state.theme });
 
-    const navigation = useNavigation();
+function ForgotPasswordScreen({ ...props }) {
+
+    const { navigation } = props
+
     const [email, setEmail] = useState('');
 
     const handleSendEmail = () => {
@@ -166,3 +169,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+export default connect(mapStateToProps)(ForgotPasswordScreen);

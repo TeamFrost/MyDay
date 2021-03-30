@@ -1,23 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
+import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 import React, { useState, useEffect } from 'react';
 import * as Google from 'expo-google-app-auth';
-import * as Facebook from 'expo-facebook';
+// import * as Facebook from 'expo-facebook';
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
 import { Divider } from 'react-native-elements';
+import { connect } from 'react-redux';
+
+import { loginUser } from '../redux/actions/auth/auth';
+import { loginUserWithGoogle } from '../redux/actions/auth/auth';
+// import { loginUserWithFacebook } from '../redux/actions/auth/auth';
 
 import MailIcon from '../assets/icons/mailIcon';
 import LockIcon from '../assets/icons/lockIcon';
 import EyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
-
-import { connect } from 'react-redux';
-import { loginUser } from '../redux/actions/auth/auth';
-import { loginUserWithGoogle } from '../redux/actions/auth/auth';
-import { loginUserWithFacebook } from '../redux/actions/auth/auth';
-import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 
 const theme = colors.light
 
