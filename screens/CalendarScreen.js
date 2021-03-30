@@ -117,7 +117,7 @@ function CalendarScreen({ ...props }) {
                     onDayPress={(day) => { console.log('selected day', day) }}
                     theme={{
                         textDayFontSize: 18,
-                        textDayHeaderFontSize: 16,
+                        textDayHeaderFontSize: 15,
                         textMonthFontSize: 20,
                         textMonthFontWeight: 'bold',
                         'stylesheet.day.basic': {
@@ -164,11 +164,18 @@ const styles = StyleSheet.create({
     },
     calendar: {
         width: '100%',
-        height: 360,
+        height: 385,
         backgroundColor: theme.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-end',
-        elevation: 5
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     flatListDiv: {
         flex: 1,

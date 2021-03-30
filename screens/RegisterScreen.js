@@ -277,6 +277,13 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 20,
         elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     forgotPassword: {
         flex: 0.8,
@@ -321,6 +328,13 @@ const styles = StyleSheet.create({
         width: 150,
         justifyContent: 'center',
         elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     }
 });
 

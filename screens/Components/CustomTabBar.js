@@ -63,10 +63,17 @@ const styles = StyleSheet.create({
         height: '9%',
         width: '100%',
         backgroundColor: theme.backgroundColor,
-        elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
         paddingBottom: Platform === 'ios' ? 10 : 0,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     button: {
         flex: 1,

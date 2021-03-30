@@ -183,13 +183,13 @@ function LoginScreen({ ...props }) {
 
                 <View style={{ ...styles.dividerView, justifyContent: 'space-around', width: '85%' }}>
 
-                    <Icon.Button name="facebook" backgroundColor="#3b599866" borderRadius={30} disabled="true" onPress={handleFacebookLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5 }}>
+                    <Icon.Button name="facebook" backgroundColor="#3b599866" borderRadius={30} disabled="true" onPress={handleFacebookLoginPress} style={styles.socialMediaButton}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Facebook
                         </Text>
                     </Icon.Button>
 
-                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={{ width: 150, justifyContent: 'center', elevation: 5, }}>
+                    <Icon.Button name="google" backgroundColor="#DB4437" borderRadius={30} onPress={handleGmailLoginPress} style={styles.socialMediaButton}>
                         <Text style={{ fontSize: 15, color: theme.backgroundColor }}>
                             Google
                         </Text>
@@ -272,6 +272,13 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 20,
         elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     forgotPassword: {
         flex: 0.8,
@@ -300,6 +307,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    socialMediaButton: {
+        width: 150,
+        justifyContent: 'center',
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     }
 });
 
