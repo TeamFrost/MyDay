@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux';
 
@@ -9,6 +9,8 @@ import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
 import FormClock from '../assets/others/formClock.js';
 import FormMap from '../assets/others/formMap.js';
+import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
+
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -23,6 +25,60 @@ const mapStateToProps = (state) => ({
 function CreateActivityScreen({ ...props }) {
 
     const { user, navigation } = props
+
+    const [option1, setOption1] = useState("");
+    const [option2, setOption2] = useState("");
+    const [option3, setOption3] = useState("");
+    const [option4, setOption4] = useState("");
+    const [category, setCategory] = useState("");
+    const [optionSelect, setOptionSelect] = useState(1);
+    const [optionVisibility, setOptionVisibility] = useState(false);
+
+    const handleCategoryChange = (category, option1, option2, option3, option4) => {
+        setOptionVisibility(true);
+        setCategory(category);
+        setOption1(option1);
+        setOption2(option2);
+        setOption3(option3);
+        setOption4(option4);
+        setOptionSelect(1);
+        console.log(category)
+    }
+
+    const handleCategoryPress = () => (
+        <View style={{ height: screenHeight / 7, width: "90%", alignSelf: 'center' }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Options</Text>
+
+            <View style={{ ...styles.radioButtonsView, marginTop: 10, }}>
+                <View style={{ ...styles.radioButtonsView, paddingLeft: 10 }}>
+                    <TouchableOpacity onPress={() => setOptionSelect(1)}>
+                        <RadioButtonActivity selected={optionSelect == 1 ? true : false} />
+                    </TouchableOpacity>
+                    <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option1}</Text>
+                </View>
+                <View style={styles.radioButtonsView}>
+                    <TouchableOpacity onPress={() => setOptionSelect(2)}>
+                        <RadioButtonActivity selected={optionSelect == 2 ? true : false} />
+                    </TouchableOpacity>
+                    <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option2}</Text>
+                </View>
+            </View>
+            <View style={styles.radioButtonsView}>
+                <View style={{ flex: 1, flexDirection: 'row', paddingLeft: 10 }}>
+                    <TouchableOpacity onPress={() => setOptionSelect(3)}>
+                        <RadioButtonActivity selected={optionSelect == 3 ? true : false} />
+                    </TouchableOpacity>
+                    <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option3}</Text>
+                </View>
+                <View style={styles.radioButtonsView}>
+                    <TouchableOpacity onPress={() => setOptionSelect(4)}>
+                        <RadioButtonActivity selected={optionSelect == 4 ? true : false} />
+                    </TouchableOpacity>
+                    <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option4}</Text>
+                </View>
+            </View>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -86,15 +142,21 @@ function CreateActivityScreen({ ...props }) {
                 <View style={{ ...styles.taskTitleDiv, justifyContent: 'flex-start', height: screenHeight / 6, marginTop: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Category</Text>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>University</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>Work</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>Lifestyle</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("University", "Lecture", "Exam", "Laboratory", "Test")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? theme.backgroundColor : theme.textColor }}>University</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Work' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Work", "Meeting", "Deadline", "Interview", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Work' ? theme.backgroundColor : theme.textColor }}>Work</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Lifestyle' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Lifestyle", "Birthday", "Date", "Freetime", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Lifestyle' ? theme.backgroundColor : theme.textColor }}>Lifestyle</Text></TouchableHighlight>
                     </View>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>Sport</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>Shopping</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.categoryButton} underlayColor={theme.lightViolet} onPress={() => alert("da")}><Text style={styles.textCategoryButton}>Holiday</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Sport' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Sport", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Sport' ? theme.backgroundColor : theme.textColor }}>Sport</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Shopping' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Shopping", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Shopping' ? theme.backgroundColor : theme.textColor }}>Shopping</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Holiday' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Holiday", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Holiday' ? theme.backgroundColor : theme.textColor }}>Holiday</Text></TouchableHighlight>
                     </View>
+                </View>
+                {optionVisibility ? handleCategoryPress() : null}
+                <View style={{ padding: 20 }}>
+                    <TouchableHighlight style={styles.submitButton}>
+                        <Text style={styles.submitButtonText}>Create new activity</Text>
+                    </TouchableHighlight>
                 </View>
                 <StatusBar style="auto" />
             </KeyboardAwareScrollView>
@@ -175,12 +237,30 @@ const styles = StyleSheet.create({
         padding: 8,
         paddingLeft: 25,
         paddingRight: 25,
-        backgroundColor: theme.cardLightViolet,
         borderRadius: 10
     },
     textCategoryButton: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    radioButtonsView: {
+        flexDirection: 'row',
+        flex: 1
+    },
+    submitButton: {
+        alignSelf: 'center',
+        width: '90%',
+        height: 50,
+        backgroundColor: theme.button,
+        borderRadius: 20,
+        elevation: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    submitButtonText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: theme.backgroundColor
     }
 });
 
