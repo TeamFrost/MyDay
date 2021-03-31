@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Avatar } from 'react-native-paper';
+import ProgressCircle from 'react-native-progress-circle'
 import { connect } from 'react-redux';
 
 import HeaderGradient from '../assets/backgrounds/profileGradient';
@@ -11,6 +12,7 @@ import ProfileMale from '../assets/profiles/profileMale'
 import SettingsIcon from '../assets/settings/settings'
 import StatisticsIcon from '../assets/icons/statisticsIcon'
 import FriendsIcon from '../assets/icons/friendsIcon'
+import PlannerIcon from '../assets/achievements/achivementPlanner'
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -42,11 +44,8 @@ function ProfileScreen({ ...props }) {
     const handleStatisticsPress = () => navigation.navigate("Statistics")
     const handleFriendsPress = () => navigation.navigate("Friends")
 
-    console.log(user.profile)
-
     useEffect(() => {
         if (user) {
-            console.log(user.profile)
             setProfile(user.profile)
         }
     }, [])
@@ -85,6 +84,16 @@ function ProfileScreen({ ...props }) {
                     </View>
                 </TouchableHighlight>
             </View>
+            <ProgressCircle
+                percent={30}
+                radius={50}
+                borderWidth={8}
+                color="#3399FF"
+                shadowColor="#999"
+                bgColor="#fff"
+            >
+                <PlannerIcon />
+            </ProgressCircle>
 
             <StatusBar style="auto" />
         </View >
