@@ -28,6 +28,7 @@ function ProfileScreen({ ...props }) {
     const { user, navigation } = props
 
     const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
+    const [username, setUsername] = useState("User")
 
     const profilePicture = () => {
         if (profile === "M")
@@ -47,6 +48,7 @@ function ProfileScreen({ ...props }) {
     useEffect(() => {
         if (user) {
             setProfile(user.profile)
+            setUsername(user.username)
         }
     }, [])
 
@@ -57,7 +59,7 @@ function ProfileScreen({ ...props }) {
             <View style={styles.profile}>
                 {profilePicture()}
             </View>
-            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.username}>{username}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                 <Icon name="map-marker-alt" size={14} color={"white"} style={{ paddingRight: 5 }} />
                 <Text style={styles.location}>Timisoara, Romania</Text>

@@ -85,6 +85,7 @@ function HomeScreen({ ...props }) {
     const { user, navigation } = props
 
     const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
+    const [username, setUsername] = useState("User")
 
     const profilePicture = () => {
         if (profile === "M")
@@ -112,6 +113,7 @@ function HomeScreen({ ...props }) {
     useEffect(() => {
         if (user) {
             setProfile(user.profile)
+            setUsername(user.username)
         }
     }, [])
 
@@ -125,7 +127,7 @@ function HomeScreen({ ...props }) {
                         {profilePicture()}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {user.username}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
