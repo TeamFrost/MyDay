@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Dimensions, Switch } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
@@ -32,6 +32,12 @@ const mapDispatchToProps = (dispatch) => ({
 
 function SettingsScreen({ ...props }) {
     const { user, navigation, doneFetching, logoutUser } = props
+    const [darkMode, setDarkMode] = useState(false);
+    const [pushNoti, setPushNoti] = useState(false);
+
+    const toggleSwitch = (f) => {
+        f(previousState => !previousState);
+    }
 
     const handleLogoutPress = () => {
         console.log("Logout")
@@ -120,12 +126,28 @@ function SettingsScreen({ ...props }) {
 
                 <View style={styles.switchView}>
                     <Text style={styles.text}>Push notifications</Text>
-                    <QuizIcon />
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Switch
+                            value={pushNoti}
+                            onValueChange={() => toggleSwitch(setPushNoti)}
+                            trackColor={{ false: theme.textGray, true: theme.linkBlue }}
+                            ios_backgroundColor={theme.textGray}
+                            thumbColor="#fff"
+                        />
+                    </View>
                 </View>
 
                 <View style={styles.switchView}>
                     <Text style={styles.text}>Dark mode</Text>
-                    <QuizIcon />
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Switch
+                            value={darkMode}
+                            onValueChange={() => toggleSwitch(setDarkMode)}
+                            trackColor={{ false: theme.textGray, true: theme.linkBlue }}
+                            ios_backgroundColor={theme.textGray}
+                            thumbColor="#fff"
+                        />
+                    </View>
                 </View>
 
                 <TouchableHighlight
@@ -141,7 +163,7 @@ function SettingsScreen({ ...props }) {
 
             </View>
 
-            <View style={{ ...styles.categoryView, flex: 2 }}>
+            <View style={{ ...styles.categoryView, flex: 2, marginTop: '5%' }}>
                 <Text style={styles.categoryText}>More</Text>
                 <Divider style={styles.divider} />
 
@@ -194,7 +216,7 @@ const styles = StyleSheet.create({
     },
     topText: {
         width: '100%',
-        height: screenHeight / 4.7,
+        height: screenHeight / 4.8,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -209,9 +231,8 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     categoryView: {
-        flex: 3.5,
+        flex: 4.2,
         width: "90%",
-        marginTop: "5%"
     },
     categoryText: {
         fontSize: 20,
@@ -238,12 +259,12 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '98%',
+        width: '105%',
         height: 30,
         marginTop: "3%",
     },
     text: {
+        flex: 4.2,
         fontSize: 18
     },
 });
