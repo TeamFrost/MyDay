@@ -82,16 +82,16 @@ function CreateActivityScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
+            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            <View style={styles.topText}>
+                <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+                    <View style={styles.backButton}>
+                        <Back />
+                    </View>
+                </TouchableWithoutFeedback>
+                <Text style={styles.textTop}>Create a new activity</Text>
+            </View>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
-                <HeaderGradient width={screenWidth} height={screenHeight * 17 / 100} style={{ flex: 1, position: 'absolute' }} />
-                <View style={styles.topText}>
-                    <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-                        <View style={styles.backButton}>
-                            <Back />
-                        </View>
-                    </TouchableWithoutFeedback>
-                    <Text style={styles.textTop}>Create a new activity</Text>
-                </View>
 
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
@@ -174,14 +174,13 @@ const styles = StyleSheet.create({
     awareScrollView: {
         flex: 1,
         width: screenWidth,
-        height: screenHeight
+        height: screenHeight,
     },
     topText: {
         width: '100%',
         height: screenHeight / 4.7,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     textTop: {
         color: "white",

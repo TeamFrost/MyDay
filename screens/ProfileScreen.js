@@ -31,6 +31,7 @@ function ProfileScreen({ ...props }) {
     const { user, navigation } = props
 
     const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
+    const [username, setUsername] = useState("User")
 
     const profilePicture = () => {
         if (profile === "M")
@@ -50,6 +51,7 @@ function ProfileScreen({ ...props }) {
     useEffect(() => {
         if (user) {
             setProfile(user.profile)
+            setUsername(user.username)
         }
     }, [])
 
