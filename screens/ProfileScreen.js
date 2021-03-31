@@ -33,6 +33,11 @@ function ProfileScreen({ ...props }) {
     const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
     const [username, setUsername] = useState("User")
 
+    const [achievement1, setAchievement1] = useState(15);
+    const [achievement2, setAchievement2] = useState(58);
+    const [achievement3, setAchievement3] = useState(70);
+    const [achievement4, setAchievement4] = useState(90);
+
     const profilePicture = () => {
         if (profile === "M")
             return <ProfileMale width={125} height={125} />
@@ -70,7 +75,7 @@ function ProfileScreen({ ...props }) {
             <View style={styles.buttonView}>
                 <TouchableHighlight
                     onPress={handleStatisticsPress}
-                    underlayColor="#DDDDDD"
+                    underlayColor={theme.violet}
                     style={styles.buttonTouch}
                 >
                     <View style={styles.button}>
@@ -80,7 +85,7 @@ function ProfileScreen({ ...props }) {
                 </TouchableHighlight>
                 <TouchableHighlight
                     onPress={handleFriendsPress}
-                    underlayColor="#DDDDDD"
+                    underlayColor={theme.violet}
                     style={styles.buttonTouch}
                 >
                     <View style={styles.button}>
@@ -95,7 +100,7 @@ function ProfileScreen({ ...props }) {
 
                 <View style={styles.achivementCard}>
                     <ProgressCircle
-                        percent={15}
+                        percent={achievement1}
                         radius={30}
                         borderWidth={5}
                         color="#9B8CF8"
@@ -113,7 +118,7 @@ function ProfileScreen({ ...props }) {
 
                 <View style={styles.achivementCard}>
                     <ProgressCircle
-                        percent={58}
+                        percent={achievement2}
                         radius={30}
                         borderWidth={5}
                         color="#5C8DF7"
@@ -131,7 +136,7 @@ function ProfileScreen({ ...props }) {
 
                 <View style={styles.achivementCard}>
                     <ProgressCircle
-                        percent={70}
+                        percent={achievement3}
                         radius={30}
                         borderWidth={5}
                         color="#564B93"
@@ -149,7 +154,7 @@ function ProfileScreen({ ...props }) {
 
                 <View style={styles.achivementCard}>
                     <ProgressCircle
-                        percent={90}
+                        percent={achievement4}
                         radius={30}
                         borderWidth={5}
                         color="#D4C3FC"
