@@ -39,6 +39,15 @@ function SettingsScreen({ ...props }) {
         f(previousState => !previousState);
     }
 
+    const handleEditProfilePress = () => navigation.navigate("EditProfilePicture")
+    const handleChangeNamePress = () => navigation.navigate("ChangeName")
+    const handleChangePasswordPress = () => navigation.navigate("ChangePassword")
+    const handleTakeQuizPress = () => navigation.navigate("Quiz")
+    const handleCustomizeCategoryPress = () => navigation.navigate("CustomizeCategory")
+    const handleAboutAppPress = () => navigation.navigate("AboutApp")
+    const handlePrivacyPolicyPress = () => navigation.navigate("PrivacyPolicy")
+    const handleTermsAndConditionsPress = () => navigation.navigate("TermsAndConditions")
+
     const handleLogoutPress = () => {
         console.log("Logout")
         logoutUser()
@@ -70,7 +79,7 @@ function SettingsScreen({ ...props }) {
                 <Divider style={styles.divider} />
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleEditProfilePress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -81,7 +90,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleChangeNamePress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -92,7 +101,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleChangePasswordPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -103,7 +112,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleCustomizeCategoryPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -114,7 +123,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleTakeQuizPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -168,7 +177,7 @@ function SettingsScreen({ ...props }) {
                 <Divider style={styles.divider} />
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleAboutAppPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -179,7 +188,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handlePrivacyPolicyPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
@@ -190,7 +199,7 @@ function SettingsScreen({ ...props }) {
                 </TouchableHighlight>
 
                 <TouchableHighlight
-                    onPress={() => alert("aha")}
+                    onPress={handleTermsAndConditionsPress}
                     underlayColor="#F6F6F6"
                     style={styles.touch}
                 >
