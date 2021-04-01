@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: screenWidth,
         height: screenHeight,
+        marginTop: "-3%",
     },
     topText: {
         width: '100%',
