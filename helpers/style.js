@@ -10,6 +10,7 @@ export const colors = {
         textGray: "#B4C5D2", // Gray
         textGrayDark: "#AEAFB0", //Gray Darker
         lightViolet: "#D4C3FC", // Light Violet
+        lightBlue: "#A5C5FC", // LightBlue
         red: "#F6707B",
         green: "#6ED687",
         cardBlue: "#5C8DF7", // Blue
@@ -29,6 +30,7 @@ export const colors = {
         textGray: "", // Gray
         textGrayDark: "", //Gray Darker
         lightViolet: "", // Light Violet
+        lightBlue: "", // LightBlue
         red: "",
         green: "",
         cardBlue: "", // Blue
