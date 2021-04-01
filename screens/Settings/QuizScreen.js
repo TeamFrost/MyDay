@@ -12,7 +12,7 @@ const mapStateToProps = (state) => ({
     theme: state.theme
 });
 
-function QuizScreen() {
+function QuizScreen({ ...props }) {
     const { user, navigation } = props
 
     return (
