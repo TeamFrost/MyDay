@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     profile: {
-        paddingTop: "15%"
+        paddingTop: screenHeight / 20
     },
     username: {
         color: "white",
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "90%",
         alignSelf: 'center',
-        marginTop: "17%",
+        marginTop: screenHeight / 100 * 8,
         // backgroundColor: 'red',
     },
     achivementText: {
