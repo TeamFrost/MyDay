@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "90%",
         alignSelf: 'center',
-        marginTop: "8%",
+        marginTop: "17%",
         // backgroundColor: 'red',
     },
     achivementText: {
