@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Dimensions, Switch } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Dimensions, Switch, Linking } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
@@ -45,7 +45,7 @@ function SettingsScreen({ ...props }) {
     const handleTakeQuizPress = () => navigation.navigate("Quiz")
     const handleCustomizeCategoryPress = () => navigation.navigate("CustomizeCategory")
     const handleAboutAppPress = () => navigation.navigate("AboutApp")
-    const handlePrivacyPolicyPress = () => navigation.navigate("PrivacyPolicy")
+    const handlePrivacyPolicyPress = () => Linking.openURL('https://www.privacypolicies.com/live/3f433032-b9fd-4db7-913c-e90be36e6425')
     const handleTermsAndConditionsPress = () => navigation.navigate("TermsAndConditions")
 
     const handleLogoutPress = () => {

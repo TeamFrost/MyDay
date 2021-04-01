@@ -67,7 +67,7 @@ function ProfileScreen({ ...props }) {
             <View style={styles.profile}>
                 {profilePicture()}
             </View>
-            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.username}>{username}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Icon name="map-marker-alt" size={14} color={"white"} style={{ paddingRight: 5 }} />
                 <Text style={styles.location}>Timisoara, Romania</Text>
@@ -233,8 +233,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "90%",
         alignSelf: 'center',
-        marginTop: screenHeight / 100 * 8,
-        // backgroundColor: 'red',
+        marginTop: screenHeight / 100 * 7,
     },
     achivementText: {
         fontSize: 22,

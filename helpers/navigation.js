@@ -25,7 +25,6 @@ import EditProfilePictureScreen from '../screens/Settings/EditProfilePictureScre
 import QuizScreen from '../screens/Settings/QuizScreen';
 import CustomizeCategoryScreen from '../screens/Settings/CustomizeCategoryScreen';
 import AboutAppScreen from '../screens/Settings/AboutAppScreen';
-import PrivacyPolicyScreen from '../screens/Settings/PrivacyPolicyScreen';
 import TermsAndConditionsScreen from '../screens/Settings/TermsAndConditionsScreen';
 import CustomTabBar from '../screens/Components/CustomTabBar';
 
@@ -93,7 +92,6 @@ export const SettingsStackScreen = () =>
         <SettingsStack.Screen name="Quiz" component={QuizScreen} />
         <SettingsStack.Screen name="CustomizeCategory" component={CustomizeCategoryScreen} />
         <SettingsStack.Screen name="AboutApp" component={AboutAppScreen} />
-        <SettingsStack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         <SettingsStack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
     </SettingsStack.Navigator>
 
