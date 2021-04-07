@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     achivementCard: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: '4%'
+        marginTop: '7%'
     },
     achivementCardTitle: {
         fontSize: 16,

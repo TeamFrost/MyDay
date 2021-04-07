@@ -15,6 +15,7 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import CreateActivityScreen from '../screens/CreateActivityScreen';
 import GoalsScreen from '../screens/GoalsScreen';
+import AddNewGoalScreen from "../screens/AddNewGoalScreen";
 import ProfileScreen from '../screens/ProfileScreen';
 import FriendsScreen from '../screens/FriendsScreen';
 import StatisticsScreen from '../screens/StatisticsScreen';
@@ -67,6 +68,7 @@ export const GoalsStackScreen = () =>
             headerShown: false,
         }}>
         <GoalsStack.Screen name="Goals" component={GoalsScreen} />
+        <GoalsStack.Screen name="AddGoal" component={AddNewGoalScreen} />
     </GoalsStack.Navigator>
 
 export const ProfileStackScreen = () =>

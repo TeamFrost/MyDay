@@ -2,7 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Avatar } from 'react-native-paper';
+import { useActionSheet } from '@expo/react-native-action-sheet'
+import * as ImagePicker from 'expo-image-picker';
+import moment from 'moment';
 import { connect } from 'react-redux';
+
+import { firebase } from '../../firebase/config'
+import { restoreSession } from '../../redux/actions/auth/auth'
 
 import ProfileFemale from '../../assets/profiles/profileFemale'
 import ProfileMale from '../../assets/profiles/profileMale'
@@ -15,6 +21,8 @@ const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
 
+const mapDispatchToProps = (dispatch) => ({ restoreSession: () => dispatch(restoreSession()) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     theme: state.theme
@@ -22,7 +30,14 @@ const mapStateToProps = (state) => ({
 
 function EditProfilePictureScreen({ ...props }) {
     const { user, navigation } = props
+
+    const { showActionSheetWithOptions } = useActionSheet();
+
+    const [userId, setUserId] = useState("")
     const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
+
+    const [image, setImage] = useState(null);
+    const [imageRef, setImageRef] = useState("");
 
     const profilePicture = () => {
         if (profile === "M")
@@ -36,12 +51,128 @@ function EditProfilePictureScreen({ ...props }) {
     }
 
     const updateProfile = () => {
-        alert("da")
+
+        const options = ['Take Photo...', 'Choose from gallery...', 'Cancel'];
+        const cancelButtonIndex = 2;
+
+        showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+            },
+            buttonIndex => {
+                if (buttonIndex === 0) {
+                    takePicture()
+                } else if (buttonIndex === 1) {
+                    pickImage()
+                } else if (buttonIndex === 2) {
+                    //cancel
+                }
+            },
+        );
+    }
+
+    const takePicture = async () => {
+        (async () => {
+            if (Platform.OS !== 'web') {
+                const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Sorry, we need camera roll permissions to make this work!');
+                }
+            }
+        })();
+
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            let image = result.uri;
+            setImage(image);
+            let imageName = moment(Date.parse(new Date())).format().toString() + '-' + userId;
+            uploadImage(image, imageName)
+        }
+    }
+
+    const pickImage = async () => {
+
+        (async () => {
+            if (Platform.OS !== 'web') {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Sorry, we need camera roll permissions to make this work!');
+                }
+            }
+        })();
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            let image = result.uri;
+            setImage(image);
+            let imageName = moment(Date.parse(new Date())).format().toString() + '-' + userId;
+            uploadImage(image, imageName)
+        }
+    }
+
+    const uploadImage = async (uri, imageName) => {
+        let oldRef = ''
+        if (profile.includes("firebasestorage")) {
+            console.log("Poza exista in storage")
+            oldRef = firebase.storage().refFromURL(profile)
+        }
+        console.log(oldRef)
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        let imageURL = '';
+        const ref = firebase.storage().ref().child(`images/users/${imageName}`);
+        setImageRef(ref)
+        ref.put(blob)
+            .then(function () {
+                ref.getDownloadURL()
+                    .then(function (url) {
+                        imageURL = url;
+                        firebase.firestore().collection('users').doc(userId)
+                            .update({ profile: imageURL })
+                            .then(function () {
+                                if (oldRef != '') {
+                                    console.log("Delete old ref")
+                                    oldRef.delete().then(function () {
+                                        restoreSession()
+                                        alert("Success!")
+                                    }).catch(function (error) {
+                                        alert(error)
+                                    });
+                                }
+                                else {
+                                    restoreSession()
+                                    alert("Success!")
+                                }
+                            })
+                            .catch(function (error) {
+                                alert(error)
+                            });
+                    })
+                    .catch(function (error) {
+                        alert(error)
+                    })
+            })
+            .catch(function (error) {
+                alert(error)
+            })
     }
 
     useEffect(() => {
         if (user) {
             setProfile(user.profile)
+            setUserId(user.id)
         }
     }, [])
 
@@ -63,7 +194,7 @@ function EditProfilePictureScreen({ ...props }) {
                     {profilePicture()}
                 </View>
                 <View style={styles.profile}>
-                    <Text style={styles.profileText} onPress={() => updateProfile()}>Upload a new picture</Text>
+                    <Text style={styles.profileText} onPress={updateProfile}>Upload a new picture</Text>
                     <AddPhoto />
                 </View>
             </View>
@@ -114,4 +245,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect(mapStateToProps)(EditProfilePictureScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfilePictureScreen);

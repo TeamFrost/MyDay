@@ -106,12 +106,15 @@ function GoalsScreen({ ...props }) {
     );
 
     const scrollY = React.useRef(new Animated.Value(0)).current;
+
+    const handleAddGoalPress = () => navigation.navigate("AddGoal");
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
             <View style={styles.topText}>
                 <Text style={styles.textTop}>Goals</Text>
-                <Text style={styles.subtextTop} onPress={() => { console.log('goal new') }}>Add a new goal +</Text>
+                <Text style={styles.subtextTop} onPress={handleAddGoalPress}>Add a new goal +</Text>
             </View>
 
             <View style={styles.flatListDiv}>
