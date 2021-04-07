@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import DatePicker from 'react-native-modern-datepicker';
+import moment from 'moment';
 import { connect } from 'react-redux';
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
@@ -33,6 +35,9 @@ function CreateActivityScreen({ ...props }) {
     const [category, setCategory] = useState("");
     const [optionSelect, setOptionSelect] = useState(1);
     const [optionVisibility, setOptionVisibility] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
+
+    console.log(selectedDate)
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -93,6 +98,9 @@ function CreateActivityScreen({ ...props }) {
             </View>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
 
+                <DatePicker
+                    onSelectedChange={date => setSelectedDate(date)}
+                />
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
                         <TextInput placeholder="Task Title" placeholderTextColor={theme.textColor} style={{ fontSize: 22 }}></TextInput>
