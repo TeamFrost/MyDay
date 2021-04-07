@@ -1,5 +1,4 @@
 import { firebase } from '../../../firebase/config';
-import { getCurrentlySingedIn, emailAndPassSignIn, googleSignIn, facebookSignIn, createUser, signOut } from '../../../firebase/services/auth.js';
 import * as types from './actionTypes';
 
 export const restoreSession = () => dispatch => {
@@ -183,77 +182,6 @@ const isUserEqual = (googleUser, firebaseUser) => {
     }
     return false;
 }
-
-// export const restoreSession = () => dispatch => {
-//     dispatch(sessionStart());
-
-//     getCurrentlySingedIn()
-//         .then((res) => {
-//             console.log(res)
-//             if (res === null)
-//                 dispatch(sessionLogout())
-//             dispatch(sessionSuccess(res))
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// };
-
-// export const loginUser = (email, password) => dispatch => {
-//     dispatch(sessionStart());
-//     emailAndPassSignIn(email, password)
-//         .then((res) => {
-//             dispatch(sessionSuccess(res))
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// };
-
-// export const loginUserWithGoogle = () => dispatch => {
-//     dispatch(sessionStart());
-//     googleSignIn()
-//         .then((res) => {
-//             dispatch(sessionSuccess(res))
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// }
-
-// export const loginUserWithFacebook = () => dispatch => {
-//     dispatch(sessionStart());
-//     facebookSignIn()
-//         .then((res) => {
-//             dispatch(sessionSuccess(res))
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// }
-
-// export const signupUser = (email, password, username, profile) => dispatch => {
-//     dispatch(sessionStart());
-//     createUser(email, password, username, profile)
-//         .then((res) => {
-//             dispatch(sessionSuccess(res))
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// };
-
-// export const logoutUser = () => dispatch => {
-//     dispatch(sessionStart())
-//     signOut()
-//         .then((res) => {
-//             if (res === null)
-//                 dispatch(sessionLogout())
-//         })
-//         .catch(error => {
-//             dispatch(sessionError(error.message));
-//         })
-// };
 
 const sessionStart = () => ({
     type: types.SESSION_START
