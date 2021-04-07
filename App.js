@@ -1,4 +1,5 @@
 import React from 'react';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 
 //Redux imports
 import { Provider } from 'react-redux'
@@ -10,11 +11,13 @@ import { LandingStackScreen } from './helpers/navigation'
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <NavigationContainer>
-        {LandingStackScreen()}
-      </NavigationContainer>
-    </Provider>
+    <ActionSheetProvider>
+      <Provider store={store}>
+        <NavigationContainer>
+          {LandingStackScreen()}
+        </NavigationContainer>
+      </Provider>
+    </ActionSheetProvider>
   );
 }
 
