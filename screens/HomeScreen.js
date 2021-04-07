@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
 import { Avatar } from 'react-native-paper';
@@ -13,9 +13,12 @@ import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import GoalIcon from '../assets/others/goal'
+import QuizIcon from '../assets/settings/quizIcon.js'
 import { colors } from '../helpers/style';
 
 const theme = colors.light;
+const screenHeight = Dimensions.get('screen').height;
+const screenWidth = Dimensions.get('screen').width;
 let today = moment();
 
 let markedDatesArray = [
@@ -152,8 +155,8 @@ function HomeScreen({ ...props }) {
 
             <View style={styles.midDiv}>
 
-                <View style={{ flex: 1.6, justifyContent: 'center', flexDirection: 'row' }}>
-                    <Text style={{ ...styles.title, marginLeft: "5%", marginTop: '5%', flex: 1 }}>Today's Events</Text>
+                <View style={{ flex: 1.2, justifyContent: 'center', flexDirection: 'row' }}>
+                    <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
                     <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
                 <ScrollView
@@ -173,6 +176,17 @@ function HomeScreen({ ...props }) {
                         </View>
                     ))}
                 </ScrollView>
+                <View style={{ width: "100%" }}>
+                    <TouchableOpacity activeOpacity={0.6} style={styles.quizz}>
+                        <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.paperTitle}>Take a quizz</Text>
+                                <Text>Find out how to spend your time.</Text>
+                            </View>
+                            <QuizIcon style={{ marginRight: 10 }} />
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
 
 
@@ -204,14 +218,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     topDiv: {
-        flex: 1.7,
+        flex: 1.5,
         width: '90%',
         alignItems: 'center',
         justifyContent: 'center',
 
     },
     midDiv: {
-        flex: 1.5,
+        flex: 1.9,
         alignItems: 'flex-start',
         justifyContent: 'center',
         width: '100%',
@@ -240,7 +254,7 @@ const styles = StyleSheet.create({
     },
     paper: {
         justifyContent: 'flex-start',
-        height: 155,
+        height: 160,
         width: 135,
         borderRadius: 20,
         padding: 10,
@@ -259,7 +273,7 @@ const styles = StyleSheet.create({
     paperTitle: {
         fontSize: 18,
         color: theme.button,
-        height: '38%'
+        height: '42%'
     },
     paperTime: {
         color: theme.textColor,
@@ -267,14 +281,13 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     containerEvents: {
-        height: '80%',
+        height: '90%',
         alignItems: 'center',
         paddingRight: "5%",
         paddingLeft: "5%",
-        marginTop: '5%',
     },
     botDiv: {
-        flex: 1.1,
+        flex: 0.9,
         width: '90%',
         alignItems: 'flex-start',
         justifyContent: 'space-around',
@@ -324,7 +337,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        marginTop: '5%',
+        marginTop: screenHeight / 914 * 15,
         marginRight: '5%',
     },
     plusButton: {
@@ -345,6 +358,16 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+    },
+    quizz: {
+        width: '90%',
+        height: 80,
+        alignSelf: 'center',
+        backgroundColor: theme.backgroundColor,
+        elevation: 5,
+        borderRadius: 10,
+        justifyContent: 'center',
+        paddingLeft: 10
     }
 });
 
