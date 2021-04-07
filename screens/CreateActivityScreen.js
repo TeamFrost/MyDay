@@ -11,6 +11,8 @@ import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
 import FormClock from '../assets/others/formClock.js';
 import FormMap from '../assets/others/formMap.js';
+import ExpandLessIcon from '../assets/icons/expandLessIcon.js';
+import ExpandMoreIcon from '../assets/icons/expandMoreIcon.js';
 import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
 
 import { colors } from '../helpers/style';
@@ -18,6 +20,8 @@ import { colors } from '../helpers/style';
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
+const today = moment().format('YYYY-MM-DD');
+
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -33,11 +37,10 @@ function CreateActivityScreen({ ...props }) {
     const [option3, setOption3] = useState("");
     const [option4, setOption4] = useState("");
     const [category, setCategory] = useState("");
+    const [datePicker, setDatePicker] = useState(false);
     const [optionSelect, setOptionSelect] = useState(1);
     const [optionVisibility, setOptionVisibility] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
-
-    console.log(selectedDate)
+    const [selectedDate, setSelectedDate] = useState('Today');
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -47,7 +50,6 @@ function CreateActivityScreen({ ...props }) {
         setOption3(option3);
         setOption4(option4);
         setOptionSelect(1);
-        console.log(category)
     }
 
     const handleCategoryPress = () => (
@@ -85,6 +87,24 @@ function CreateActivityScreen({ ...props }) {
         </View>
     );
 
+    const handleDatePickerPress = () => {
+        setDatePicker((value) => !value);
+    }
+
+    const showPicker = () => {
+        return (
+            <View style={{ width: '100%', height: screenHeight / 5 * 2.1 }}>
+                <DatePicker
+                    mode='calendar'
+                    minimumDate={today}
+                    current={today}
+                    options={{ mainColor: theme.violet }}
+                    onSelectedChange={date => setSelectedDate(moment(new Date(date)).format("dddd, DD MMMM"))}
+                />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
@@ -98,9 +118,6 @@ function CreateActivityScreen({ ...props }) {
             </View>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
 
-                <DatePicker
-                    onSelectedChange={date => setSelectedDate(date)}
-                />
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
                         <TextInput placeholder="Task Title" placeholderTextColor={theme.textColor} style={{ fontSize: 22 }}></TextInput>
@@ -108,18 +125,23 @@ function CreateActivityScreen({ ...props }) {
                     <TextInput placeholder="Add your task details here" multiline style={styles.detailsText}></TextInput>
 
                 </View>
-                <View style={{ ...styles.taskTitleDiv, height: screenHeight / 3.5, justifyContent: 'flex-start', }}>
+                <View style={{ ...styles.taskTitleDiv, height: datePicker ? screenHeight / 1.45 : screenHeight / 3.5, justifyContent: 'flex-start', }}>
 
                     <View style={styles.card}>
                         <View style={styles.cardIcon}>
                             <FormClock />
                         </View>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>Today</Text>
+                        <View style={{ flexDirection: 'column', width: '60%' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>{selectedDate}</Text>
                             <Text style={{ fontSize: 16 }}>10:00 - 11:30</Text>
                             <Text style={{ fontSize: 12 }}>Just Once</Text>
                         </View>
+                        <TouchableOpacity onPress={handleDatePickerPress}>
+                            {datePicker ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </TouchableOpacity>
                     </View>
+
+                    {datePicker ? showPicker() : null}
 
                     <View style={{ ...styles.card, backgroundColor: theme.cardLightBlue }}>
                         <View style={styles.cardIcon}>
