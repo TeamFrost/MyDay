@@ -103,11 +103,12 @@ function SettingsScreen({ ...props }) {
                 <TouchableHighlight
                     onPress={handleChangePasswordPress}
                     underlayColor="#F6F6F6"
+                    disabled={user.google}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
-                        <Text style={styles.text}>Change password</Text>
-                        <RightArrowIcon />
+                        <Text style={{ ...styles.text, color: user.google ? theme.textGray : theme.textColor }}>Change password</Text>
+                        <RightArrowIcon style={{ opacity: user.google ? 0 : 1 }} />
                     </View>
                 </TouchableHighlight>
 
@@ -274,7 +275,8 @@ const styles = StyleSheet.create({
     },
     text: {
         flex: 4.2,
-        fontSize: 18
+        fontSize: 18,
+        color: theme.textColor
     },
 });
 
