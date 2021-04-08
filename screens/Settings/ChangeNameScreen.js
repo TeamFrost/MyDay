@@ -5,6 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux';
 
+import { firebase } from '../../firebase/config'
+import { restoreSession } from '../../redux/actions/auth/auth'
 
 import UserIcon from '../../assets/icons/userIcon';
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
@@ -12,25 +14,44 @@ import ChangeName from '../../assets/settings/changeName';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
 
-
 const theme = colors.light;
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
+const mapDispatchToProps = (dispatch) => ({ restoreSession: () => dispatch(restoreSession()) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    theme: state.theme
+    doneFetching: state.auth.doneFetching,
+    hasError: state.auth.hasError,
+    errorMessage: state.auth.errorMessage,
+    theme: state.theme,
 });
 
 function ChangeNameScreen({ ...props }) {
-    const { user, navigation } = props
-    const [username, setUsername] = useState('');
+    const { user, doneFetching, navigation } = props
+    const [newName, setNewName] = useState('')
 
-    useEffect(() => {
+    let username = '';
+
+    if (doneFetching) {
         if (user) {
-            setUsername(user.username)
+            username = user.username
         }
-    }, [])
+    }
+
+    const changeName = () => {
+        if (user) {
+            firebase.firestore().collection('users').doc(user.id)
+                .update({
+                    username: newName
+                })
+                .then(function () {
+                    restoreSession()
+                    setNewName('')
+                })
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -48,14 +69,14 @@ function ChangeNameScreen({ ...props }) {
 
                 <View style={styles.content}>
                     <ChangeName />
-                    <Text style={styles.nameText}>Current name: <Text style={styles.username}>{user.username}</Text></Text>
+                    <Text style={styles.nameText}>Current name: <Text style={styles.username}>{username}</Text></Text>
                     <View style={{ width: '90%' }}>
                         <LinearGradient start={[0, 0]} end={[1, 1]} colors={['#E8B7E5', '#D4C3FC', '#5C8DF7']} style={styles.linearGradient}>
                             <View style={styles.inputView}>
                                 <TextInput
                                     placeholder="New username"
-                                    autoCapitalize="none"
-                                    onChangeText={username => setUsername(username)}
+                                    onChangeText={name => setNewName(name)}
+                                    value={newName}
                                     style={styles.input}
                                 />
                                 <UserIcon style={styles.leftIconInput} />
@@ -67,6 +88,7 @@ function ChangeNameScreen({ ...props }) {
                         <TouchableHighlight
                             underlayColor="#DDDDDD"
                             style={{ width: '100%', borderRadius: 20 }}
+                            onPress={changeName}
                         >
                             <View style={styles.sendButton}>
                                 <Text style={{ ...styles.sendText, fontSize: 20 }}>Confirm</Text>
@@ -184,4 +206,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default connect(mapStateToProps)(ChangeNameScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ChangeNameScreen);
