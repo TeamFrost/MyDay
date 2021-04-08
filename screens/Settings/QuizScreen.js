@@ -35,12 +35,12 @@ function QuizScreen({ ...props }) {
             </View>
             <View style={styles.content}>
                 <View style={styles.card}>
-                    <Workout width={screenWidth / 10 * 9} />
+                    <Workout width={screenWidth / 100 * 89} height={screenHeight / 10 * 2.27} />
                     <Text style={styles.quizTextTitle}>Find out when is the best time to workout</Text>
                     <Text style={styles.quizzRedirect} onPress={() => navigation.navigate("WorkoutQuiz")}>Take the quiz now</Text>
                 </View>
                 <View style={styles.card}>
-                    <Activity width={screenWidth / 10 * 9} />
+                    <Activity width={screenWidth / 100 * 89} height={screenHeight / 10 * 2.27} />
                     <Text style={styles.quizTextTitle}>Don’t know what what to do? </Text>
                     <Text style={styles.quizzRedirect} onPress={() => navigation.navigate("ActivityQuiz")}>Take the quiz now</Text>
                 </View>
@@ -90,7 +90,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
         color: theme.linkBlue,
-        textAlign: 'center'
+        textAlign: 'center',
+        marginTop: 5
     },
     quizzRedirect: {
         textDecorationLine: 'underline',
