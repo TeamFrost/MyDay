@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Avatar } from 'react-native-paper';
@@ -30,8 +30,13 @@ const mapStateToProps = (state) => ({
 function ProfileScreen({ ...props }) {
     const { user, navigation } = props
 
-    const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
-    const [username, setUsername] = useState("User")
+    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
+    let username = ''
+
+    if (user) {
+        profile = user.profile
+        username = user.username
+    }
 
     const [achievement1, setAchievement1] = useState(15);
     const [achievement2, setAchievement2] = useState(58);
@@ -52,13 +57,6 @@ function ProfileScreen({ ...props }) {
     const handleSettingsPress = () => navigation.navigate("SettingsStack")
     const handleStatisticsPress = () => navigation.navigate("Statistics")
     const handleFriendsPress = () => navigation.navigate("Friends")
-
-    useEffect(() => {
-        if (user) {
-            setProfile(user.profile)
-            setUsername(user.username)
-        }
-    }, [])
 
     return (
         <View style={styles.container}>
