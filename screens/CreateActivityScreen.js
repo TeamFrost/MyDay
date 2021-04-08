@@ -20,8 +20,6 @@ import { colors } from '../helpers/style';
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
-const today = moment().format('YYYY-MM-DD');
-
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -31,6 +29,11 @@ const mapStateToProps = (state) => ({
 function CreateActivityScreen({ ...props }) {
 
     const { user, navigation } = props
+
+    const today = moment().format('YYYY-MM-DD');
+    const fancyToday = moment().format("dddd, DD MMMM");
+    const timeNow = moment().format('HH:mm');
+    const timeAfterOneHour = moment().add(1, 'hours').format('HH:mm');
 
     const [option1, setOption1] = useState("");
     const [option2, setOption2] = useState("");
@@ -43,9 +46,10 @@ function CreateActivityScreen({ ...props }) {
     const [datePicker, setDatePicker] = useState(false);
     const [startTimePicker, setStartTimePicker] = useState(false);
     const [endTimePicker, setEndTimePicker] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('Today');
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [showDate, setShowDate] = useState(fancyToday)
+    const [startTime, setStartTime] = useState(timeNow);
+    const [endTime, setEndTime] = useState(timeAfterOneHour);
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -104,7 +108,10 @@ function CreateActivityScreen({ ...props }) {
                     minimumDate={today}
                     current={today}
                     options={{ mainColor: theme.violet }}
-                    onSelectedChange={date => setSelectedDate(moment(new Date(date)).format("dddd, DD MMMM"))}
+                    onSelectedChange={date => {
+                        setSelectedDate(date)
+                        setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
+                    }}
                 />
             </View>
         )
@@ -168,7 +175,7 @@ function CreateActivityScreen({ ...props }) {
                             <FormClock />
                         </View>
                         <View style={{ flexDirection: 'column', width: '60%' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>{selectedDate}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>{showDate}</Text>
                             <Text style={{ fontSize: 18 }} onPress={handleStartTimePickerPress}>{startTime}</Text>
                             <Text style={{ fontSize: 16, color: theme.textGrayDark }} onPress={handleEndTimePickerPress}>{endTime}</Text>
                         </View>
