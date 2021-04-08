@@ -5,6 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux';
 
+import { firebase } from '../../firebase/config'
+
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import LockIcon from '../../assets/icons/lockIcon.js';
@@ -32,6 +34,29 @@ function ChangePasswordScreen({ ...props }) {
     const [invisible2, setInvisible2] = useState(true);
     const [invisible3, setInvisible3] = useState(true);
 
+    const changePass = () => {
+        const currentUser = firebase.auth().currentUser
+        const credential = firebase.auth.EmailAuthProvider.credential(
+            firebase.auth().currentUser.email,
+            oldPass
+        );
+
+        currentUser.reauthenticateWithCredential(credential).then(function () {
+            if (newPass === newPassConfirm) {
+                currentUser.updatePassword(newPass).then(function () {
+                    alert("Success!")
+                    setOldPass('')
+                    setNewPass('')
+                    setNewPassConfirm('')
+                }).catch(function (error) {
+                    alert(error)
+                });
+            }
+        }).catch(function (error) {
+            alert(error)
+        });
+    }
+
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
@@ -58,6 +83,7 @@ function ChangePasswordScreen({ ...props }) {
                                         autoCapitalize="none"
                                         textContentType="password"
                                         secureTextEntry={invisible1}
+                                        value={oldPass}
                                         onChangeText={input => setOldPass(input)}
                                         style={styles.input}
                                     />
@@ -77,6 +103,7 @@ function ChangePasswordScreen({ ...props }) {
                                         autoCapitalize="none"
                                         textContentType="newPassword"
                                         secureTextEntry={invisible2}
+                                        value={newPass}
                                         onChangeText={input => setNewPass(input)}
                                         style={styles.input}
                                     />
@@ -96,6 +123,7 @@ function ChangePasswordScreen({ ...props }) {
                                         autoCapitalize="none"
                                         textContentType="password"
                                         secureTextEntry={invisible3}
+                                        value={confirmNewPass}
                                         onChangeText={input => setConfirmNewPass(input)}
                                         style={styles.input}
                                     />
@@ -115,6 +143,7 @@ function ChangePasswordScreen({ ...props }) {
                         <TouchableHighlight
                             underlayColor="#DDDDDD"
                             style={{ width: '100%', borderRadius: 20 }}
+                            onPress={changePass}
                         >
                             <View style={styles.sendButton}>
                                 <Text style={{ ...styles.sendText, fontSize: 20 }}>Confirm</Text>
