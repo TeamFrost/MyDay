@@ -9,6 +9,7 @@ import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import LockIcon from '../../assets/icons/lockIcon.js';
 import EyeIcon from '../../assets/icons/eyeIcon.js';
+import EyeClosedIcon from '../../assets/icons/eyeClosedIcon.js'
 import ChangePassword from '../../assets/settings/changePassword.js';
 import { colors } from '../../helpers/style';
 
@@ -61,7 +62,10 @@ function ChangePasswordScreen({ ...props }) {
                                         style={styles.input}
                                     />
                                     <LockIcon style={styles.leftIconInput} />
-                                    <EyeIcon onPress={() => setInvisible1(!invisible1)} style={styles.rightIconInput} />
+                                    {invisible1 ?
+                                        <EyeClosedIcon onPress={() => setInvisible1(!invisible1)} style={styles.rightIconInput} /> :
+                                        <EyeIcon onPress={() => setInvisible1(!invisible1)} style={styles.rightIconInput} />
+                                    }
                                 </View>
                             </LinearGradient>
                         </View>
@@ -77,7 +81,10 @@ function ChangePasswordScreen({ ...props }) {
                                         style={styles.input}
                                     />
                                     <LockIcon style={styles.leftIconInput} />
-                                    <EyeIcon onPress={() => setInvisible2(!invisible2)} style={styles.rightIconInput} />
+                                    {invisible2 ?
+                                        <EyeClosedIcon onPress={() => setInvisible2(!invisible2)} style={styles.rightIconInput} /> :
+                                        <EyeIcon onPress={() => setInvisible2(!invisible2)} style={styles.rightIconInput} />
+                                    }
                                 </View>
                             </LinearGradient>
                         </View>
@@ -93,7 +100,10 @@ function ChangePasswordScreen({ ...props }) {
                                         style={styles.input}
                                     />
                                     <LockIcon style={styles.leftIconInput} />
-                                    <EyeIcon onPress={() => setInvisible3(!invisible3)} style={styles.rightIconInput} />
+                                    {invisible3 ?
+                                        <EyeClosedIcon onPress={() => setInvisible3(!invisible3)} style={styles.rightIconInput} /> :
+                                        <EyeIcon onPress={() => setInvisible3(!invisible3)} style={styles.rightIconInput} />
+                                    }
                                 </View>
                             </LinearGradient>
                         </View>
