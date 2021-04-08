@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -25,21 +25,33 @@ const mapDispatchToProps = (dispatch) => ({ restoreSession: () => dispatch(resto
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    theme: state.theme
+    doneFetching: state.auth.doneFetching,
+    hasError: state.auth.hasError,
+    errorMessage: state.auth.errorMessage,
+    theme: state.theme,
 });
 
 function EditProfilePictureScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation } = props
+    const { user, doneFetching, navigation } = props
+
+    console.log(props.errorMessage)
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let userId = ''
 
+
     if (user) {
-        profile = user.profile
+        // profile = user.profile
         userId = user.id
+    }
+
+    if (doneFetching) {
+        if (user) {
+            profile = user.profile
+        }
     }
 
     const [image, setImage] = useState(null);
@@ -79,14 +91,14 @@ function EditProfilePictureScreen({ ...props }) {
     }
 
     const takePicture = async () => {
-        (async () => {
-            if (Platform.OS !== 'web') {
-                const { status } = await ImagePicker.requestCameraPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
-                }
-            }
-        })();
+        // (async () => {
+        //     if (Platform.OS !== 'web') {
+        //         const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        //         if (status !== 'granted') {
+        //             alert('Sorry, we need camera roll permissions to make this work!');
+        //         }
+        //     }
+        // })();
 
         let result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
@@ -134,7 +146,6 @@ function EditProfilePictureScreen({ ...props }) {
             console.log("Poza exista in storage")
             oldRef = firebase.storage().refFromURL(profile)
         }
-        console.log(oldRef)
         const response = await fetch(uri);
         const blob = await response.blob();
         let imageURL = '';
@@ -152,6 +163,7 @@ function EditProfilePictureScreen({ ...props }) {
                                     console.log("Delete old ref")
                                     oldRef.delete().then(function () {
                                         restoreSession()
+                                        setReload(!reload)
                                         alert("Success!")
                                     }).catch(function (error) {
                                         alert(error)
