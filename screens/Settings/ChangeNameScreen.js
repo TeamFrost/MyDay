@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '90%',
-        height: screenHeight / 1.5,
+        height: screenHeight / 1.55,
         justifyContent: 'space-around',
         alignItems: 'center',
         alignSelf: 'center'
