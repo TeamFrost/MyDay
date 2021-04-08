@@ -37,10 +37,15 @@ function CreateActivityScreen({ ...props }) {
     const [option3, setOption3] = useState("");
     const [option4, setOption4] = useState("");
     const [category, setCategory] = useState("");
-    const [datePicker, setDatePicker] = useState(false);
     const [optionSelect, setOptionSelect] = useState(1);
     const [optionVisibility, setOptionVisibility] = useState(false);
+
+    const [datePicker, setDatePicker] = useState(false);
+    const [startTimePicker, setStartTimePicker] = useState(false);
+    const [endTimePicker, setEndTimePicker] = useState(false);
     const [selectedDate, setSelectedDate] = useState('Today');
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -87,9 +92,9 @@ function CreateActivityScreen({ ...props }) {
         </View>
     );
 
-    const handleDatePickerPress = () => {
-        setDatePicker((value) => !value);
-    }
+    const handleDatePickerPress = () => setDatePicker((value) => !value);
+    const handleStartTimePickerPress = () => setStartTimePicker((value) => !value);
+    const handleEndTimePickerPress = () => setEndTimePicker((value) => !value);
 
     const showPicker = () => {
         return (
@@ -102,7 +107,38 @@ function CreateActivityScreen({ ...props }) {
                     onSelectedChange={date => setSelectedDate(moment(new Date(date)).format("dddd, DD MMMM"))}
                 />
             </View>
-        );
+        )
+    }
+
+    const showStartTimePicker = () => {
+        return (
+            <View style={{ width: '100%', height: screenHeight / 5 * 2.1 }}>
+                <DatePicker
+                    mode='time'
+                    options={{ mainColor: theme.violet }}
+                    onTimeChange={selectedTime => {
+                        setStartTime(selectedTime)
+                        setStartTimePicker()
+                    }}
+                />
+            </View>
+        )
+
+    }
+
+    const showEndTimePicker = () => {
+        return (
+            <View style={{ width: '100%', height: screenHeight / 5 * 2.1 }}>
+                <DatePicker
+                    mode='time'
+                    options={{ mainColor: theme.violet }}
+                    onTimeChange={selectedTime => {
+                        setEndTime(selectedTime)
+                        setEndTimePicker()
+                    }}
+                />
+            </View>
+        )
     }
 
     return (
@@ -125,16 +161,16 @@ function CreateActivityScreen({ ...props }) {
                     <TextInput placeholder="Add your task details here" multiline style={styles.detailsText}></TextInput>
 
                 </View>
-                <View style={{ ...styles.taskTitleDiv, height: datePicker ? screenHeight / 1.45 : screenHeight / 3.5, justifyContent: 'flex-start', }}>
+                <View style={{ ...styles.taskTitleDiv, height: datePicker || startTimePicker || endTimePicker ? screenHeight / 1.35 : screenHeight / 3.5, justifyContent: 'flex-start', }}>
 
                     <View style={styles.card}>
                         <View style={styles.cardIcon}>
                             <FormClock />
                         </View>
                         <View style={{ flexDirection: 'column', width: '60%' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>{selectedDate}</Text>
-                            <Text style={{ fontSize: 16 }}>10:00 - 11:30</Text>
-                            <Text style={{ fontSize: 12 }}>Just Once</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>{selectedDate}</Text>
+                            <Text style={{ fontSize: 18 }} onPress={handleStartTimePickerPress}>{startTime}</Text>
+                            <Text style={{ fontSize: 16, color: theme.textGrayDark }} onPress={handleEndTimePickerPress}>{endTime}</Text>
                         </View>
                         <TouchableOpacity onPress={handleDatePickerPress}>
                             {datePicker ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -142,6 +178,8 @@ function CreateActivityScreen({ ...props }) {
                     </View>
 
                     {datePicker ? showPicker() : null}
+                    {startTimePicker ? showStartTimePicker() : null}
+                    {endTimePicker ? showEndTimePicker() : null}
 
                     <View style={{ ...styles.card, backgroundColor: theme.cardLightBlue }}>
                         <View style={styles.cardIcon}>
