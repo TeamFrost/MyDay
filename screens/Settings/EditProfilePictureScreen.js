@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -29,12 +29,18 @@ const mapStateToProps = (state) => ({
 });
 
 function EditProfilePictureScreen({ ...props }) {
-    const { user, navigation } = props
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const [userId, setUserId] = useState("")
-    const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
+    const { user, navigation } = props
+
+    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
+    let userId = ''
+
+    if (user) {
+        profile = user.profile
+        userId = user.id
+    }
 
     const [image, setImage] = useState(null);
     const [imageRef, setImageRef] = useState("");
@@ -168,13 +174,6 @@ function EditProfilePictureScreen({ ...props }) {
                 alert(error)
             })
     }
-
-    useEffect(() => {
-        if (user) {
-            setProfile(user.profile)
-            setUserId(user.id)
-        }
-    }, [])
 
     return (
         <View style={styles.container}>
