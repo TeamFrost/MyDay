@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-modern-datepicker';
+import moment from 'moment';
 import { connect } from 'react-redux';
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
@@ -10,6 +11,8 @@ import Back from '../assets/others/back.js';
 import FormClock from '../assets/others/formClock.js';
 import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
 
+import ExpandLessIcon from '../assets/icons/expandLessIcon.js';
+import ExpandMoreIcon from '../assets/icons/expandMoreIcon.js';
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -25,9 +28,36 @@ function AddGoalScreen({ ...props }) {
 
     const { user, navigation } = props
 
+    const today = moment().format('YYYY-MM-DD');
+    const fancyToday = moment().format("dddd, DD MMMM");
+    const timeNow = moment().format('HH:mm');
+
     const [category, setCategory] = useState("");
     const [option, setOption] = useState("");
-    const [selectedDate, setSelectedDate] = useState('');
+    const [datePicker, setDatePicker] = useState(false);
+    const [time, setTime] = useState(timeNow);
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [showDate, setShowDate] = useState(fancyToday)
+
+
+    const handleDatePickerPress = () => setDatePicker((value) => !value);
+
+    const showPicker = () => {
+        return (
+            <View style={{ width: '100%', height: screenHeight / 5 * 2.3 }}>
+                <DatePicker
+                    minimumDate={today}
+                    selected={selectedDate}
+                    options={{ mainColor: theme.violet }}
+                    onSelectedChange={date => {
+                        setSelectedDate(date)
+                        setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
+                    }}
+                    onTimeChange={selectedTime => setTime(selectedTime)}
+                />
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -54,18 +84,22 @@ function AddGoalScreen({ ...props }) {
                         <View style={styles.cardIcon}>
                             <FormClock />
                         </View>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>Today</Text>
-                            <Text style={{ fontSize: 16 }}>10:00 - 11:30</Text>
-                            <Text style={{ fontSize: 12 }}>Just Once</Text>
+                        <View style={{ flexDirection: 'column', width: '60%' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>{showDate}</Text>
+                            <Text style={{ fontSize: 16, marginTop: 5 }}>{time}</Text>
                         </View>
+                        <TouchableOpacity onPress={handleDatePickerPress}>
+                            {datePicker ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </TouchableOpacity>
                     </View>
                 </View>
+
+                {datePicker ? showPicker() : null}
 
                 <View style={{ ...styles.taskTitleDiv, justifyContent: 'flex-start', height: screenHeight / 5.5, marginTop: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Category</Text>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Univerity")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? theme.backgroundColor : theme.textColor }}>University</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("University")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? theme.backgroundColor : theme.textColor }}>University</Text></TouchableHighlight>
                         <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Work' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Work")}><Text style={{ ...styles.textCategoryButton, color: category === 'Work' ? theme.backgroundColor : theme.textColor }}>Work</Text></TouchableHighlight>
                         <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Lifestyle' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Lifestyle")}><Text style={{ ...styles.textCategoryButton, color: category === 'Lifestyle' ? theme.backgroundColor : theme.textColor }}>Lifestyle</Text></TouchableHighlight>
                     </View>
