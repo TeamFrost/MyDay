@@ -42,7 +42,7 @@ function SettingsScreen({ ...props }) {
     const handleEditProfilePress = () => navigation.navigate("EditProfilePicture")
     const handleChangeNamePress = () => navigation.navigate("ChangeName")
     const handleChangePasswordPress = () => navigation.navigate("ChangePassword")
-    const handleTakeQuizPress = () => navigation.navigate("Quiz")
+    const handleTakeQuizPress = () => navigation.navigate("QuizStack")
     const handleCustomizeCategoryPress = () => navigation.navigate("CustomizeCategory")
     const handleAboutAppPress = () => navigation.navigate("AboutApp")
     const handlePrivacyPolicyPress = () => Linking.openURL('https://www.privacypolicies.com/live/3f433032-b9fd-4db7-913c-e90be36e6425')

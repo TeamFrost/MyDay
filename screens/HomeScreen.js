@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
@@ -87,8 +87,13 @@ function HomeScreen({ ...props }) {
 
     const { user, navigation } = props
 
-    const [profile, setProfile] = useState("https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg")
-    const [username, setUsername] = useState("User")
+    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
+    let username = ''
+
+    if (user) {
+        profile = user.profile
+        username = user.username
+    }
 
     const profilePicture = () => {
         if (profile === "M")
@@ -107,18 +112,11 @@ function HomeScreen({ ...props }) {
 
     const [notification, setNotification] = useState(false);
 
-    let notificationIcon = (notification) => {
-        return (notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />)
-    }
+    const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
+
+    const handleQuizPress = () => navigation.navigate("QuizStack")
 
     let dayString = moment().format("dddd, MMMM Do YYYY");
-
-    useEffect(() => {
-        if (user) {
-            setProfile(user.profile)
-            setUsername(user.username)
-        }
-    }, [])
 
     return (
         <View style={styles.container}>
@@ -177,7 +175,7 @@ function HomeScreen({ ...props }) {
                     ))}
                 </ScrollView>
                 <View style={{ width: "100%" }}>
-                    <TouchableOpacity activeOpacity={0.6} style={styles.quizz}>
+                    <TouchableOpacity activeOpacity={0.6} style={styles.quizz} onPress={handleQuizPress}>
                         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.paperTitle}>Take a quizz</Text>
@@ -361,13 +359,20 @@ const styles = StyleSheet.create({
     },
     quizz: {
         width: '90%',
-        height: 80,
+        height: 85,
         alignSelf: 'center',
         backgroundColor: theme.backgroundColor,
         elevation: 5,
-        borderRadius: 10,
+        borderRadius: 20,
         justifyContent: 'center',
-        paddingLeft: 10
+        paddingLeft: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     }
 });
 

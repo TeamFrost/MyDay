@@ -24,6 +24,10 @@ import ChangeNameScreen from '../screens/Settings/ChangeNameScreen';
 import ChangePasswordScreen from '../screens/Settings/ChangePasswordScreen';
 import EditProfilePictureScreen from '../screens/Settings/EditProfilePictureScreen';
 import QuizScreen from '../screens/Settings/QuizScreen';
+import WorkoutQuizScreen from '../screens/Quiz/WorkoutQuizScreen';
+import WorkoutResultScreen from '../screens/Quiz/WorkoutResultScreen';
+import ActivityQuizScreen from '../screens/Quiz/ActivityQuizScreen';
+import ActivityResultScreen from '../screens/Quiz/ActivityResultScreen';
 import CustomizeCategoryScreen from '../screens/Settings/CustomizeCategoryScreen';
 import AboutAppScreen from '../screens/Settings/AboutAppScreen';
 import TermsAndConditionsScreen from '../screens/Settings/TermsAndConditionsScreen';
@@ -38,6 +42,7 @@ const CalendarStack = createStackNavigator();
 const GoalsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
+const QuizStack = createStackNavigator();
 
 export const HomeStackScreen = () =>
     <HomeStack.Navigator
@@ -46,6 +51,7 @@ export const HomeStackScreen = () =>
         }}
     >
         <HomeStack.Screen name="Home" component={HomeScreen} />
+        <HomeStack.Screen name="QuizStack" component={QuizStackScreen} />
         <HomeStack.Screen name="Notifications" component={NotificationsScreen} />
         <HomeStack.Screen name="Calendar" component={CalendarScreen} />
         <HomeStack.Screen name="CreateActivity" component={CreateActivityScreen} />
@@ -91,11 +97,23 @@ export const SettingsStackScreen = () =>
         <SettingsStack.Screen name="EditProfilePicture" component={EditProfilePictureScreen} />
         <SettingsStack.Screen name="ChangeName" component={ChangeNameScreen} />
         <SettingsStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <SettingsStack.Screen name="Quiz" component={QuizScreen} />
+        <SettingsStack.Screen name="QuizStack" component={QuizStackScreen} />
         <SettingsStack.Screen name="CustomizeCategory" component={CustomizeCategoryScreen} />
         <SettingsStack.Screen name="AboutApp" component={AboutAppScreen} />
         <SettingsStack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
     </SettingsStack.Navigator>
+
+export const QuizStackScreen = () =>
+    <QuizStack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}>
+        <QuizStack.Screen name="Quiz" component={QuizScreen} />
+        <QuizStack.Screen name="WorkoutQuiz" component={WorkoutQuizScreen} />
+        <QuizStack.Screen name="WorkoutResult" component={WorkoutResultScreen} />
+        <QuizStack.Screen name="ActivityQuiz" component={ActivityQuizScreen} />
+        <QuizStack.Screen name="ActivityResult" component={ActivityResultScreen} />
+    </QuizStack.Navigator>
 
 export const HomeTabs = () => {
     return (
@@ -103,6 +121,7 @@ export const HomeTabs = () => {
             initialRouteName='HomeStack'
             screenOptions={{
                 headerShown: false,
+                unmountOnBlur: true,
             }}
 
             tabBar={props => <CustomTabBar {...props} />}
