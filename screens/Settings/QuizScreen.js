@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: theme.linkBlue,
         textAlign: 'center',
-        marginTop: 5
+        marginTop: 2
     },
     quizzRedirect: {
         textDecorationLine: 'underline',
