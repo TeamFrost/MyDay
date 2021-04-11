@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { connect } from 'react-redux';
 
+import { watchGoalsData } from '../redux/actions/data/goals'
 import { firebase } from '../firebase/config'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
@@ -69,8 +70,11 @@ const DATA = [
 
 ]
 
+const mapDispatchToProps = (dispatch) => ({ watchGoalsData: (userId) => dispatch(watchGoalsData(userId)) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    goals: state.goals.goalsData,
     theme: state.theme
 });
 
@@ -78,7 +82,7 @@ function GoalsScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation } = props
+    const { user, navigation, watchGoalsData, goals } = props
 
     let goalId = 'PV9qqSL24UK9op7GSxnw'
 
@@ -148,6 +152,14 @@ function GoalsScreen({ ...props }) {
             });
     }
 
+    useEffect(() => {
+        if (user) {
+            let id = user.id
+            watchGoalsData(id)
+        }
+    }, [])
+
+    console.log(goals)
 
     return (
         <View style={styles.container}>
@@ -224,4 +236,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default connect(mapStateToProps)(GoalsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(GoalsScreen);
