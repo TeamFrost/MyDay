@@ -6,6 +6,8 @@ import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
+import { firebase } from '../firebase/config'
+
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import Back from '../assets/others/back.js';
 import FormClock from '../assets/others/formClock.js';
@@ -32,6 +34,7 @@ function AddGoalScreen({ ...props }) {
     const fancyToday = moment().format("dddd, DD MMMM");
     const timeNow = moment().format('HH:mm');
 
+    const [title, setTitle] = useState("")
     const [category, setCategory] = useState("");
     const [option, setOption] = useState("");
     const [datePicker, setDatePicker] = useState(false);
@@ -59,6 +62,42 @@ function AddGoalScreen({ ...props }) {
         )
     }
 
+    let check = true;
+
+    const handleAddGoalPress = () => {
+        if ((title === '') || (category === '') || (option === '') || (selectedDate === "") || (time === '')) {
+            check = false
+            alert("Please complete all fields!")
+        }
+
+        if (timeNow > time) {
+            check = false;
+            alert("The goal must be set to a future time!")
+        }
+
+        if (check === true) {
+
+            const data = {
+                title: title,
+                date: selectedDate,
+                time: time,
+                category: category,
+                option: option,
+                completed: false
+            }
+
+            const reportRef = firebase.firestore().collection('goals').doc(user.id).collection('sub_goals');
+            reportRef.add(data)
+                .then(
+                    navigation.goBack()
+                )
+                .catch(function (error) {
+                    alert(error)
+                });
+
+        }
+    }
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
@@ -75,7 +114,13 @@ function AddGoalScreen({ ...props }) {
 
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
-                        <TextInput placeholder="Task Title" placeholderTextColor={theme.textColor} style={{ fontSize: 22 }}></TextInput>
+                        <TextInput
+                            placeholder="Goal Title"
+                            placeholderTextColor={theme.textColor}
+                            style={{ fontSize: 22 }}
+                            onChangeText={text => setTitle(text)}
+                            value={title}
+                        />
                     </View>
                 </View>
 
@@ -136,7 +181,7 @@ function AddGoalScreen({ ...props }) {
                 </View>
 
                 <View style={{ padding: 5 }}>
-                    <TouchableHighlight style={styles.submitButton}>
+                    <TouchableHighlight style={styles.submitButton} onPress={handleAddGoalPress}>
                         <Text style={styles.submitButtonText}>Add new goal</Text>
                     </TouchableHighlight>
                 </View>
