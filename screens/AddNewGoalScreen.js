@@ -82,7 +82,7 @@ function AddGoalScreen({ ...props }) {
                 date: selectedDate,
                 time: time,
                 category: category,
-                option: option,
+                priority: option,
                 completed: false
             }
 
