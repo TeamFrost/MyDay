@@ -3,7 +3,10 @@ import React from 'react';
 import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import { connect } from 'react-redux';
+
+import { firebase } from '../firebase/config'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import GoalIcon from '../assets/others/goal';
@@ -73,7 +76,11 @@ const mapStateToProps = (state) => ({
 
 function GoalsScreen({ ...props }) {
 
+    const { showActionSheetWithOptions } = useActionSheet();
+
     const { user, navigation } = props
+
+    let goalId = 'PV9qqSL24UK9op7GSxnw'
 
     const Item = ({ title, time, index }) => {
         const inputRange = [-1, 0, 100 * (index), 100 * (index + 2)]
@@ -94,7 +101,7 @@ function GoalsScreen({ ...props }) {
                         <Text style={styles.title}>{title}</Text>
                         <Text>{time}</Text>
                     </View>
-                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} />
+                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(goalId)} />
                 </LinearGradient>
 
             </Animated.View>
@@ -108,6 +115,39 @@ function GoalsScreen({ ...props }) {
     const scrollY = React.useRef(new Animated.Value(0)).current;
 
     const handleAddGoalPress = () => navigation.navigate("AddGoal");
+
+    const handleGoalOptionPress = (id) => {
+
+        const options = ['Yes', 'No'];
+        const destructiveButtonIndex = 0;
+        const title = "Do you whish to mark this goal as completed?"
+
+
+        showActionSheetWithOptions(
+            {
+                title,
+                options,
+                destructiveButtonIndex,
+            },
+            buttonIndex => {
+                if (buttonIndex === 0) {
+                    markGoal(id)
+                } else if (buttonIndex === 1) {
+                    //cancel
+                }
+            },
+        );
+    }
+
+    const markGoal = (id) => {
+        firebase.firestore().collection('goals').doc(user.id).collection('sub_goals').doc(id).update({
+            "completed": true,
+        })
+            .then(() => {
+                console.log("Document successfully updated!");
+            });
+    }
+
 
     return (
         <View style={styles.container}>
