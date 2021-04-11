@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { CalendarList } from 'react-native-calendars';
 import moment from 'moment';
 import { connect } from 'react-redux';
+
+import { watchEventsData } from '../redux/actions/data/events'
 
 import Background from '../assets/backgrounds/background'
 import { colors } from '../helpers/style';
@@ -51,14 +53,17 @@ const DATA = [
     }
 ]
 
+const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    events: state.events.eventsData,
     theme: state.theme
 });
 
 function CalendarScreen({ ...props }) {
 
-    const { user } = props
+    const { user, watchEventsData, events, navigation } = props
 
     const Item = ({ title, description, startTime, endTime, location }) => (
         <View style={styles.item}>
@@ -98,6 +103,15 @@ function CalendarScreen({ ...props }) {
             </View>)
     }
 
+    useEffect(() => {
+        if (user) {
+            let id = user.id
+            watchEventsData(id)
+        }
+    }, [])
+
+    console.log(events)
+
     return (
         <View style={styles.container}>
             <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
@@ -115,6 +129,7 @@ function CalendarScreen({ ...props }) {
                     style={{ marginTop: 25 }}
                     contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
                     onDayPress={(day) => { console.log('selected day', day) }}
+                    onDayLongPress={(day) => { console.log('navigate') }}
                     theme={{
                         textDayFontSize: 18,
                         textDayHeaderFontSize: 15,
@@ -250,4 +265,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default connect(mapStateToProps)(CalendarScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(CalendarScreen);

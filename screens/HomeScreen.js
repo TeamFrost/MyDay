@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
 import { Avatar } from 'react-native-paper';
 import { connect } from 'react-redux';
+
+import { watchEventsData } from '../redux/actions/data/events'
 
 import Background from '../assets/backgrounds/background'
 import ProfileFemale from '../assets/profiles/profileFemale'
@@ -77,15 +79,18 @@ let todayEventsCards = [
     }
 ];
 
+const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    events: state.events.eventsData,
     theme: state.theme
 });
 
 
 function HomeScreen({ ...props }) {
 
-    const { user, navigation } = props
+    const { user, navigation, watchEventsData, events } = props
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let username = ''
@@ -117,6 +122,15 @@ function HomeScreen({ ...props }) {
     const handleQuizPress = () => navigation.navigate("QuizStack")
 
     let dayString = moment().format("dddd, MMMM Do YYYY");
+
+    useEffect(() => {
+        if (user) {
+            let id = user.id
+            watchEventsData(id)
+        }
+    }, [])
+
+    console.log(events)
 
     return (
         <View style={styles.container}>
@@ -377,4 +391,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default connect(mapStateToProps)(HomeScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
