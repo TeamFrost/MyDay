@@ -6,6 +6,8 @@ import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
+import { firebase } from '../firebase/config'
+
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
@@ -35,13 +37,10 @@ function CreateActivityScreen({ ...props }) {
     const timeNow = moment().format('HH:mm');
     const timeAfterOneHour = moment().add(1, 'hours').format('HH:mm');
 
-    const [option1, setOption1] = useState("");
-    const [option2, setOption2] = useState("");
-    const [option3, setOption3] = useState("");
-    const [option4, setOption4] = useState("");
-    const [category, setCategory] = useState("");
-    const [optionSelect, setOptionSelect] = useState(1);
-    const [optionVisibility, setOptionVisibility] = useState(false);
+    const [title, setTitle] = useState("")
+    const [details, setDetails] = useState("")
+    const [location, setLocation] = useState("")
+    const [friends, setFriends] = useState([])
 
     const [datePicker, setDatePicker] = useState(false);
     const [startTimePicker, setStartTimePicker] = useState(false);
@@ -50,6 +49,15 @@ function CreateActivityScreen({ ...props }) {
     const [showDate, setShowDate] = useState(fancyToday)
     const [startTime, setStartTime] = useState(timeNow);
     const [endTime, setEndTime] = useState(timeAfterOneHour);
+
+    const [option1, setOption1] = useState("");
+    const [option2, setOption2] = useState("");
+    const [option3, setOption3] = useState("");
+    const [option4, setOption4] = useState("");
+    const [category, setCategory] = useState("");
+    const [option, setOption] = useState("")
+    const [optionSelect, setOptionSelect] = useState(1);
+    const [optionVisibility, setOptionVisibility] = useState(false);
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -67,13 +75,19 @@ function CreateActivityScreen({ ...props }) {
 
             <View style={{ ...styles.radioButtonsView, marginTop: 10, }}>
                 <View style={{ ...styles.radioButtonsView, paddingLeft: 10 }}>
-                    <TouchableOpacity onPress={() => setOptionSelect(1)}>
+                    <TouchableOpacity onPress={() => {
+                        setOptionSelect(1)
+                        setOption(option1)
+                    }}>
                         <RadioButtonActivity selected={optionSelect == 1 ? true : false} />
                     </TouchableOpacity>
                     <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option1}</Text>
                 </View>
                 <View style={styles.radioButtonsView}>
-                    <TouchableOpacity onPress={() => setOptionSelect(2)}>
+                    <TouchableOpacity onPress={() => {
+                        setOptionSelect(2)
+                        setOption(option2)
+                    }}>
                         <RadioButtonActivity selected={optionSelect == 2 ? true : false} />
                     </TouchableOpacity>
                     <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option2}</Text>
@@ -81,13 +95,19 @@ function CreateActivityScreen({ ...props }) {
             </View>
             <View style={styles.radioButtonsView}>
                 <View style={{ flex: 1, flexDirection: 'row', paddingLeft: 10 }}>
-                    <TouchableOpacity onPress={() => setOptionSelect(3)}>
+                    <TouchableOpacity onPress={() => {
+                        setOptionSelect(3)
+                        setOption(option3)
+                    }}>
                         <RadioButtonActivity selected={optionSelect == 3 ? true : false} />
                     </TouchableOpacity>
                     <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option3}</Text>
                 </View>
                 <View style={styles.radioButtonsView}>
-                    <TouchableOpacity onPress={() => setOptionSelect(4)}>
+                    <TouchableOpacity onPress={() => {
+                        setOptionSelect(4)
+                        setOption(option4)
+                    }}>
                         <RadioButtonActivity selected={optionSelect == 4 ? true : false} />
                     </TouchableOpacity>
                     <Text style={{ ...styles.textCategoryButton, paddingLeft: 10 }}>{option4}</Text>
@@ -148,6 +168,40 @@ function CreateActivityScreen({ ...props }) {
         )
     }
 
+    let check = true;
+
+    const handleCreateNewActivityPress = () => {
+        if ((title === '') || (details === '') || (category === '') || (option === '') || (selectedDate === "") || (startTime === '') || (endTime === '') || (location === '')) {
+            check = false
+            alert("Toate câmpurile trebuie completate!")
+        }
+
+        if (check === true) {
+
+            const data = {
+                title: title,
+                details: details,
+                date: selectedDate,
+                startTime: startTime,
+                endTime: endTime,
+                location: location,
+                friends: friends,
+                category: category,
+                option: option
+            }
+
+            const reportRef = firebase.firestore().collection('events').doc(user.id).collection('sub_events');
+            reportRef.add(data)
+                .then(
+                    navigation.goBack()
+                )
+                .catch(function (error) {
+                    alert(error)
+                });
+
+        }
+    }
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
@@ -163,10 +217,21 @@ function CreateActivityScreen({ ...props }) {
 
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
-                        <TextInput placeholder="Task Title" placeholderTextColor={theme.textColor} style={{ fontSize: 22 }}></TextInput>
+                        <TextInput
+                            placeholder="Task Title"
+                            placeholderTextColor={theme.textColor}
+                            style={{ fontSize: 22 }}
+                            onChangeText={text => setTitle(text)}
+                            value={title}
+                        />
                     </View>
-                    <TextInput placeholder="Add your task details here" multiline style={styles.detailsText}></TextInput>
-
+                    <TextInput
+                        placeholder="Add your task details here"
+                        multiline
+                        style={styles.detailsText}
+                        onChangeText={text => setDetails(text)}
+                        value={details}
+                    />
                 </View>
                 <View style={{ ...styles.taskTitleDiv, height: datePicker || startTimePicker || endTimePicker ? screenHeight / 1.35 : screenHeight / 3.5, justifyContent: 'flex-start', }}>
 
@@ -194,7 +259,13 @@ function CreateActivityScreen({ ...props }) {
                         </View>
                         <View style={{ flexDirection: 'column' }}>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>Location</Text>
-                            <Text style={{ fontSize: 16 }}>Str. 1 Decembrie, nr. 18</Text>
+                            <TextInput
+                                placeholder="Location"
+                                placeholderTextColor={theme.textColor}
+                                style={{ fontSize: 16 }}
+                                onChangeText={text => setLocation(text)}
+                                value={location}
+                            />
                         </View>
                     </View>
 
@@ -229,7 +300,7 @@ function CreateActivityScreen({ ...props }) {
                 </View>
                 {optionVisibility ? handleCategoryPress() : null}
                 <View style={{ padding: 20 }}>
-                    <TouchableHighlight style={styles.submitButton}>
+                    <TouchableHighlight style={styles.submitButton} onPress={handleCreateNewActivityPress}>
                         <Text style={styles.submitButtonText}>Create new activity</Text>
                     </TouchableHighlight>
                 </View>
