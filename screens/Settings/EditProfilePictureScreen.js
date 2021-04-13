@@ -163,7 +163,6 @@ function EditProfilePictureScreen({ ...props }) {
                                     console.log("Delete old ref")
                                     oldRef.delete().then(function () {
                                         restoreSession()
-                                        setReload(!reload)
                                         alert("Success!")
                                     }).catch(function (error) {
                                         alert(error)
