@@ -14,83 +14,34 @@ import ProfileMale from '../assets/profiles/profileMale'
 import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import CountingStars from '../assets/others/countingStars'
 import GoalIcon from '../assets/others/goal'
 import QuizIcon from '../assets/settings/quizIcon.js'
-import { colors } from '../helpers/style';
+import { colors, categories } from '../helpers/style';
 
 const theme = colors.light;
 const screenHeight = Dimensions.get('screen').height;
 const screenWidth = Dimensions.get('screen').width;
 let today = moment();
 
-let markedDatesArray = [
-    {
-        date: today,
-        dots: [
-            {
-                color: "red",
-            },
-            {
-                color: "yellow",
-            },
-            {
-                color: "green",
-            },
-        ],
-    },
-    {
-        date: "2021-02-24T13:17:09.561Z",
-        dots: [
-            {
-                color: "blue",
-            },
-        ],
-    },
-    {
-        date: "2021-03-02T13:17:09.561Z",
-        dots: [
-            {
-                color: "blue",
-            },
-        ],
-    }
-];
-
-let todayEventsCards = [
-    {
-        title: "Design Meeting",
-        time: "10:00 - 11:30",
-        location: "Zoom",
-    },
-    {
-        title: "Office Team Meeting",
-        time: "12:00 - 14:30",
-        location: "Office room",
-    },
-    {
-        title: "Going Out",
-        time: "18:00 - 19:30",
-        location: "Central Park",
-    },
-    {
-        title: "Going In Rn Acum",
-        time: "20:00 - 21:30",
-        location: "Home",
-    }
-];
-
 const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
+    doneFetchingData: state.events.doneFetching,
     theme: state.theme
 });
 
-
 function HomeScreen({ ...props }) {
 
-    const { user, navigation, watchEventsData, events } = props
+    const { user, navigation, watchEventsData, events, doneFetchingData } = props
+
+    const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
+    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+    const [notification, setNotification] = useState(false);
+
+    const dayString = moment().format("dddd, MMMM Do YYYY");
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let username = ''
@@ -111,26 +62,61 @@ function HomeScreen({ ...props }) {
             }
     }
 
-    const vacation = { key: 'vacation', color: 'red', selectedDotColor: 'orange' };
-    const massage = { key: 'massage', color: 'orange', selectedDotColor: 'yellow' };
-    const workout = { key: 'workout', color: 'green' };
-
-    const [notification, setNotification] = useState(false);
-
     const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
 
-    let dayString = moment().format("dddd, MMMM Do YYYY");
+    const compare = (obj1, obj2) => {
+        if (obj1.time < obj2.time) {
+            return -1;
+        }
+        if (obj1.time > obj2.time) {
+            return 1;
+        }
+        return 0;
+    }
+
+    const chooseColor = (category) => {
+        switch (category) {
+            case "University":
+                return categories.university
+            case "Work":
+                return categories.work
+            case "Lifestyle":
+                return categories.lifestyle
+            case "Sport":
+                return categories.sport
+            case "Shopping":
+                return categories.shopping
+            case "Holiday":
+                return categories.holiday
+        }
+    }
+
+    let markedDatesArray = markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
+
+    let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
+        (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
+        return a;
+    }, {}));
+
+    let todayEvents = todayEventsArray
+        .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+        .map(ev => ({ title: ev.title, time: ev.startTime + " - " + ev.endTime, location: ev.location }))
+    let todayEventsCards = todayEvents.sort(compare)
 
     useEffect(() => {
         if (user) {
             let id = user.id
-            watchEventsData(id)
+            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
+                watchEventsData(id)
+            }
         }
-    }, [])
-
-    console.log(events)
+        if (doneFetchingData) {
+            setMarkedEventsArray(events)
+            setTodayEventsArray(events)
+        }
+    }, [doneFetchingData])
 
     return (
         <View style={styles.container}>
@@ -148,21 +134,26 @@ function HomeScreen({ ...props }) {
                     {notificationIcon(notification)}
 
                 </View>
-                <CalendarStrip
-                    style={styles.calendarStrip}
-                    calendarColor={theme.backgroundColor}
-                    calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
-                    dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
-                    dateNumberStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal' }}
-                    highlightDateNameStyle={{ color: theme.backgroundColor, fontSize: 11 }}
-                    highlightDateNumberStyle={{ color: theme.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
-                    highlightDateContainerStyle={{ backgroundColor: theme.lightViolet, borderRadius: 10, height: "100%" }}
-                    iconContainer={{ flex: 0.1 }}
-                    upperCaseDays={false}
-                    selectedDate={today}
-                    markedDates={markedDatesArray}
-                    onDateSelected={() => navigation.navigate("CalendarStack")}
-                />
+
+                {markedDatesArray.length === 0 ?
+                    null
+                    :
+                    <CalendarStrip
+                        style={styles.calendarStrip}
+                        calendarColor={theme.backgroundColor}
+                        calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
+                        dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
+                        dateNumberStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateNameStyle={{ color: theme.backgroundColor, fontSize: 11 }}
+                        highlightDateNumberStyle={{ color: theme.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateContainerStyle={{ backgroundColor: theme.lightViolet, borderRadius: 10, height: "100%" }}
+                        iconContainer={{ flex: 0.1 }}
+                        upperCaseDays={false}
+                        selectedDate={today}
+                        markedDates={markedDatesArrayResult}
+                        onDateSelected={() => navigation.navigate("CalendarStack")}
+                    />
+                }
             </View>
 
             <View style={styles.midDiv}>
@@ -171,23 +162,30 @@ function HomeScreen({ ...props }) {
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
                     <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
-                <ScrollView
-                    horizontal
-                    scrollEventThrottle={1}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.containerEvents}
-                >
-                    {todayEventsCards.map((info, index) => (
-                        <View key={index} style={styles.paper}>
-                            <Text style={styles.paperTitle}>{info.title}</Text>
-                            <Text style={styles.paperTime}>{info.time}</Text>
-                            <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
-                                <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
-                                <Text>{info.location}</Text>
+                {todayEventsCards.length === 0 ?
+                    <View style={styles.containerNoEvents}>
+                        <CountingStars />
+                        <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
+                    </View>
+                    :
+                    <ScrollView
+                        horizontal
+                        scrollEventThrottle={1}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.containerEvents}
+                    >
+                        {todayEventsCards.map((info, index) => (
+                            <View key={index} style={styles.paper}>
+                                <Text style={styles.paperTitle}>{info.title}</Text>
+                                <Text style={styles.paperTime}>{info.time}</Text>
+                                <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
+                                    <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
+                                    <Text>{info.location}</Text>
+                                </View>
                             </View>
-                        </View>
-                    ))}
-                </ScrollView>
+                        ))}
+                    </ScrollView>
+                }
                 <View style={{ width: "100%" }}>
                     <TouchableOpacity activeOpacity={0.6} style={styles.quizz} onPress={handleQuizPress}>
                         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
@@ -297,6 +295,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingRight: "5%",
         paddingLeft: "5%",
+    },
+    containerNoEvents: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: "5%",
+        marginLeft: "5%",
+        marginBottom: "3%"
+    },
+    textNoActivities: {
+        fontSize: 22,
+        color: theme.textColor,
+        fontWeight: '200'
     },
     botDiv: {
         flex: 0.9,
