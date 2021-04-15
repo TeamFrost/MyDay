@@ -6,6 +6,7 @@ import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
+import { watchEventsData } from '../redux/actions/data/events'
 import { firebase } from '../firebase/config'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
@@ -22,6 +23,8 @@ import { colors } from '../helpers/style';
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
+
+const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -176,12 +179,14 @@ function CreateActivityScreen({ ...props }) {
             alert("Toate câmpurile trebuie completate!")
         }
 
+        let date = moment(new Date(selectedDate)).format("YYYY-MM-DD")
+
         if (check === true) {
 
             const data = {
                 title: title,
                 details: details,
-                date: selectedDate,
+                date: date,
                 startTime: startTime,
                 endTime: endTime,
                 location: location,
@@ -192,8 +197,10 @@ function CreateActivityScreen({ ...props }) {
 
             const reportRef = firebase.firestore().collection('events').doc(user.id).collection('sub_events');
             reportRef.add(data)
-                .then(
+                .then(() => {
+                    watchEventsData(user.id)
                     navigation.goBack()
+                }
                 )
                 .catch(function (error) {
                     alert(error)
@@ -410,4 +417,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect(mapStateToProps)(CreateActivityScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateActivityScreen);
