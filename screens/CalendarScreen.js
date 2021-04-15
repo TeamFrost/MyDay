@@ -1,12 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { CalendarList } from 'react-native-calendars';
 import moment from 'moment';
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import { connect } from 'react-redux';
 
 import { watchEventsData } from '../redux/actions/data/events'
+import { firebase } from '../firebase/config'
 
 import Background from '../assets/backgrounds/background'
 import { colors } from '../helpers/style';
@@ -58,24 +60,29 @@ const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatc
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
+    doneFetchingData: state.events.doneFetching,
     theme: state.theme
 });
 
 function CalendarScreen({ ...props }) {
 
-    const { user, watchEventsData, events, navigation } = props
+    const { showActionSheetWithOptions } = useActionSheet();
 
-    const Item = ({ title, description, startTime, endTime, location }) => (
+    const { user, watchEventsData, events, doneFetchingData, navigation, } = props
+
+    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+
+    const Item = ({ title, description, startTime, endTime, location, current, id }) => (
         <View style={styles.item}>
             <View style={styles.leftCardTime}>
                 <Text style={styles.startTime}>{startTime}</Text>
                 <Text style={styles.endTime}>{endTime}</Text>
             </View>
 
-            <View style={styles.card}>
+            <View style={{ ...styles.card, backgroundColor: current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={styles.title}>{title}</Text>
-                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} />
+                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleDeletePress(id)} />
                 </View>
                 <Text style={styles.description}>{description}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
@@ -88,7 +95,7 @@ function CalendarScreen({ ...props }) {
     );
 
     const renderItem = ({ item }) => (
-        <Item title={item.title} startTime={item.startTime} endTime={item.endTime} location={item.location} description={item.description} />
+        <Item title={item.title} startTime={item.startTime} endTime={item.endTime} location={item.location} description={item.description} current={item.current} id={item.id} />
     );
 
     const headerFlatList = () => {
@@ -103,14 +110,72 @@ function CalendarScreen({ ...props }) {
             </View>)
     }
 
+    const handleDeletePress = (id) => {
+        console.log(id)
+        const options = ['Yes', 'No'];
+        const destructiveButtonIndex = 0;
+        const title = "Are you sure you want to delete this event?"
+
+        showActionSheetWithOptions(
+            {
+                title,
+                options,
+                destructiveButtonIndex,
+            },
+            buttonIndex => {
+                if (buttonIndex === 0) {
+                    deleteEvent(id)
+                } else if (buttonIndex === 1) {
+                    // cancel
+                }
+            },
+        );
+    }
+
+    const deleteEvent = (id) => {
+        firebase.firestore().collection('goals').doc(user.id).collection('sub_goals').doc(id).delete()
+            .then(() => {
+                console.log("Document successfully deleted!");
+            }).catch((error) => {
+                console.error("Error removing document: ", error);
+            });
+    }
+
+    const compare = (obj1, obj2) => {
+        if (obj1.startTime < obj2.startTime) {
+            return -1;
+        }
+        if (obj1.startTime > obj2.startTime) {
+            return 1;
+        }
+        return 0;
+    }
+
+    let todayEvents = todayEventsArray
+        .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+        .map(ev => ({
+            id: ev.id,
+            title: ev.title,
+            description: ev.details,
+            startTime: ev.startTime,
+            endTime: ev.endTime,
+            location: ev.location,
+            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? "blue" : "white"
+        }));
+
+    let todayEventsCards = todayEvents.sort(compare)
+
     useEffect(() => {
         if (user) {
             let id = user.id
-            watchEventsData(id)
+            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
+                watchEventsData(id)
+            }
         }
-    }, [])
-
-    console.log(events)
+        if (doneFetchingData) {
+            setTodayEventsArray(events)
+        }
+    }, [doneFetchingData])
 
     return (
         <View style={styles.container}>
@@ -157,14 +222,18 @@ function CalendarScreen({ ...props }) {
 
             </View>
 
-            <View style={styles.flatListDiv}>
-                <FlatList
-                    ListHeaderComponent={headerFlatList()}
-                    data={DATA}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.title}
-                />
-            </View>
+            {todayEventsCards.length === 0 || todayEventsCards === undefined ?
+                null
+                :
+                <View style={styles.flatListDiv}>
+                    <FlatList
+                        ListHeaderComponent={headerFlatList()}
+                        data={todayEventsCards}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.title}
+                    />
+                </View>
+            }
             <StatusBar style="auto" />
         </View>
     );
@@ -228,7 +297,7 @@ const styles = StyleSheet.create({
     },
     title: {
         flex: 1,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     description: {
