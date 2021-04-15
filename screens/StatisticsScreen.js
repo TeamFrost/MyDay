@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { VictoryLine, VictoryChart, VictoryTheme, VictoryScatter, VictoryPie, VictoryContainer } from "victory-native";
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
@@ -16,6 +18,25 @@ import { colors } from '../helpers/style';
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
+
+let DATA = [
+    { x: moment().subtract(6, 'days').format("DD/MM"), y: 2 },
+    { x: moment().subtract(5, 'days').format("DD/MM"), y: 3 },
+    { x: moment().subtract(4, 'days').format("DD/MM"), y: 7 },
+    { x: moment().subtract(3, 'days').format("DD/MM"), y: 5 },
+    { x: moment().subtract(2, 'days').format("DD/MM"), y: 6 },
+    { x: moment().subtract(1, 'days').format("DD/MM"), y: 11 },
+    { x: moment().format("DD/MM"), y: 8 },
+];
+
+const pieChartData = [
+    { x: "University", y: 21, color: "#6B75CE" },
+    { x: "Work", y: 29, color: "#564B93" },
+    { x: "Lifestyle", y: 18, color: "#9B8CF8" },
+    { x: "Sport", y: 25, color: "#D4C3FC" },
+    { x: "Shopping", y: 5, color: "#A5C5FC" },
+    { x: "Holiday", y: 8, color: "#5C8DF7" },
+];
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -34,6 +55,24 @@ function StatisticsScreen({ ...props }) {
     const [achievement, setAchievement] = useState("Planner")
     const [friendsNumber, setFriendsNumber] = useState(154)
     const [friend, setFriend] = useState("Julie")
+
+    const ItemLegend = ({ color, title }) => (
+        <View style={{ height: 40, alignItems: 'center', ...styles.flatListItem }}>
+            <View
+                style={{ width: 22, height: 22, borderRadius: 20, backgroundColor: color }}
+            />
+            <View style={{ width: '70%', justifyContent: 'flex-start' }}>
+                <Text style={styles.textLegend}>{title}</Text>
+            </View>
+        </View>
+    );
+
+    const renderItemLegend = ({ item }) => (
+        <ItemLegend
+            color={item.color}
+            title={item.x}
+        />
+    );
 
     return (
         <View style={styles.container}>
@@ -106,11 +145,52 @@ function StatisticsScreen({ ...props }) {
                 </View>
 
                 <View style={styles.lineChart}>
-
+                    <Text style={styles.subtitleText}>Number of activities in the last days</Text>
+                    <VictoryChart
+                        theme={VictoryTheme.material}
+                        height={300}
+                        domainPadding={{ x: [10, 10], y: 20 }}
+                        padding={{ top: 40, bottom: 50, right: 50, left: 50 }}
+                    >
+                        <VictoryLine
+                            style={{
+                                data: { stroke: theme.violet },
+                                parent: { border: "1px solid #ccc" }
+                            }}
+                            labels={({ datum }) => datum.y}
+                            interpolation="monotoneX"
+                            data={DATA}
+                        />
+                        <VictoryScatter
+                            data={DATA}
+                            style={{ data: { fill: theme.red } }}
+                        />
+                    </VictoryChart>
                 </View>
 
                 <View style={styles.pieChart}>
-
+                    <Text style={styles.subtitleText}>Types of activities</Text>
+                    <View style={styles.defaultView}>
+                        <VictoryPie
+                            theme={VictoryTheme.material}
+                            colorScale={["#6B75CE", "#564B93", "#9B8CF8", "#D4C3FC", "#A5C5FC", "#5C8DF7"]}
+                            height={300}
+                            padding={{ bottom: 50 }}
+                            data={pieChartData}
+                            containerComponent={<VictoryContainer height={300} style={{ flex: 1 }} />}
+                            origin={{ x: screenWidth / 3.4 }}
+                            radius={screenWidth / 4}
+                            labels={() => null}
+                        />
+                        <View style={styles.statisticsLegend}>
+                            <FlatList
+                                data={pieChartData}
+                                renderItem={renderItemLegend}
+                                keyExtractor={(item) => item.x}
+                                style={{ alignSelf: 'flex-end' }}
+                            />
+                        </View>
+                    </View>
                 </View>
             </KeyboardAwareScrollView>
             <StatusBar style="auto" />
@@ -145,8 +225,7 @@ const styles = StyleSheet.create({
     awareScrollView: {
         flex: 1,
         width: screenWidth,
-        height: screenHeight,
-        // marginTop: "-1%",
+        height: screenHeight
     },
     cardsView: {
         height: screenHeight / 1.8,
@@ -154,7 +233,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         alignSelf: "center",
-        marginTop: "5%",
     },
     stat: {
         width: "100%",
@@ -188,18 +266,46 @@ const styles = StyleSheet.create({
         marginLeft: "2%"
     },
     lineChart: {
-        height: screenHeight / 3.5,
+        flex: 1,
+        height: screenHeight / 3,
         width: "90%",
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: "center",
+
     },
     pieChart: {
-        height: screenHeight / 3.5,
+        flex: 1,
+        height: screenHeight / 3.3,
         width: "90%",
         alignItems: 'center',
         alignSelf: "center",
         justifyContent: 'center',
+        marginTop: '5%',
+    },
+    subtitleText: {
+        fontWeight: "bold",
+        fontSize: 20,
+        alignSelf: 'flex-start'
+    },
+    statisticsLegend: {
+        flex: 0.7,
+        alignItems: "center",
+    },
+    textLegend: {
+        color: colors.textColor,
+        fontSize: 14,
+        fontWeight: "bold"
+    },
+    flatListItem: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: "space-between"
+    },
+    defaultView: {
+        flex: 1,
+        flexDirection: 'row',
+        width: '100%',
     }
 
 });
