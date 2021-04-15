@@ -162,29 +162,32 @@ function HomeScreen({ ...props }) {
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
                     <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
-                {todayEventsCards.length === 0 ?
-                    <View style={styles.containerNoEvents}>
-                        <CountingStars />
-                        <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
-                    </View>
+                {todayEventsCards === undefined ?
+                    null
                     :
-                    <ScrollView
-                        horizontal
-                        scrollEventThrottle={1}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.containerEvents}
-                    >
-                        {todayEventsCards.map((info, index) => (
-                            <View key={index} style={styles.paper}>
-                                <Text style={styles.paperTitle}>{info.title}</Text>
-                                <Text style={styles.paperTime}>{info.time}</Text>
-                                <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
-                                    <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
-                                    <Text>{info.location}</Text>
+                    todayEventsCards.length === 0 ?
+                        <View style={styles.containerNoEvents}>
+                            <CountingStars />
+                            <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
+                        </View>
+                        :
+                        <ScrollView
+                            horizontal
+                            scrollEventThrottle={1}
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.containerEvents}
+                        >
+                            {todayEventsCards.map((info, index) => (
+                                <View key={index} style={styles.paper}>
+                                    <Text style={styles.paperTitle}>{info.title}</Text>
+                                    <Text style={styles.paperTime}>{info.time}</Text>
+                                    <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
+                                        <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
+                                        <Text>{info.location}</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        ))}
-                    </ScrollView>
+                            ))}
+                        </ScrollView>
                 }
                 <View style={{ width: "100%" }}>
                     <TouchableOpacity activeOpacity={0.6} style={styles.quizz} onPress={handleQuizPress}>
