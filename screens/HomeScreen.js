@@ -93,14 +93,14 @@ function HomeScreen({ ...props }) {
         }
     }
 
-    let markedDatesArray = markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
+    let markedDatesArray = markedEventsArray === undefined ? [] : markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
 
     let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
         (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
         return a;
     }, {}));
 
-    let todayEvents = todayEventsArray
+    let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
         .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
         .map(ev => ({ title: ev.title, time: ev.startTime + " - " + ev.endTime, location: ev.location }))
     let todayEventsCards = todayEvents.sort(compare)
