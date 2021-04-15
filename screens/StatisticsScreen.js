@@ -146,11 +146,10 @@ function StatisticsScreen({ ...props }) {
                             <Text style={styles.belowText}>Last added friend: <Text style={{ ...styles.belowText, fontWeight: "bold" }}>{friend}</Text></Text>
                         </View>
                     </View>
-
                 </View>
 
                 <View style={styles.lineChart}>
-                    <Text style={styles.subtitleText}>Number of activities in the last days</Text>
+                    <Text style={{ ...styles.subtitleText, marginTop: "10%" }}>Number of activities in the last days</Text>
                     <VictoryChart
                         theme={VictoryTheme.material}
                         height={300}
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
     },
     lineChart: {
         flex: 1,
-        height: screenHeight / 3,
+        height: screenHeight / 2.8,
         width: "90%",
         alignItems: 'center',
         justifyContent: 'center',
