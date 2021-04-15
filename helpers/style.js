@@ -17,6 +17,7 @@ export const colors = {
         cardLightViolet: "#D4C3F33F", // Light Violet 25%
         cardLightBlue: "#A5C5FC3F", // Light Blue 25%
         violet: "#9B8CF8", // Violet
+
     },
     // to be completed
     dark: {
@@ -38,4 +39,15 @@ export const colors = {
         cardLightBlue: "", // Light Blue 25%
         violet: "", // Violet
     }
+}
+
+// Maybe change colors to be more visible
+
+export const categories = {
+    university: "#6B75CE", // Dark Blue 2
+    work: "#564B93", // Dark Blue
+    lifestyle: "#9B8CF8", // Violet
+    sport: "#D4C3FC", // Light Violet
+    shopping: "#A5C5FC", // LightBlue
+    holiday: "#5C8DF7", // Blue
 }
