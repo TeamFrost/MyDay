@@ -151,7 +151,7 @@ function CalendarScreen({ ...props }) {
         return 0;
     }
 
-    let todayEvents = todayEventsArray
+    let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
         .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
         .map(ev => ({
             id: ev.id,
