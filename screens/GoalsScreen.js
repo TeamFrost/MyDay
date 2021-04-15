@@ -124,7 +124,7 @@ function GoalsScreen({ ...props }) {
 
         const options = ['Yes', 'No'];
         const destructiveButtonIndex = 0;
-        const title = "Do you whish to mark this goal as completed?"
+        const title = "Do you wish to mark this goal as completed?"
 
 
         showActionSheetWithOptions(
