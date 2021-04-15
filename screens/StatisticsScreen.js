@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList, LogBox } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryScatter, VictoryPie, VictoryContainer } from "victory-native";
 import { connect } from 'react-redux';
@@ -43,6 +43,7 @@ const mapStateToProps = (state) => ({
     theme: state.theme
 });
 
+
 function StatisticsScreen({ ...props }) {
 
     const { user, navigation } = props
@@ -73,6 +74,10 @@ function StatisticsScreen({ ...props }) {
             title={item.x}
         />
     );
+
+    useEffect(() => {
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    }, [])
 
     return (
         <View style={styles.container}>
