@@ -3,9 +3,9 @@ import * as types from './actionTypes';
 
 export const watchEventsData = (userId) => dispatch => {
     dispatch(requestStart());
-    const reportsRef = firebase.firestore().collection('events').doc(userId).collection('sub_events');
-    reportsRef
-        .onSnapshot(querySnapshot => {
+    const reportsRef = firebase.firestore().collection('events').doc(userId).collection('sub_events')
+    reportsRef.get()
+        .then((querySnapshot) => {
             let eventsData = []
             querySnapshot.forEach(doc => {
                 const event = doc.data()

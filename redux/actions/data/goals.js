@@ -4,8 +4,8 @@ import * as types from './actionTypes';
 export const watchGoalsData = (userId) => dispatch => {
     dispatch(requestStart());
     const reportsRef = firebase.firestore().collection('goals').doc(userId).collection('sub_goals');
-    reportsRef
-        .onSnapshot(querySnapshot => {
+    reportsRef.get()
+        .then((querySnapshot) => {
             let goalsData = []
             querySnapshot.forEach(doc => {
                 const goal = doc.data()
