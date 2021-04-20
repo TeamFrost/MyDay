@@ -65,6 +65,8 @@ function HomeScreen({ ...props }) {
     const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
+    const handleNotificationPress = () => navigation.navigate("Notifications")
+
 
     const compare = (obj1, obj2) => {
         if (obj1.time < obj2.time) {
@@ -128,7 +130,7 @@ function HomeScreen({ ...props }) {
                         {profilePicture()}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {username}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }} onPress={handleNotificationPress}> {username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
