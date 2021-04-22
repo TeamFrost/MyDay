@@ -1,39 +1,59 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
-import RightArrowIcon from '../assets/icons/rightArrowIcon'
 import { colors } from '../helpers/style';
+
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
+
+const DATA = [
+    {
+        title: 'Winston York',
+    },
+    {
+        title: 'Kaitlin Hulme',
+    },
+    {
+        title: "Jenny Alexander",
+    },
+    {
+        title: "Armin Twinson",
+    },
+    {
+        title: "Jenniffer Alexander",
+    },
+]
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     theme: state.theme
 });
 
-let notificationCard = (sender) => {
-    return (
-        <View style={styles.notificationCard}>
-            <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{sender}</Text> sent you a friend request</Text>
-            <View style={styles.buttonsView}>
-                <TouchableOpacity style={styles.button} onPress={() => console.log("da")}>
-                    <Text style={styles.buttonText}>Accept</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ ...styles.button, borderColor: theme.red }} onPress={() => console.log("nu")}>
-                    <Text style={{ ...styles.buttonText, color: theme.red }}>Decline</Text>
-                </TouchableOpacity>
-            </View>
-            <Divider style={{ height: 2 }} />
+const Item = ({ title }) => (
+    <View style={styles.notificationCard}>
+        <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{title}</Text> sent you a friend request</Text>
+        <View style={styles.buttonsView}>
+            <TouchableOpacity style={styles.button} onPress={() => console.log("da")}>
+                <Text style={styles.buttonText}>Accept</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ ...styles.button, borderColor: theme.red }} onPress={() => console.log("nu")}>
+                <Text style={{ ...styles.buttonText, color: theme.red }}>Decline</Text>
+            </TouchableOpacity>
         </View>
-    );
-}
+        <Divider style={{ height: 2 }} />
+    </View>
+);
+
+const renderItem = ({ item }) => (
+    <Item title={item.title} />
+)
 
 function NotificationsScreen({ ...props }) {
     const { user, navigation } = props
@@ -50,11 +70,12 @@ function NotificationsScreen({ ...props }) {
                 <Text style={styles.textTop}>Notifications</Text>
             </View>
 
-            <ScrollView contentContainterStyle={styles.notificationsView}>
-                {notificationCard("Kaitlin Hulme")}
-                {notificationCard("Jenny Alexander")}
-                {notificationCard("Armin Twinson")}
-            </ScrollView>
+            <FlatList
+                data={DATA}
+                renderItem={renderItem}
+                keyExtractor={item => item.title}
+                style={styles.notificationsView}
+            />
 
             <StatusBar style="auto" />
         </View>
@@ -88,7 +109,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         padding: '5%',
-        alignItems: 'flex-start',
+        paddingTop: 0,
     },
     notificationCard: {
         width: '100%',
