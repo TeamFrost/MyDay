@@ -169,7 +169,7 @@ function HomeScreen({ ...props }) {
                     :
                     todayEventsCards.length === 0 ?
                         <View style={styles.containerNoEvents}>
-                            <CountingStars />
+                            <CountingStars width={screenHeight / 100 * 21} height={screenHeight / 100 * 21} />
                             <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
                         </View>
                         :
