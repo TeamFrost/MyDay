@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
@@ -20,9 +20,11 @@ import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
 
 import { colors } from '../helpers/style';
 
+let profile = 'https://randomuser.me/api/portraits/'
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
+
 
 const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
 
@@ -52,6 +54,12 @@ function CreateActivityScreen({ ...props }) {
     const [showDate, setShowDate] = useState(fancyToday)
     const [startTime, setStartTime] = useState(timeNow);
     const [endTime, setEndTime] = useState(timeAfterOneHour);
+
+    const [friend1, setFriend1] = useState(false);
+    const [friend2, setFriend2] = useState(false);
+    const [friend3, setFriend3] = useState(false);
+    const [friend4, setFriend4] = useState(false);
+    const [friend5, setFriend5] = useState(false);
 
     const [option1, setOption1] = useState("");
     const [option2, setOption2] = useState("");
@@ -211,7 +219,7 @@ function CreateActivityScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            <HeaderGradient width={screenWidth} height={155} style={{ flex: 1, position: 'absolute', top: 0 }} />
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>
@@ -278,17 +286,37 @@ function CreateActivityScreen({ ...props }) {
 
                 </View>
 
-                <View style={{ ...styles.taskTitleDiv, justifyContent: 'space-around', height: screenHeight / 8.5 }}>
+                <View style={{ ...styles.taskTitleDiv, justifyContent: 'space-around', height: screenHeight / 8, marginTop: 5 }}>
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold', paddingRight: 10 }}>Add People</Text>
                         <TouchableHighlight onPress={() => alert("da")} underlayColor={theme.textGray}>
                             <AddPerson />
                         </TouchableHighlight>
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={styles.avatar} />
-                        <View style={{ ...styles.avatar, backgroundColor: 'red', marginLeft: -10 }} />
-                        <View style={{ ...styles.avatar, backgroundColor: 'pink', marginLeft: -10 }} />
+                    <View style={{ ...styles.nicknameView, marginTop: 10 }}>
+                        <TouchableOpacity onPress={() => setFriend1(!friend1)}>
+                            <Image source={{ uri: profile + "men/27.jpg" }} style={friend1 ? styles.avatar : styles.avatarGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setFriend2(!friend2)}>
+                            <Image source={{ uri: profile + "men/88.jpg" }} style={friend2 ? styles.avatar : styles.avatarGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setFriend3(!friend3)}>
+                            <Image source={{ uri: profile + "women/74.jpg" }} style={friend3 ? styles.avatar : styles.avatarGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setFriend4(!friend4)}>
+                            <Image source={{ uri: profile + "men/20.jpg" }} style={friend4 ? styles.avatar : styles.avatarGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setFriend5(!friend5)}>
+                            <Image source={{ uri: profile + "lego/1.jpg" }} style={friend5 ? styles.avatar : styles.avatarGray} />
+                        </TouchableOpacity>
+
+                    </View>
+                    <View style={styles.nicknameView}>
+                        <Text style={styles.nicknames}>JI</Text>
+                        <Text style={styles.nicknames}>CO</Text>
+                        <Text style={styles.nicknames}>BI</Text>
+                        <Text style={styles.nicknames}>MA</Text>
+                        <Text style={styles.nicknames}>LE</Text>
                     </View>
                 </View>
 
@@ -332,7 +360,7 @@ const styles = StyleSheet.create({
     },
     topText: {
         width: '100%',
-        height: screenHeight / 4.7,
+        height: screenHeight / 5.2,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -381,10 +409,9 @@ const styles = StyleSheet.create({
         marginRight: '5%'
     },
     avatar: {
-        height: 40,
-        width: 40,
-        backgroundColor: 'orange',
-        borderRadius: 20
+        height: 50,
+        width: 50,
+        borderRadius: 25,
     },
     categoryButton: {
         padding: 8,
@@ -414,7 +441,24 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: theme.backgroundColor
-    }
+    },
+    nicknames: {
+        fontWeight: 'bold'
+    },
+    nicknameView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginTop: 5
+    },
+    avatarGray: {
+        height: 50,
+        width: 50,
+        borderRadius: 25,
+        borderWidth: 0.5,
+        borderColor: 'gray',
+        opacity: 0.45,
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateActivityScreen);
