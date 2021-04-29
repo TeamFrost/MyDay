@@ -1,10 +1,10 @@
 import { firebase } from '../../../firebase/config';
-import * as types from './actionTypes';
+import * as types from './goalsActionTypes';
 
 export const watchGoalsData = (userId) => dispatch => {
-    dispatch(requestStart());
-    const reportsRef = firebase.firestore().collection('goals').doc(userId).collection('sub_goals');
-    reportsRef.get()
+    dispatch(goalsRequestStart());
+    const goalsRef = firebase.firestore().collection('goals').doc(userId).collection('sub_goals');
+    goalsRef.get()
         .then((querySnapshot) => {
             let goalsData = []
             querySnapshot.forEach(doc => {
@@ -12,24 +12,23 @@ export const watchGoalsData = (userId) => dispatch => {
                 goal.id = doc.id
                 goalsData.push(goal)
             })
-            dispatch(requestSuccess(goalsData))
+            dispatch(goalsRequestSuccess(goalsData))
         }),
         (error) => {
-            dispatch(requestError(error))
+            dispatch(goalsRequestError(error))
         }
 }
 
-
-const requestStart = () => ({
-    type: types.REQUEST_START
+const goalsRequestStart = () => ({
+    type: types.GOALS_REQUEST_START
 });
 
-const requestSuccess = goalsData => ({
-    type: types.REQUEST_SUCCESS,
+const goalsRequestSuccess = goalsData => ({
+    type: types.GOALS_REQUEST_SUCCESS,
     goalsData
 });
 
-const requestError = error => ({
-    type: types.REQUEST_ERROR,
+const goalsRequestError = error => ({
+    type: types.GOALS_REQUEST_ERROR,
     error
 });

@@ -1,4 +1,4 @@
-import * as types from '../../actions/data/actionTypes'
+import * as types from '../../actions/data/goalsActionTypes'
 
 const initialState = {
     doneFetching: false,
@@ -8,15 +8,15 @@ const initialState = {
     goalsData: [],
 };
 
-export default events = (state = initialState, action) => {
+export default goals = (state = initialState, action) => {
     switch (action.type) {
-        case types.REQUEST_START: {
+        case types.GOALS_REQUEST_START: {
             return {
                 ...initialState,
                 isFetching: true
             };
         }
-        case types.REQUEST_SUCCESS: {
+        case types.GOALS_REQUEST_SUCCESS: {
             const { goalsData } = action;
             return {
                 ...state,
@@ -25,7 +25,7 @@ export default events = (state = initialState, action) => {
                 goalsData
             };
         }
-        case types.REQUEST_ERROR: {
+        case types.GOALS_REQUEST_ERROR: {
             const { error } = action;
             return {
                 ...state,

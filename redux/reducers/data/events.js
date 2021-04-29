@@ -1,4 +1,4 @@
-import * as types from '../../actions/data/actionTypes'
+import * as types from '../../actions/data/eventsActionTypes'
 
 const initialState = {
     doneFetching: false,
@@ -10,13 +10,13 @@ const initialState = {
 
 export default events = (state = initialState, action) => {
     switch (action.type) {
-        case types.REQUEST_START: {
+        case types.EVENTS_REQUEST_START: {
             return {
                 ...initialState,
                 isFetching: true
             };
         }
-        case types.REQUEST_SUCCESS: {
+        case types.EVENTS_REQUEST_SUCCESS: {
             const { eventsData } = action;
             return {
                 ...state,
@@ -25,7 +25,7 @@ export default events = (state = initialState, action) => {
                 eventsData
             };
         }
-        case types.REQUEST_ERROR: {
+        case types.EVENTS_REQUEST_ERROR: {
             const { error } = action;
             return {
                 ...state,

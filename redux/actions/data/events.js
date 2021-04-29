@@ -1,10 +1,10 @@
 import { firebase } from '../../../firebase/config';
-import * as types from './actionTypes';
+import * as types from './eventsActionTypes';
 
 export const watchEventsData = (userId) => dispatch => {
-    dispatch(requestStart());
-    const reportsRef = firebase.firestore().collection('events').doc(userId).collection('sub_events')
-    reportsRef.get()
+    dispatch(eventsRequestStart());
+    const eventsRef = firebase.firestore().collection('events').doc(userId).collection('sub_events')
+    eventsRef.get()
         .then((querySnapshot) => {
             let eventsData = []
             querySnapshot.forEach(doc => {
@@ -12,23 +12,23 @@ export const watchEventsData = (userId) => dispatch => {
                 event.id = doc.id
                 eventsData.push(event)
             })
-            dispatch(requestSuccess(eventsData))
+            dispatch(eventsRequestSuccess(eventsData))
         }),
         (error) => {
-            dispatch(requestError(error))
+            dispatch(eventsRequestError(error))
         }
 }
 
-const requestStart = () => ({
-    type: types.REQUEST_START
+const eventsRequestStart = () => ({
+    type: types.EVENTS_REQUEST_START
 });
 
-const requestSuccess = eventsData => ({
-    type: types.REQUEST_SUCCESS,
+const eventsRequestSuccess = eventsData => ({
+    type: types.EVENTS_REQUEST_SUCCESS,
     eventsData
 });
 
-const requestError = error => ({
-    type: types.REQUEST_ERROR,
+const eventsRequestError = error => ({
+    type: types.EVENTS_REQUEST_ERROR,
     error
 });
