@@ -1,13 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList } from 'react-native';
-import { Searchbar, Divider } from 'react-native-paper';
+import { Searchbar, Divider, Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
+
+import { firebase } from '../firebase/config'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
 import ProfileMale from '../assets/profiles/profileMale'
+import AddFriend from '../assets/icons/addFriend'
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
@@ -33,9 +36,54 @@ const DATA = [
 
 function FriendsScreen({ ...props }) {
     const { user, navigation } = props
-    const [searchQuery, setSearchQuery] = useState('');
 
-    const onChangeSearch = query => setSearchQuery(query);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [result, setResult] = useState('')
+    const [resultName, setResultName] = useState('')
+
+    const userRef = firebase.firestore().collection("users");
+    const notifiactionRef = firebase.firestore().collection("notifications");
+
+    const handleSearch = (queryText) => {
+        setSearchQuery(queryText)
+        userRef.where("username", "==", queryText)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    let res = doc.data();
+                    setResult(res)
+                    setResultName(res.username)
+                });
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+            });
+    };
+
+    const profilePicture = (profile) => {
+        if (profile === "M")
+            return <ProfileMale width={50} height={50} />
+        else
+            if (profile === "F")
+                return <ProfileFemale width={50} height={50} />
+            else {
+                return <Avatar.Image size={50} source={{ uri: profile }} />
+            }
+    }
+
+    const sendNotificationToAddFriend = (id) => {
+        notifiactionRef.doc().set({
+            user: user.id,
+            username: user.username,
+            friend: id,
+        })
+            .then(() => {
+                console.log("Document successfully written!");
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+            });
+    }
 
     const Item = ({ title }) => (
         <View style={styles.item}>
@@ -65,18 +113,30 @@ function FriendsScreen({ ...props }) {
             <View style={styles.bodyView}>
                 <Searchbar
                     placeholder="Search for users"
-                    onChangeText={onChangeSearch}
+                    onChangeText={queryText => setSearchQuery(queryText)}
                     value={searchQuery}
+                    onSubmitEditing={() => handleSearch(searchQuery)}
                     style={styles.searchBar}
                     iconColor={theme.linkBlue}
                 />
+                {resultName != '' ?
+                    <View style={{ ...styles.item, marginTop: 10 }}>
+                        {profilePicture(result.profile)}
+                        <Text style={styles.title}>{resultName}</Text>
+                        <AddFriend onPress={() => sendNotificationToAddFriend(result.id)} />
+                    </View>
+                    :
+                    null
+                }
                 <View>
                     <FlatList
+                        ListHeaderComponent={<Text style={styles.headerText}>My Friends</Text>}
+                        ListHeaderComponentStyle={{ marginBottom: 10 }}
                         data={DATA}
                         renderItem={renderItem}
                         keyExtractor={item => item.title}
                         ItemSeparatorComponent={() => (<Divider style={styles.divider} />)}
-                        style={{ marginTop: 10 }}
+                        style={{ marginTop: 20 }}
                     />
                 </View>
             </View>
@@ -138,8 +198,12 @@ const styles = StyleSheet.create({
     bodyView: {
         flex: 1,
         width: '90%'
-    }
-
+    },
+    headerText: {
+        fontSize: 22,
+        fontWeight: "bold",
+        color: theme.textColor
+    },
 });
 
 export default connect(mapStateToProps)(FriendsScreen);
