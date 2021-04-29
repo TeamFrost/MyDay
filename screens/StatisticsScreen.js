@@ -40,13 +40,15 @@ const pieChartData = [
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    goals: state.goals.goalsData,
     theme: state.theme
 });
 
 
 function StatisticsScreen({ ...props }) {
 
-    const { user, navigation } = props
+    const { user, navigation, goals } = props
+    console.log(goals)
 
     const [activitiesNumber, setActivitiesNumber] = useState(1052)
     const [activity, setActivity] = useState("University")
