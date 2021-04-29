@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-modern-datepicker';
@@ -195,8 +195,8 @@ function CreateActivityScreen({ ...props }) {
                 option: option
             }
 
-            const reportRef = firebase.firestore().collection('events').doc(user.id).collection('sub_events');
-            reportRef.add(data)
+            const subEventsRef = firebase.firestore().collection('events').doc(user.id).collection('sub_events');
+            subEventsRef.add(data)
                 .then(() => {
                     watchEventsData(user.id)
                     navigation.goBack()
@@ -208,6 +208,14 @@ function CreateActivityScreen({ ...props }) {
 
         }
     }
+
+    useEffect(() => {
+        if (props.route.params.date.dateString != undefined) {
+            let date = props.route.params.date.dateString;
+            setSelectedDate(date)
+            setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
+        }
+    }, [])
 
     return (
         <View style={styles.container}>
