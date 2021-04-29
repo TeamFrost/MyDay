@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { CalendarList } from 'react-native-calendars';
@@ -7,60 +7,20 @@ import moment from 'moment';
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { connect } from 'react-redux';
 
-import { watchEventsData } from '../redux/actions/data/events'
 import { firebase } from '../firebase/config'
 
 import Background from '../assets/backgrounds/background'
-import { colors } from '../helpers/style';
+import Space from "../assets/others/space";
+import { colors, categories } from '../helpers/style';
 
 const theme = colors.light;
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
-let today = moment().format('YYYY-MM-DD').toString();
-
-const vacation = { key: 'vacation', color: 'red', selectedDotColor: 'orange' };
-const massage = { key: 'massage', color: 'orange', selectedDotColor: 'yellow' };
-const workout = { key: 'workout', color: 'green' };
-
-
-const DATA = [
-    {
-        title: "Design Meeting",
-        description: "Short Briefing",
-        startTime: "10:00",
-        endTime: "11:30",
-        location: "Zoom",
-    },
-    {
-        title: "Office Team Meeting",
-        description: "Present work summary",
-        startTime: "12:00",
-        endTime: "14:30",
-        location: "Office room",
-    },
-    {
-        title: "Going Out",
-        description: "Meeting with my friends",
-        startTime: "18:00",
-        endTime: "19:30",
-        location: "Central Park",
-    },
-    {
-        title: "Watching Netflix",
-        description: "Binging Modern Family XD",
-        startTime: "20:00",
-        endTime: "22:30",
-        location: "Home",
-    }
-]
-
-const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
-    doneFetchingData: state.events.doneFetching,
     theme: state.theme
 });
 
@@ -68,9 +28,10 @@ function CalendarScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, watchEventsData, events, doneFetchingData, navigation, } = props
+    const { user, events, navigation } = props
 
-    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+    const [todayEventsArray, setTodayEventsArray] = useState(events)
+    const [todayEventsCards, setTodayEventsCards] = useState([])
 
     const Item = ({ title, description, startTime, endTime, location, current, id }) => (
         <View style={styles.item}>
@@ -111,7 +72,6 @@ function CalendarScreen({ ...props }) {
     }
 
     const handleDeletePress = (id) => {
-        console.log(id)
         const options = ['Yes', 'No'];
         const destructiveButtonIndex = 0;
         const title = "Are you sure you want to delete this event?"
@@ -151,8 +111,32 @@ function CalendarScreen({ ...props }) {
         return 0;
     }
 
-    let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
-        .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+    const chooseColor = (category) => {
+        switch (category) {
+            case "University":
+                return categories.university
+            case "Work":
+                return categories.work
+            case "Lifestyle":
+                return categories.lifestyle
+            case "Sport":
+                return categories.sport
+            case "Shopping":
+                return categories.shopping
+            case "Holiday":
+                return categories.holiday
+        }
+    }
+
+    let markedDatesArray = events.map(ev => ({ date: ev.date, dots: { color: chooseColor(ev.category) } }))
+    let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
+        (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
+        return a;
+    }, {}));
+
+    var markedDatesObject = markedDatesArrayResult.reduce((a, c) => ({ ...a, [c.date]: c }), {});
+
+    let todayEvents = todayEventsArray.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
         .map(ev => ({
             id: ev.id,
             title: ev.title,
@@ -163,19 +147,20 @@ function CalendarScreen({ ...props }) {
             current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? "blue" : "white"
         }));
 
-    let todayEventsCards = todayEvents.sort(compare)
-
-    useEffect(() => {
-        if (user) {
-            let id = user.id
-            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
-                watchEventsData(id)
-            }
-        }
-        if (doneFetchingData) {
-            setTodayEventsArray(events)
-        }
-    }, [doneFetchingData])
+    const setAgendaDay = (day) => {
+        todayEvents = todayEventsArray
+            .filter(ev => ev.date === day.dateString)
+            .map(ev => ({
+                id: ev.id,
+                title: ev.title,
+                description: ev.details,
+                startTime: ev.startTime,
+                endTime: ev.endTime,
+                location: ev.location,
+                current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? "blue" : "white"
+            }));
+        setTodayEventsCards(todayEvents.sort(compare))
+    }
 
     return (
         <View style={styles.container}>
@@ -193,8 +178,8 @@ function CalendarScreen({ ...props }) {
                     firstDay={1}
                     style={{ marginTop: 25 }}
                     contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-                    onDayPress={(day) => { console.log('selected day', day) }}
-                    onDayLongPress={(day) => { console.log('navigate') }}
+                    onDayPress={(day) => setAgendaDay(day)}
+                    onDayLongPress={(day) => navigation.navigate("CreateActivity", { date: day })}
                     theme={{
                         textDayFontSize: 18,
                         textDayHeaderFontSize: 15,
@@ -212,18 +197,18 @@ function CalendarScreen({ ...props }) {
                             },
                         },
                     }}
-                    markedDates={{
-                        '2021-03-16': { dots: [vacation, massage, workout], selectedColor: theme.violet },
-                        '2021-03-17': { dots: [massage, workout] }
-                    }}
+                    markedDates={markedDatesObject}
                     markingType={'multi-dot'}
 
                 />
 
             </View>
 
-            {todayEventsCards.length === 0 || todayEventsCards === undefined ?
-                null
+            {todayEventsCards.length === 0 ?
+                <View style={styles.containerNoEvents}>
+                    <Space />
+                    <Text style={styles.textNoEvents}>No activities for today.</Text>
+                </View>
                 :
                 <View style={styles.flatListDiv}>
                     <FlatList
@@ -332,6 +317,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 22,
     },
+    containerNoEvents: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textNoEvents: {
+        fontSize: 22,
+        color: theme.textColor,
+        fontWeight: '200'
+    },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CalendarScreen);
+export default connect(mapStateToProps)(CalendarScreen);

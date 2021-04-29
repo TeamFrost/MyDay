@@ -1,76 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import moment from 'moment';
 import { connect } from 'react-redux';
 
-import { watchGoalsData } from '../redux/actions/data/goals'
 import { firebase } from '../firebase/config'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
-import GoalIcon from '../assets/others/goal';
+import LowGoalIcon from '../assets/goalsVariation/lowPriority';
+import MediumGoalIcon from '../assets/goalsVariation/mediumPriority';
+import HighGoalIcon from '../assets/goalsVariation/highPriority';
+import Rocket from "../assets/others/rocket";
 import { colors } from '../helpers/style';
 
 const screenWidth = Dimensions.get('screen').width;
 const theme = colors.light;
-
-const DATA = [
-    {
-        key: 1,
-        title: 'Study for Test',
-        time: '3 days left',
-    },
-    {
-        key: 2,
-        title: 'Learn Spanish',
-        time: '5 days left',
-    },
-    {
-        key: 3,
-        title: 'Finish Project',
-        time: '8 days left',
-    },
-    {
-        key: 4,
-        title: 'Submit Work',
-        time: '9 days left',
-    },
-    {
-        key: 5,
-        title: 'Submit Work1',
-        time: '9 days left',
-    },
-    {
-        key: 6,
-        title: 'Submit Work2',
-        time: '9 days left',
-    },
-    {
-        key: 7,
-        title: 'Submit Work3',
-        time: '9 days left',
-    },
-    {
-        key: 8,
-        title: 'Submit Work4',
-        time: '9 days left',
-    },
-    {
-        key: 9,
-        title: 'Submit Work5',
-        time: '9 days left',
-    },
-    {
-        key: 10,
-        title: 'Submit Work6',
-        time: '9 days left',
-    },
-
-]
-
-const mapDispatchToProps = (dispatch) => ({ watchGoalsData: (userId) => dispatch(watchGoalsData(userId)) });
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -82,11 +29,11 @@ function GoalsScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation, watchGoalsData, goals } = props
+    const { user, navigation, goals } = props
 
-    let goalId = 'PV9qqSL24UK9op7GSxnw'
+    const [goalsArray, setGoalsArray] = useState(goals)
 
-    const Item = ({ title, time, index }) => {
+    const Item = ({ title, time, index, priority, id, completed }) => {
         const inputRange = [-1, 0, 100 * (index), 100 * (index + 2)]
         const opacityInputRange = [-1, 0, 100 * index, 100 * (index + 1)]
         const scale = scrollY.interpolate({
@@ -97,23 +44,33 @@ function GoalsScreen({ ...props }) {
             inputRange: opacityInputRange,
             outputRange: [1, 1, 1, 0]
         })
-        return (
-            <Animated.View style={{ transform: [{ scale }], opacity }} >
-                <LinearGradient colors={['#F8D7F67F', '#D4C3FC7F', '#BBD4FF7F']} style={styles.card} start={[0, 0]} end={[1, 0]}>
-                    <GoalIcon height={40} width={40} />
-                    <View style={{ flex: 1, paddingLeft: 15 }}>
-                        <Text style={styles.title}>{title}</Text>
-                        <Text>{time}</Text>
-                    </View>
-                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(goalId)} />
-                </LinearGradient>
+        if (!completed)
+            return (
+                <Animated.View style={{ transform: [{ scale }], opacity }} >
+                    <LinearGradient colors={['#F8D7F67F', '#D4C3FC7F', '#BBD4FF7F']} style={styles.card} start={[0, 0]} end={[1, 0]}>
+                        {priority === "low" ?
+                            <LowGoalIcon height={40} width={40} />
+                            :
+                            priority === "Medium" ?
+                                <MediumGoalIcon height={40} width={40} />
+                                :
+                                <HighGoalIcon height={40} width={40} />
+                        }
+                        <View style={{ flex: 1, paddingLeft: 15 }}>
+                            <Text style={styles.title}>{title}</Text>
+                            <Text style={{ color: time.includes("ago") ? theme.red : theme.text }}>{time}</Text>
+                        </View>
+                        <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(id)} />
+                    </LinearGradient>
 
-            </Animated.View>
-        );
+                </Animated.View>
+            );
+        else
+            return null;
     }
 
     const renderItem = ({ item, index }) => (
-        <Item title={item.title} time={item.time} index={index} />
+        <Item title={item.title} time={item.time} priority={item.priority} id={item.key} completed={item.completed} index={index} />
     );
 
     const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -125,7 +82,6 @@ function GoalsScreen({ ...props }) {
         const options = ['Yes', 'No'];
         const destructiveButtonIndex = 0;
         const title = "Do you wish to mark this goal as completed?"
-
 
         showActionSheetWithOptions(
             {
@@ -152,14 +108,7 @@ function GoalsScreen({ ...props }) {
             });
     }
 
-    useEffect(() => {
-        if (user) {
-            let id = user.id
-            watchGoalsData(id)
-        }
-    }, [])
-
-    console.log(goals)
+    let goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('day').fromNow(), priority: goal.priority, completed: goal.completed }))
 
     return (
         <View style={styles.container}>
@@ -169,18 +118,25 @@ function GoalsScreen({ ...props }) {
                 <Text style={styles.subtextTop} onPress={handleAddGoalPress}>Add a new goal +</Text>
             </View>
 
-            <View style={styles.flatListDiv}>
-                <Animated.FlatList
-                    data={DATA}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                        { useNativeDriver: true }
-                    )}
-                    contentContainerStyle={{ padding: '5%' }}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.title}
-                />
-            </View>
+            {goalsArrayList.length === 0 ?
+                <View style={styles.containerNoGoals}>
+                    <Rocket />
+                    <Text style={styles.textNoGoals}>No goals to show.</Text>
+                </View>
+                :
+                <View style={styles.flatListDiv}>
+                    <Animated.FlatList
+                        data={goalsArrayList}
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: true }
+                        )}
+                        contentContainerStyle={{ padding: '5%' }}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
+            }
 
             <StatusBar style="auto" />
         </View>
@@ -233,7 +189,16 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
     },
+    containerNoGoals: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textNoGoals: {
+        fontSize: 22,
+        color: theme.textColor,
+        fontWeight: '200'
+    },
 });
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(GoalsScreen);
+export default connect(mapStateToProps)(GoalsScreen);

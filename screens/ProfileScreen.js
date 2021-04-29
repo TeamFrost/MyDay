@@ -24,11 +24,18 @@ const theme = colors.light;
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    events: state.events.eventsData,
+    doneFetchingEventsData: state.events.doneFetching,
+    goals: state.goals.goalsData,
+    doneFetchingGoalsData: state.goals.doneFetching,
     theme: state.theme
 });
 
 function ProfileScreen({ ...props }) {
-    const { user, navigation } = props
+    const { user, navigation, goals, events } = props
+
+    const [eventsArray, setEventsArray] = useState(events)
+    const [goalsArray, setGoalsArray] = useState(goals)
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let username = ''
@@ -145,7 +152,7 @@ function ProfileScreen({ ...props }) {
                     </ProgressCircle>
                     <View style={styles.textAlignCard}>
                         <Text style={styles.achivementCardTitle}>All about the goals</Text>
-                        <Text style={styles.achivementCardSubtitle1}>Completed 100 goals in a row</Text>
+                        <Text style={styles.achivementCardSubtitle1}>Completed 100 goals</Text>
                         <Text style={styles.achivementCardSubtitle2}>Current: 70 out of 100</Text>
                     </View>
                 </View>
