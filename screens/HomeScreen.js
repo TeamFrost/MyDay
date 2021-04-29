@@ -7,6 +7,7 @@ import { Avatar } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import { watchEventsData } from '../redux/actions/data/events'
+import { watchGoalsData } from '../redux/actions/data/goals'
 
 import Background from '../assets/backgrounds/background'
 import ProfileFemale from '../assets/profiles/profileFemale'
@@ -24,21 +25,27 @@ const screenHeight = Dimensions.get('screen').height;
 const screenWidth = Dimensions.get('screen').width;
 let today = moment();
 
-const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatch(watchEventsData(userId)) });
+const mapDispatchToProps = (dispatch) => ({
+    watchEventsData: (userId) => dispatch(watchEventsData(userId)),
+    watchGoalsData: (userId) => dispatch(watchGoalsData(userId))
+});
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
-    doneFetchingData: state.events.doneFetching,
+    doneFetchingEventsData: state.events.doneFetching,
+    goals: state.goals.goalsData,
+    doneFetchingGoalsData: state.goals.doneFetching,
     theme: state.theme
 });
 
 function HomeScreen({ ...props }) {
 
-    const { user, navigation, watchEventsData, events, doneFetchingData } = props
+    const { user, navigation, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData } = props
 
     const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
     const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+    const [goalsArray, setGoalsArray] = useState(goals === undefined ? [] : goals)
     const [notification, setNotification] = useState(false);
 
     const dayString = moment().format("dddd, MMMM Do YYYY");
@@ -62,11 +69,11 @@ function HomeScreen({ ...props }) {
             }
     }
 
-    const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
+    // const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
+    const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={handleNotificationPress} /> : <NotificationOffIcon onPress={handleNotificationPress} />
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
     const handleNotificationPress = () => navigation.navigate("Notifications")
-
 
     const compare = (obj1, obj2) => {
         if (obj1.time < obj2.time) {
@@ -113,12 +120,18 @@ function HomeScreen({ ...props }) {
             if ((Array.isArray(events) && events.length === 0) || events === undefined) {
                 watchEventsData(id)
             }
+            if ((Array.isArray(goals) && goals.length === 0) || goals === undefined) {
+                watchGoalsData(id)
+            }
         }
-        if (doneFetchingData) {
+        if (doneFetchingEventsData) {
             setMarkedEventsArray(events)
             setTodayEventsArray(events)
         }
-    }, [doneFetchingData])
+        if (doneFetchingGoalsData) {
+            setGoalsArray(goals)
+        }
+    }, [doneFetchingEventsData, doneFetchingGoalsData])
 
     return (
         <View style={styles.container}>
@@ -130,7 +143,7 @@ function HomeScreen({ ...props }) {
                         {profilePicture()}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }} onPress={handleNotificationPress}> {username}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
@@ -138,7 +151,20 @@ function HomeScreen({ ...props }) {
                 </View>
 
                 {markedDatesArray.length === 0 ?
-                    null
+                    <CalendarStrip
+                        style={styles.calendarStrip}
+                        calendarColor={theme.backgroundColor}
+                        calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
+                        dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
+                        dateNumberStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateNameStyle={{ color: theme.backgroundColor, fontSize: 11 }}
+                        highlightDateNumberStyle={{ color: theme.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateContainerStyle={{ backgroundColor: theme.lightViolet, borderRadius: 10, height: "100%" }}
+                        iconContainer={{ flex: 0.1 }}
+                        upperCaseDays={false}
+                        selectedDate={today}
+                        onDateSelected={() => navigation.navigate("CalendarStack")}
+                    />
                     :
                     <CalendarStrip
                         style={styles.calendarStrip}
@@ -164,32 +190,29 @@ function HomeScreen({ ...props }) {
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
                     <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
-                {todayEventsCards === undefined ?
-                    null
+                {todayEventsCards.length === 0 ?
+                    <View style={styles.containerNoEvents}>
+                        <CountingStars width={screenHeight / 100 * 21} height={screenHeight / 100 * 21} />
+                        <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
+                    </View>
                     :
-                    todayEventsCards.length === 0 ?
-                        <View style={styles.containerNoEvents}>
-                            <CountingStars width={screenHeight / 100 * 21} height={screenHeight / 100 * 21} />
-                            <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
-                        </View>
-                        :
-                        <ScrollView
-                            horizontal
-                            scrollEventThrottle={1}
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.containerEvents}
-                        >
-                            {todayEventsCards.map((info, index) => (
-                                <View key={index} style={styles.paper}>
-                                    <Text style={styles.paperTitle}>{info.title}</Text>
-                                    <Text style={styles.paperTime}>{info.time}</Text>
-                                    <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
-                                        <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
-                                        <Text>{info.location}</Text>
-                                    </View>
+                    <ScrollView
+                        horizontal
+                        scrollEventThrottle={1}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.containerEvents}
+                    >
+                        {todayEventsCards.map((info, index) => (
+                            <View key={index} style={styles.paper}>
+                                <Text style={styles.paperTitle}>{info.title}</Text>
+                                <Text style={styles.paperTime}>{info.time}</Text>
+                                <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
+                                    <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
+                                    <Text>{info.location}</Text>
                                 </View>
-                            ))}
-                        </ScrollView>
+                            </View>
+                        ))}
+                    </ScrollView>
                 }
                 <View style={{ width: "100%" }}>
                     <TouchableOpacity activeOpacity={0.6} style={styles.quizz} onPress={handleQuizPress}>
