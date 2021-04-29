@@ -70,11 +70,6 @@ function AddGoalScreen({ ...props }) {
             alert("Please complete all fields!")
         }
 
-        if (timeNow > time) {
-            check = false;
-            alert("The goal must be set to a future time!")
-        }
-
         if (check === true) {
 
             const data = {
@@ -86,8 +81,8 @@ function AddGoalScreen({ ...props }) {
                 completed: false
             }
 
-            const reportRef = firebase.firestore().collection('goals').doc(user.id).collection('sub_goals');
-            reportRef.add(data)
+            const subGoalsRef = firebase.firestore().collection('goals').doc(user.id).collection('sub_goals');
+            subGoalsRef.add(data)
                 .then(
                     navigation.goBack()
                 )
