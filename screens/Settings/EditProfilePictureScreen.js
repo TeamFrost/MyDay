@@ -37,8 +37,6 @@ function EditProfilePictureScreen({ ...props }) {
 
     const { user, doneFetching, navigation } = props
 
-    console.log(props.errorMessage)
-
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let userId = ''
 
@@ -143,7 +141,7 @@ function EditProfilePictureScreen({ ...props }) {
     const uploadImage = async (uri, imageName) => {
         let oldRef = ''
         if (profile.includes("firebasestorage")) {
-            console.log("Poza exista in storage")
+            console.log("The photo exists in firebase storage!")
             oldRef = firebase.storage().refFromURL(profile)
         }
         const response = await fetch(uri);
