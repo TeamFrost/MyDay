@@ -4,41 +4,25 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, TouchableWithoutFee
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
+import { firebase } from '../firebase/config'
+
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
+import NoNotificationsAstronaut from '../assets/others/noNotificationAstronaut';
 import { colors } from '../helpers/style';
-
 
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
-
-const DATA = [
-    {
-        title: 'Winston York',
-    },
-    {
-        title: 'Kaitlin Hulme',
-    },
-    {
-        title: "Jenny Alexander",
-    },
-    {
-        title: "Armin Twinson",
-    },
-    {
-        title: "Jenniffer Alexander",
-    },
-]
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     theme: state.theme
 });
 
-const Item = ({ title }) => (
+const Item = ({ username }) => (
     <View style={styles.notificationCard}>
-        <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{title}</Text> sent you a friend request</Text>
+        <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{username}</Text> sent you a friend request</Text>
         <View style={styles.buttonsView}>
             <TouchableOpacity style={styles.button} onPress={() => console.log("da")}>
                 <Text style={styles.buttonText}>Accept</Text>
@@ -52,11 +36,33 @@ const Item = ({ title }) => (
 );
 
 const renderItem = ({ item }) => (
-    <Item title={item.title} />
+    <Item username={item.username} />
 )
 
 function NotificationsScreen({ ...props }) {
     const { user, navigation } = props
+
+    const [notifications, setNotifications] = useState([])
+
+    const notifiactionRef = firebase.firestore().collection("notifications");
+
+    useEffect(() => {
+        notifiactionRef.where("friend", "==", user.id).get()
+            .then((querySnapshot) => {
+                let notificationsData = []
+                querySnapshot.forEach((doc) => {
+                    let notification = doc.data();
+                    notificationsData.push(notification)
+                });
+                setNotifications(notificationsData)
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+            });
+    }, []);
+
+    console.log(notifications)
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
@@ -70,12 +76,19 @@ function NotificationsScreen({ ...props }) {
                 <Text style={styles.textTop}>Notifications</Text>
             </View>
 
-            <FlatList
-                data={DATA}
-                renderItem={renderItem}
-                keyExtractor={item => item.title}
-                style={styles.notificationsView}
-            />
+            {notifications.length != 0 ?
+                <FlatList
+                    data={notifications}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.username}
+                    style={styles.notificationsView}
+                />
+                :
+                <View style={styles.containerNoEvents}>
+                    <NoNotificationsAstronaut />
+                    <Text style={styles.textNoActivities}>No notifications at the moment.</Text>
+                </View>
+            }
 
             <StatusBar style="auto" />
         </View>
@@ -140,7 +153,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: theme.green
-    }
+    },
+    containerNoEvents: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: "5%",
+        marginLeft: "5%",
+        marginBottom: "3%"
+    },
+    textNoActivities: {
+        fontSize: 22,
+        color: theme.textColor,
+        fontWeight: '200'
+    },
 });
 
 
