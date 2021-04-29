@@ -11,13 +11,13 @@ import { LandingStackScreen } from './helpers/navigation'
 
 export default function App() {
   return (
-    <ActionSheetProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <ActionSheetProvider>
         <NavigationContainer>
           {LandingStackScreen()}
         </NavigationContainer>
-      </Provider>
-    </ActionSheetProvider>
+      </ActionSheetProvider>
+    </Provider>
   );
 }
 
