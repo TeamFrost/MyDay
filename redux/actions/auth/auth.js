@@ -77,7 +77,8 @@ export const loginUserWithGoogle = (googleUser) => dispatch => {
                         email: firebaseUser.email,
                         username: firebaseUser.displayName,
                         profile: firebaseUser.photoURL,
-                        google: true
+                        google: true,
+                        friends: [],
                     };
                     const usersRef = firebase.firestore().collection('users')
                     usersRef
@@ -139,7 +140,8 @@ export const signupUser = (email, password, username, profile) => dispatch => {
                 email,
                 username,
                 profile,
-                google: false
+                google: false,
+                friends: [],
             };
             const usersRef = firebase.firestore().collection('users')
             usersRef
