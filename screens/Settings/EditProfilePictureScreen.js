@@ -9,9 +9,8 @@ import { connect } from 'react-redux';
 
 import { firebase } from '../../firebase/config'
 import { restoreSession } from '../../redux/actions/auth/auth'
+import { profilePicture } from '../../helpers/functions'
 
-import ProfileFemale from '../../assets/profiles/profileFemale'
-import ProfileMale from '../../assets/profiles/profileMale'
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import AddPhoto from '../../assets/others/addPhoto.js';
@@ -55,16 +54,6 @@ function EditProfilePictureScreen({ ...props }) {
     const [image, setImage] = useState(null);
     const [imageRef, setImageRef] = useState("");
 
-    const profilePicture = () => {
-        if (profile === "M")
-            return <ProfileMale width={200} height={200} />
-        else
-            if (profile === "F")
-                return <ProfileFemale width={200} height={200} />
-            else {
-                return <Avatar.Image size={200} source={{ uri: profile }} />
-            }
-    }
 
     const updateProfile = () => {
 
@@ -199,7 +188,7 @@ function EditProfilePictureScreen({ ...props }) {
 
             <View style={styles.upload}>
                 <View style={styles.profile}>
-                    {profilePicture()}
+                    {profilePicture(profile, 200)}
                 </View>
                 <View style={styles.profile}>
                     <Text style={styles.profileText} onPress={updateProfile}>Upload a new picture</Text>
