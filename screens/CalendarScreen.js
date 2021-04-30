@@ -8,10 +8,11 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import { connect } from 'react-redux';
 
 import { firebase } from '../firebase/config'
+import { chooseColor, compareStartTime } from '../helpers/functions'
 
 import Background from '../assets/backgrounds/background'
 import Space from "../assets/others/space";
-import { colors, categories } from '../helpers/style';
+import { colors } from '../helpers/style';
 
 const theme = colors.light;
 const screenWidth = Dimensions.get('screen').width;
@@ -42,13 +43,13 @@ function CalendarScreen({ ...props }) {
 
             <View style={{ ...styles.card, backgroundColor: current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleDeletePress(id)} />
+                    <Text style={{ ...styles.title, color: current === theme.cardBlue ? "white" : theme.textColor }}>{title}</Text>
+                    <Icon name="ellipsis-v" size={20} color={current === theme.cardBlue ? "white" : theme.textGray} style={styles.iconArangeGoal} onPress={() => handleDeletePress(id)} />
                 </View>
-                <Text style={styles.description}>{description}</Text>
+                <Text style={{ ...styles.description, color: current === theme.cardBlue ? "white" : theme.textColor }}>{description}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                    <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
-                    <Text style={styles.description}>{location}</Text>
+                    <Icon name="map-marker-alt" size={14} color={current === theme.cardBlue ? "white" : theme.button} style={{ paddingRight: 5 }} />
+                    <Text style={{ ...styles.description, color: current === theme.cardBlue ? "white" : theme.textColor }}>{location}</Text>
                 </View>
             </View>
 
@@ -101,33 +102,6 @@ function CalendarScreen({ ...props }) {
             });
     }
 
-    const compare = (obj1, obj2) => {
-        if (obj1.startTime < obj2.startTime) {
-            return -1;
-        }
-        if (obj1.startTime > obj2.startTime) {
-            return 1;
-        }
-        return 0;
-    }
-
-    const chooseColor = (category) => {
-        switch (category) {
-            case "University":
-                return categories.university
-            case "Work":
-                return categories.work
-            case "Lifestyle":
-                return categories.lifestyle
-            case "Sport":
-                return categories.sport
-            case "Shopping":
-                return categories.shopping
-            case "Holiday":
-                return categories.holiday
-        }
-    }
-
     let markedDatesArray = events.map(ev => ({ date: ev.date, dots: { color: chooseColor(ev.category) } }))
     let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
         (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
@@ -144,7 +118,7 @@ function CalendarScreen({ ...props }) {
             startTime: ev.startTime,
             endTime: ev.endTime,
             location: ev.location,
-            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? "blue" : "white"
+            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? theme.cardBlue : theme.backgroundColor
         }));
 
     const setAgendaDay = (day) => {
@@ -157,9 +131,9 @@ function CalendarScreen({ ...props }) {
                 startTime: ev.startTime,
                 endTime: ev.endTime,
                 location: ev.location,
-                current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? "blue" : "white"
+                current: theme.backgroundColor
             }));
-        setTodayEventsCards(todayEvents.sort(compare))
+        setTodayEventsCards(todayEvents.sort(compareStartTime))
     }
 
     return (
