@@ -3,22 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
-import { Avatar } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import { watchEventsData } from '../redux/actions/data/events'
 import { watchGoalsData } from '../redux/actions/data/goals'
+import { profilePicture, chooseColor, compareTime } from '../helpers/functions'
 
 import Background from '../assets/backgrounds/background'
-import ProfileFemale from '../assets/profiles/profileFemale'
-import ProfileMale from '../assets/profiles/profileMale'
 import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import CountingStars from '../assets/others/countingStars'
 import GoalIcon from '../assets/others/goal'
 import QuizIcon from '../assets/settings/quizIcon.js'
-import { colors, categories } from '../helpers/style';
+import { colors } from '../helpers/style';
 
 const theme = colors.light;
 const screenHeight = Dimensions.get('screen').height;
@@ -58,49 +56,11 @@ function HomeScreen({ ...props }) {
         username = user.username
     }
 
-    const profilePicture = () => {
-        if (profile === "M")
-            return <ProfileMale width={45} height={45} />
-        else
-            if (profile === "F")
-                return <ProfileFemale width={45} height={45} />
-            else {
-                return <Avatar.Image size={45} source={{ uri: profile }} />
-            }
-    }
-
     // const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
     const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={handleNotificationPress} /> : <NotificationOffIcon onPress={handleNotificationPress} />
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
     const handleNotificationPress = () => navigation.navigate("Notifications")
-
-    const compare = (obj1, obj2) => {
-        if (obj1.time < obj2.time) {
-            return -1;
-        }
-        if (obj1.time > obj2.time) {
-            return 1;
-        }
-        return 0;
-    }
-
-    const chooseColor = (category) => {
-        switch (category) {
-            case "University":
-                return categories.university
-            case "Work":
-                return categories.work
-            case "Lifestyle":
-                return categories.lifestyle
-            case "Sport":
-                return categories.sport
-            case "Shopping":
-                return categories.shopping
-            case "Holiday":
-                return categories.holiday
-        }
-    }
 
     let markedDatesArray = markedEventsArray === undefined ? [] : markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
 
@@ -112,7 +72,7 @@ function HomeScreen({ ...props }) {
     let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
         .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
         .map(ev => ({ title: ev.title, time: ev.startTime + " - " + ev.endTime, location: ev.location }))
-    let todayEventsCards = todayEvents.sort(compare)
+    let todayEventsCards = todayEvents.sort(compareTime)
 
     useEffect(() => {
         if (user) {
@@ -140,7 +100,7 @@ function HomeScreen({ ...props }) {
             <View style={styles.topDiv}>
                 <View style={styles.introText}>
                     <View style={styles.introIconArange}>
-                        {profilePicture()}
+                        {profilePicture(profile, 45)}
                     </View>
                     <View style={styles.introTextArange}>
                         <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {username}</Text></Text>
@@ -150,21 +110,8 @@ function HomeScreen({ ...props }) {
 
                 </View>
 
-                {markedDatesArray.length === 0 ?
-                    <CalendarStrip
-                        style={styles.calendarStrip}
-                        calendarColor={theme.backgroundColor}
-                        calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
-                        dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
-                        dateNumberStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal' }}
-                        highlightDateNameStyle={{ color: theme.backgroundColor, fontSize: 11 }}
-                        highlightDateNumberStyle={{ color: theme.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
-                        highlightDateContainerStyle={{ backgroundColor: theme.lightViolet, borderRadius: 10, height: "100%" }}
-                        iconContainer={{ flex: 0.1 }}
-                        upperCaseDays={false}
-                        selectedDate={today}
-                        onDateSelected={() => navigation.navigate("CalendarStack")}
-                    />
+                {markedDatesArray.length === 0 || markedDatesArray === undefined ?
+                    null
                     :
                     <CalendarStrip
                         style={styles.calendarStrip}
