@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 
 import { firebase } from '../firebase/config'
+import { profilePicture } from '../helpers/functions'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
@@ -59,17 +60,6 @@ function FriendsScreen({ ...props }) {
                 console.log("Error getting documents: ", error);
             });
     };
-
-    const profilePicture = (profile) => {
-        if (profile === "M")
-            return <ProfileMale width={50} height={50} />
-        else
-            if (profile === "F")
-                return <ProfileFemale width={50} height={50} />
-            else {
-                return <Avatar.Image size={50} source={{ uri: profile }} />
-            }
-    }
 
     const sendNotificationToAddFriend = (id) => {
         notifiactionRef.doc().set({
