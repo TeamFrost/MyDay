@@ -6,6 +6,8 @@ import ProfileFemale from '../assets/profiles/profileFemale'
 import ProfileMale from '../assets/profiles/profileMale'
 
 export const profilePicture = (profile, dimensions) => {
+    if (profile === '')
+        return null;
     if (profile === "M")
         return <ProfileMale width={dimensions} height={dimensions} />
     else
