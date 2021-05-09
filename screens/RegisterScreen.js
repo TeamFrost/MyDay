@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Divider } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -15,11 +15,9 @@ import EyeIcon from '../assets/icons/eyeIcon';
 import MailIcon from '../assets/icons/mailIcon';
 import Background from '../assets/backgrounds/registerBackground';
 import { colors } from '../helpers/style.js';
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const theme = colors.light
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
 
 const mapStateToProps = (state) => ({
     doneFetching: state.auth.doneFetching,
@@ -39,7 +37,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 function RegisterScreen({ ...props }) {
 
-    const { user, doneFetching, navigation, signupUser, loginUserWithGoogle, loginUserWithFacebook } = props
+    const { user, doneFetching, navigation, signupUser, loginUserWithGoogle } = props
 
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
@@ -47,6 +45,14 @@ function RegisterScreen({ ...props }) {
     const [invisible, setInvisible] = useState(true);
     const [checked, setChecked] = useState(true);
     const [profile, setProfile] = useState('M');
+
+    useEffect(() => {
+        if (doneFetching) {
+            if (user != null) {
+                navigation.navigate('HomeTabs')
+            }
+        }
+    }, []);
 
     const handleRadioButtonPress = () => {
         if (checked) {
@@ -86,23 +92,9 @@ function RegisterScreen({ ...props }) {
         }
     }
 
-    const handleGmailLoginPress = () => {
-        console.log("Gmail login")
-        signInWithGoogleAsync()
-    }
+    const handleGmailLoginPress = () => signInWithGoogleAsync()
 
-    const handleLoginPress = () => {
-        navigation.navigate("Login");
-    }
-
-    useEffect(() => {
-        if (doneFetching) {
-            console.log(user)
-            if (user != null) {
-                navigation.navigate('HomeTabs')
-            }
-        }
-    }, []);
+    const handleLoginPress = () => navigation.navigate("Login")
 
     return (
         <View style={styles.container}>

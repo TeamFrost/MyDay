@@ -14,12 +14,8 @@ function EmailSentScreen({ ...props }) {
 
     const { navigation } = props
 
-    const handleLoginPress = () => {
-        navigation.navigate("Login");
-    }
-    const handleResendPress = () => {
-        alert("Resend mail!")
-    }
+    const handleLoginPress = () => navigation.navigate("Login")
+    const handleResendPress = () => alert("Resend mail!")
 
 
     return (

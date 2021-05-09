@@ -2,7 +2,7 @@ import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 import React, { useState, useEffect } from 'react';
 import * as Google from 'expo-google-app-auth';
 // import * as Facebook from 'expo-facebook';
-import { StyleSheet, Text, View, Dimensions, TextInput, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Divider } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -16,11 +16,9 @@ import LockIcon from '../assets/icons/lockIcon';
 import EyeIcon from '../assets/icons/eyeIcon'
 import Background from '../assets/backgrounds/loginBackground';
 import { colors } from '../helpers/style.js';
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const theme = colors.light
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
 
 const mapStateToProps = (state) => ({
     doneFetching: state.auth.doneFetching,
@@ -44,6 +42,15 @@ function LoginScreen({ ...props }) {
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [invisible, setInvisible] = useState(true);
+
+    useEffect(() => {
+        if (doneFetching) {
+            console.log(user)
+            if (user != null) {
+                navigation.navigate('HomeTabs')
+            }
+        }
+    }, []);
 
     const signInWithGoogleAsync = async () => {
         try {
@@ -105,22 +112,10 @@ function LoginScreen({ ...props }) {
         signInWithGoogleAsync()
     }
 
-    const handleSignUpPress = () => {
-        navigation.navigate("Register");
-    }
+    const handleSignUpPress = () => navigation.navigate("Register")
 
-    const handleForgotLink = () => {
-        navigation.navigate("ForgotPasswordStack");
-    }
+    const handleForgotLink = () => navigation.navigate("ForgotPasswordStack")
 
-    useEffect(() => {
-        if (doneFetching) {
-            console.log(user)
-            if (user != null) {
-                navigation.navigate('HomeTabs')
-            }
-        }
-    }, []);
 
     return (
         <View style={styles.container}>

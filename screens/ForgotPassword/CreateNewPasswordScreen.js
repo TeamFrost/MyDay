@@ -21,9 +21,7 @@ function CreateNewPasswordScreen({ ...props }) {
     const [invisible, setInvisible] = useState(true);
     const [invisibleRepeat, setInvisibleRepeat] = useState(true);
 
-    const handleLoginPress = () => {
-        navigation.navigate("Login");
-    }
+    const handleLoginPress = () => navigation.navigate("Login")
 
     return (
         <View style={styles.container}>
