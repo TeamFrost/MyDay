@@ -9,8 +9,9 @@ export const profilePicture = (profile, dimensions) => {
     if (profile === "M")
         return <ProfileMale width={dimensions} height={dimensions} />
     else
-        if (profile === "F")
+        if (profile === "F") {
             return <ProfileFemale width={dimensions} height={dimensions} />
+        }
         else {
             return <Avatar.Image size={dimensions} source={{ uri: profile }} />
         }
