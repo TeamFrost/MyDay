@@ -5,8 +5,10 @@ import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
+import { firebase } from '../firebase/config'
 import { watchEventsData } from '../redux/actions/data/events'
 import { watchGoalsData } from '../redux/actions/data/goals'
+import { watchNotificationsData } from '../redux/actions/data/notifications'
 import { profilePicture, chooseColor, compareTime } from '../helpers/functions'
 
 import Background from '../assets/backgrounds/background'
@@ -17,6 +19,7 @@ import CountingStars from '../assets/others/countingStars'
 import GoalIcon from '../assets/others/goal'
 import QuizIcon from '../assets/settings/quizIcon.js'
 import { colors } from '../helpers/style';
+import { quotes } from '../helpers/quotes'
 
 const theme = colors.light;
 const screenHeight = Dimensions.get('screen').height;
@@ -25,7 +28,8 @@ let today = moment();
 
 const mapDispatchToProps = (dispatch) => ({
     watchEventsData: (userId) => dispatch(watchEventsData(userId)),
-    watchGoalsData: (userId) => dispatch(watchGoalsData(userId))
+    watchGoalsData: (userId) => dispatch(watchGoalsData(userId)),
+    watchNotificationsData: (userId) => dispatch(watchNotificationsData(userId)),
 });
 
 const mapStateToProps = (state) => ({
@@ -34,19 +38,14 @@ const mapStateToProps = (state) => ({
     doneFetchingEventsData: state.events.doneFetching,
     goals: state.goals.goalsData,
     doneFetchingGoalsData: state.goals.doneFetching,
+    notifications: state.notifications.notificationsData,
+    doneFetchingNotificationsData: state.notifications.doneFetching,
     theme: state.theme
 });
 
 function HomeScreen({ ...props }) {
 
-    const { user, navigation, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData } = props
-
-    const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
-    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
-    const [goalsArray, setGoalsArray] = useState(goals === undefined ? [] : goals)
-    const [notification, setNotification] = useState(false);
-
-    const dayString = moment().format("dddd, MMMM Do YYYY");
+    const { user, navigation, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData, watchNotificationsData, notifications, doneFetchingNotificationsData } = props
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let username = ''
@@ -56,11 +55,35 @@ function HomeScreen({ ...props }) {
         username = user.username
     }
 
-    // const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={() => setNotification(!notification)} /> : <NotificationOffIcon onPress={() => setNotification(!notification)} />
+    const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
+    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+    const [goalsArray, setGoalsArray] = useState(goals === undefined ? [] : goals)
+    const [notificationsArray, setNotificationsArray] = useState(notifications === undefined ? [] : notifications)
+    const [notification, setNotification] = useState(false);
+    const [nextGoal, setNextGoal] = useState("")
+    const [nextGoalDueDate, setNextGoalDueDate] = useState("")
+    const [quote, setQuote] = useState("")
+
+    const dayString = moment().format("dddd, MMMM Do YYYY");
+
     const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={handleNotificationPress} /> : <NotificationOffIcon onPress={handleNotificationPress} />
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
     const handleNotificationPress = () => navigation.navigate("Notifications")
+
+    // const getFriendsFromFirestore = (id) => {
+    //     const friendRef = firebase.firestore().collection('users').doc(id);
+    //     friendRef.get()
+    //         .then(doc => {
+    //             const data = doc.data();
+    //             const friendInfo = { id: id, profile: data.profile }
+    //             return friendInfo
+    //         })
+    //         .catch(error => {
+    //             console.log(error)
+    //         })
+    //     return null;
+    // }
 
     let markedDatesArray = markedEventsArray === undefined ? [] : markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
 
@@ -71,8 +94,19 @@ function HomeScreen({ ...props }) {
 
     let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
         .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
-        .map(ev => ({ title: ev.title, time: ev.startTime + " - " + ev.endTime, location: ev.location }))
+        // .filter(ev => ev.date === '2021-04-15')
+        .map(ev => {
+            let friendsArr = ev.friends;
+            // let arr = friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
+            return ({
+                title: ev.title,
+                time: ev.startTime + " - " + ev.endTime,
+                location: ev.location,
+                friends: friendsArr
+            })
+        })
     let todayEventsCards = todayEvents.sort(compareTime)
+
 
     useEffect(() => {
         if (user) {
@@ -83,6 +117,9 @@ function HomeScreen({ ...props }) {
             if ((Array.isArray(goals) && goals.length === 0) || goals === undefined) {
                 watchGoalsData(id)
             }
+            if ((Array.isArray(notifications) && notifications.length === 0) || notifications === undefined) {
+                watchNotificationsData(id)
+            }
         }
         if (doneFetchingEventsData) {
             setMarkedEventsArray(events)
@@ -90,8 +127,21 @@ function HomeScreen({ ...props }) {
         }
         if (doneFetchingGoalsData) {
             setGoalsArray(goals)
+            const filteredGoals = goals.filter(gl => gl.completed === false)
+            const goal = filteredGoals[0]
+            setNextGoal(goal.title)
+            setNextGoalDueDate(moment(new Date(goal.date)).startOf('day').fromNow())
+            const random = Math.floor(Math.random() * 11);
+            const quo = quotes[random]
+            setQuote(quo)
         }
-    }, [doneFetchingEventsData, doneFetchingGoalsData])
+        if (doneFetchingNotificationsData) {
+            setNotificationsArray(notifications)
+            const notificationsLength = notifications.length;
+            if (notificationsLength != 0)
+                setNotification(true)
+        }
+    }, [doneFetchingEventsData, doneFetchingGoalsData, doneFetchingNotificationsData])
 
     return (
         <View style={styles.container}>
@@ -157,6 +207,46 @@ function HomeScreen({ ...props }) {
                                     <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
                                     <Text>{info.location}</Text>
                                 </View>
+                                {info.friends.length === 0 ?
+                                    null
+                                    :
+                                    <View style={{ alignItems: 'center', flexDirection: 'row', marginTop: "5%", flex: 1 }}>
+                                        {profilePicture(info.friends[0].profile, 26)}
+                                        {/* <Image source={info.friends[1].profile} style={styles.avatar} /> */}
+                                        {info.friends.length >= 2 ?
+                                            <View style={{ marginLeft: -5 }}>
+                                                {profilePicture(info.friends[1].profile, 26)}
+                                            </View>
+                                            // <Image source={info.friends[1].profile} style={{ ...styles.avatar, marginLeft: -5 }} />
+                                            :
+                                            info.friends.length >= 3 ?
+                                                <View>
+                                                    <View style={{ marginLeft: -5 }}>
+                                                        {profilePicture(info.friends[1].profile, 26)}
+                                                    </View>
+                                                    <View style={{ marginLeft: -5 }}>
+                                                        {profilePicture(info.friends[2].profile, 26)}
+                                                    </View>
+                                                </View>
+
+                                                // <Image source={info.friends[2].profile} style={{ ...styles.avatar, marginLeft: -5 }} />
+                                                :
+                                                info.friends.length > 3 ?
+                                                    <View>
+                                                        <View style={{ marginLeft: -5 }}>
+                                                            {profilePicture(info.friends[1].profile, 26)}
+                                                        </View>
+                                                        <View style={{ marginLeft: -5 }}>
+                                                            {profilePicture(info.friends[2].profile, 26)}
+                                                        </View>
+                                                        <View style={{ ...styles.avatar, marginLeft: -5, borderWidth: 0.5, borderBottomColor: theme.textGray }}>
+                                                            <Text>{`${info.friends.length} +`}</Text>
+                                                        </View>
+                                                    </View>
+                                                    :
+                                                    null
+                                        }
+                                    </View>}
                             </View>
                         ))}
                     </ScrollView>
@@ -182,11 +272,10 @@ function HomeScreen({ ...props }) {
                     <View style={styles.viewArangeGoal}>
                         <GoalIcon width={50} height={50} style={styles.iconArangeGoal} />
                         <View style={styles.viewArangeText}>
-                            <Text style={{ fontSize: 18 }}>Study for exams</Text>
-                            <Text style={{ fontSize: 12, color: theme.textGray }}>3 days left</Text>
-                            <Text>He who laughs most, learns best.</Text>
+                            <Text style={{ fontSize: 18 }}>{nextGoal}</Text>
+                            <Text style={{ fontSize: 12, color: theme.textGray }}>{nextGoalDueDate}</Text>
+                            <Text>{quote}</Text>
                         </View>
-                        <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} />
                     </View>
                 </View>
             </View>
@@ -373,7 +462,12 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-    }
+    },
+    avatar: {
+        height: 26,
+        width: 26,
+        borderRadius: 13,
+    },
 });
 
 
