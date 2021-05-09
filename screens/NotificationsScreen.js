@@ -5,6 +5,7 @@ import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import { firebase } from '../firebase/config'
+import { watchNotificationsData } from '../redux/actions/data/notifications'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
@@ -15,53 +16,72 @@ const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
 
+const mapDispatchToProps = (dispatch) => ({ watchNotificationsData: (userId) => dispatch(watchNotificationsData(userId)) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    notifications: state.notifications.notificationsData,
     theme: state.theme
 });
 
-const Item = ({ username }) => (
-    <View style={styles.notificationCard}>
-        <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{username}</Text> sent you a friend request</Text>
-        <View style={styles.buttonsView}>
-            <TouchableOpacity style={styles.button} onPress={() => console.log("da")}>
-                <Text style={styles.buttonText}>Accept</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ ...styles.button, borderColor: theme.red }} onPress={() => console.log("nu")}>
-                <Text style={{ ...styles.buttonText, color: theme.red }}>Decline</Text>
-            </TouchableOpacity>
-        </View>
-        <Divider style={{ height: 2 }} />
-    </View>
-);
-
-const renderItem = ({ item }) => (
-    <Item username={item.username} />
-)
-
 function NotificationsScreen({ ...props }) {
-    const { user, navigation } = props
+    const { user, navigation, notifications, watchNotificationsData } = props
 
-    const [notifications, setNotifications] = useState([])
+    const [notificationsArray, setNotificationsArray] = useState([])
 
-    const notifiactionRef = firebase.firestore().collection("notifications");
+    const handleAcceptPress = (id, friendId, userId) => {
+        const notificationRef = firebase.firestore().collection('notifications').doc(id);
+        const friendRef = firebase.firestore().collection('users').doc(friendId);
+        const userRef = firebase.firestore().collection('users').doc(userId);
+
+        friendRef.update({
+            friends: firebase.firestore.FieldValue.arrayUnion(userId)
+        });
+
+        userRef.update({
+            friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+        });
+
+        notificationRef.delete().then(() => {
+            console.log("Document successfully deleted!");
+            watchNotificationsData(user.id)
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
+
+    const handleDeclinePress = (id) => {
+        const notificationRef = firebase.firestore().collection('notifications').doc(id);
+
+        notificationRef.delete().then(() => {
+            console.log("Document successfully deleted!");
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
+
+    const Item = ({ username, id, friendId, userId }) => (
+        <View style={styles.notificationCard}>
+            <Text style={styles.inviteText}><Text style={{ fontWeight: 'bold' }}>{username}</Text> sent you a friend request</Text>
+            <View style={styles.buttonsView}>
+                <TouchableOpacity style={styles.button} onPress={() => handleAcceptPress(id, friendId, userId)}>
+                    <Text style={styles.buttonText}>Accept</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ ...styles.button, borderColor: theme.red }} onPress={() => handleDeclinePress(id)}>
+                    <Text style={{ ...styles.buttonText, color: theme.red }}>Decline</Text>
+                </TouchableOpacity>
+            </View>
+            <Divider style={{ height: 2 }} />
+        </View>
+    );
+
+    const renderItem = ({ item }) => (
+        <Item username={item.username} id={item.id} friendId={item.friend} userId={item.user} />
+    )
 
     useEffect(() => {
-        notifiactionRef.where("friend", "==", user.id).get()
-            .then((querySnapshot) => {
-                let notificationsData = []
-                querySnapshot.forEach((doc) => {
-                    let notification = doc.data();
-                    notificationsData.push(notification)
-                });
-                setNotifications(notificationsData)
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
-            });
-    }, []);
-
-    console.log(notifications)
+        setNotificationsArray(notifications);
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -76,9 +96,9 @@ function NotificationsScreen({ ...props }) {
                 <Text style={styles.textTop}>Notifications</Text>
             </View>
 
-            {notifications.length != 0 ?
+            {notificationsArray.length != 0 ?
                 <FlatList
-                    data={notifications}
+                    data={notificationsArray}
                     renderItem={renderItem}
                     keyExtractor={item => item.username}
                     style={styles.notificationsView}
@@ -169,4 +189,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default connect(mapStateToProps)(NotificationsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationsScreen);
