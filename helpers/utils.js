@@ -1,3 +1,8 @@
+import { Dimensions } from 'react-native';
+
+export const screenWidth = Dimensions.get('screen').width;
+export const screenHeight = Dimensions.get('screen').height;
+
 const IosScreenHeight = 844;
 const IosScreenWidth = 390;
 
