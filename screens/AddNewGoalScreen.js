@@ -7,6 +7,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { firebase } from '../firebase/config'
+import { watchGoalsData } from '../redux/actions/data/goals'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientPink';
 import Back from '../assets/others/back.js';
@@ -21,14 +22,17 @@ const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 const theme = colors.light;
 
+const mapDispatchToProps = (dispatch) => ({ watchGoalsData: (userId) => dispatch(watchGoalsData(userId)) });
+
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    doneFetchinGoals: state.goals.doneFetchin,
     theme: state.theme
 });
 
 function AddGoalScreen({ ...props }) {
 
-    const { user, navigation } = props
+    const { user, navigation, watchGoalsData } = props
 
     const today = moment().format('YYYY-MM-DD');
     const fancyToday = moment().format("dddd, DD MMMM");
@@ -83,9 +87,11 @@ function AddGoalScreen({ ...props }) {
 
             const subGoalsRef = firebase.firestore().collection('goals').doc(user.id).collection('sub_goals');
             subGoalsRef.add(data)
-                .then(
-                    navigation.goBack()
-                )
+                .then(() => {
+                    watchGoalsData(user.id)
+                    if (doneFetchinGoals)
+                        navigation.goBack()
+                })
                 .catch(function (error) {
                     alert(error)
                 });
@@ -286,4 +292,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect(mapStateToProps)(AddGoalScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AddGoalScreen);
