@@ -178,7 +178,6 @@ function StatisticsScreen({ ...props }) {
 
     }, [])
 
-    console.log(lineChartData)
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
