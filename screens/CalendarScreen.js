@@ -181,7 +181,7 @@ function CalendarScreen({ ...props }) {
             {todayEventsCards.length === 0 ?
                 <View style={styles.containerNoEvents}>
                     <Space />
-                    <Text style={styles.textNoEvents}>No activities for today.</Text>
+                    <Text style={styles.textNoEvents}>No activities for this day.</Text>
                 </View>
                 :
                 <View style={styles.flatListDiv}>
