@@ -108,7 +108,7 @@ function GoalsScreen({ ...props }) {
             });
     }
 
-    let goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('day').fromNow(), priority: goal.priority, completed: goal.completed }))
+    const goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('day').fromNow(), priority: goal.priority, completed: goal.completed }))
 
     return (
         <View style={styles.container}>
