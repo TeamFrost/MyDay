@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList } from 'react-native';
-import { Searchbar, Divider, Avatar } from 'react-native-paper';
+import { Searchbar, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 
@@ -10,7 +10,7 @@ import { profilePicture } from '../helpers/functions'
 
 import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
-import ProfileMale from '../assets/profiles/profileMale'
+import Planet from '../assets/icon'
 import AddFriend from '../assets/icons/addFriend'
 import { colors } from '../helpers/style';
 
@@ -23,24 +23,13 @@ const mapStateToProps = (state) => ({
     theme: state.theme
 });
 
-const DATA = [
-    {
-        title: 'Brooklyn Williamson',
-    },
-    {
-        title: 'Julie Watson',
-    },
-    {
-        title: 'Jenny Alexander',
-    },
-];
-
 function FriendsScreen({ ...props }) {
     const { user, navigation } = props
 
     const [searchQuery, setSearchQuery] = useState('');
     const [result, setResult] = useState('')
     const [resultName, setResultName] = useState('')
+    const [friendsArray, setFriendsArray] = useState([])
 
     const userRef = firebase.firestore().collection("users");
     const notifiactionRef = firebase.firestore().collection("notifications");
@@ -53,8 +42,15 @@ function FriendsScreen({ ...props }) {
                 querySnapshot.forEach((doc) => {
                     let res = doc.data();
                     setResult(res)
-                    setResultName(res.username)
+                    let resId = res.id
+                    let resUsername = res.username
+                    console.log(friendsArray)
+                    if ((friendsArray.indexOf(resId) === -1)) {
+                        setResultName(resUsername)
+                    }
                 });
+                if (resultName === '')
+                    setResultName("No result")
             })
             .catch((error) => {
                 console.log("Error getting documents: ", error);
@@ -75,17 +71,39 @@ function FriendsScreen({ ...props }) {
             });
     }
 
-    const Item = ({ title }) => (
+    const Item = ({ title, profile }) => (
         <View style={styles.item}>
-            <ProfileMale width={50} height={50} />
+            {profilePicture(profile, 50)}
             <Text style={styles.title}>{title}</Text>
             <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => alert("geru")} />
         </View>
     );
 
     const renderItem = ({ item }) => (
-        <Item title={item.title} />
+        <Item title={item.title} profile={item.profile} />
     );
+
+    const getFriendsFromFirestore = (id, arr) => {
+        const friendRef = firebase.firestore().collection('users').doc(id);
+        friendRef.get()
+            .then(doc => {
+                const data = doc.data();
+                const friendInfo = { id: id, title: data.username, profile: data.profile }
+                arr.push(friendInfo)
+                setFriendsArray(arr)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    useEffect(() => {
+        if (user) {
+            let arr = []
+            const friendsArr = user.friends
+            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
+        }
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -109,25 +127,36 @@ function FriendsScreen({ ...props }) {
                     style={styles.searchBar}
                     iconColor={theme.linkBlue}
                 />
-                {resultName != '' ?
-                    <View style={{ ...styles.item, marginTop: 10 }}>
-                        {profilePicture(result.profile)}
-                        <Text style={styles.title}>{resultName}</Text>
-                        <AddFriend onPress={() => sendNotificationToAddFriend(result.id)} />
-                    </View>
+                {resultName === 'No result' && searchQuery != '' ?
+                    <Text style={styles.noResultText}>No result.</Text>
                     :
-                    null
+                    resultName != '' && resultName != 'No result' ?
+                        <View style={{ ...styles.item, marginTop: 10 }}>
+                            {profilePicture(result.profile)}
+                            <Text style={styles.title}>{resultName}</Text>
+                            <AddFriend onPress={() => sendNotificationToAddFriend(result.id)} />
+                        </View>
+                        :
+                        null
                 }
                 <View>
-                    <FlatList
-                        ListHeaderComponent={<Text style={styles.headerText}>My Friends</Text>}
-                        ListHeaderComponentStyle={{ marginBottom: 10 }}
-                        data={DATA}
-                        renderItem={renderItem}
-                        keyExtractor={item => item.title}
-                        ItemSeparatorComponent={() => (<Divider style={styles.divider} />)}
-                        style={{ marginTop: 20 }}
-                    />
+                    {friendsArray.length === 0 ?
+                        <View style={styles.planetView}>
+                            <Text style={{ ...styles.headerText, alignSelf: 'flex-start', marginTop: 20, marginBottom: '5%' }}>My Friends</Text>
+                            <Text style={styles.noFriendsText}>Add friends so you can see them here.</Text>
+                            <Planet height={250} width={250} />
+                        </View>
+                        :
+
+                        <FlatList
+                            ListHeaderComponent={<Text style={styles.headerText}>My Friends</Text>}
+                            ListHeaderComponentStyle={{ marginBottom: 10 }}
+                            data={friendsArray}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.title}
+                            ItemSeparatorComponent={() => (<Divider style={styles.divider} />)}
+                            style={{ marginTop: 20 }}
+                        />}
                 </View>
             </View>
             <StatusBar style="auto" />
@@ -194,6 +223,21 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: theme.textColor
     },
+    noResultText: {
+        alignSelf: 'center',
+        marginTop: "5%",
+        fontSize: 18,
+        color: theme.textColor,
+    },
+    planetView: {
+        alignItems: 'center'
+    },
+    noFriendsText: {
+        marginBottom: "25%",
+        fontStyle: 'italic',
+        fontSize: 16,
+        color: theme.textColor,
+    }
 });
 
 export default connect(mapStateToProps)(FriendsScreen);
