@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, Dimensions, TouchableHighlight } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 
 import Activity from "../../assets/quiz/activity.js";
@@ -13,13 +13,10 @@ const theme = colors.light;
 const screenWidth = Dimensions.get('screen').width;
 const screenHeight = Dimensions.get('screen').height;
 
-const mapStateToProps = (state) => ({
-    user: state.auth.user,
-    theme: state.theme
-});
+const mapStateToProps = (state) => ({ theme: state.theme });
 
 function QuizScreen({ ...props }) {
-    const { user, navigation } = props
+    const { navigation } = props
 
     return (
         <View style={styles.container}>
