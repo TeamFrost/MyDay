@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, TouchableHighlight, Dimensions, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
+
+import { forwardChain } from '../../helpers/data/forwardChain'
 
 import RadioButtonActivity from '../../screens/Components/RadioButtonActivity'
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
@@ -16,20 +18,24 @@ const mapStateToProps = (state) => ({ theme: state.theme });
 
 function WorkoutQuizScreen({ ...props }) {
     const { user, navigation } = props
-    const [checked, setChecked] = useState(true);
-    const [occurance, setOccurance] = useState("");
+
+    const [occurrence, setOccurrence] = useState("");
     const [noTime, setNoTime] = useState("");
     const [reason, setReason] = useState("");
     const [duration, setDuration] = useState("");
 
     let premises = [
-        { attribute: 'category', value: "sport" },
-        { attribute: 'occurance', value: occurance },
+        { attribute: 'category', value: 'sport' },
+        { attribute: 'occurrence', value: occurrence },
         { attribute: 'no_time', value: noTime },
         { attribute: 'reason', value: reason },
         { attribute: 'duration', value: duration }
     ];
 
+    const handleSubmitPress = () => {
+        const res = forwardChain(premises)
+        navigation.navigate("WorkoutResult", { conclusion: res })
+    }
 
     return (
         <View style={styles.container}>
@@ -48,18 +54,18 @@ function WorkoutQuizScreen({ ...props }) {
 
                 <Text style={styles.question}>1. How many times a week do you want to workout?</Text>
                 <View style={styles.radioButtonDiv}>
-                    <TouchableOpacity onPress={() => setOccurance("1-2")}>
-                        <RadioButtonActivity selected={occurance === "1-2" ? true : false} />
+                    <TouchableOpacity onPress={() => setOccurrence("1-2")}>
+                        <RadioButtonActivity selected={occurrence === "1-2" ? true : false} />
                     </TouchableOpacity>
                     <Text style={styles.textRadioButton}>1-2</Text>
 
-                    <TouchableOpacity onPress={() => setOccurance("3-4")}>
-                        <RadioButtonActivity selected={occurance === "3-4" ? true : false} />
+                    <TouchableOpacity onPress={() => setOccurrence("3-4")}>
+                        <RadioButtonActivity selected={occurrence === "3-4" ? true : false} />
                     </TouchableOpacity>
                     <Text style={styles.textRadioButton}>3-4</Text>
 
-                    <TouchableOpacity onPress={() => setOccurance("5+")}>
-                        <RadioButtonActivity selected={occurance === "5+" ? true : false} />
+                    <TouchableOpacity onPress={() => setOccurrence("5+")}>
+                        <RadioButtonActivity selected={occurrence === "5+" ? true : false} />
                     </TouchableOpacity>
                     <Text style={styles.textRadioButton}>5+</Text>
                 </View>
@@ -89,8 +95,8 @@ function WorkoutQuizScreen({ ...props }) {
                     </TouchableOpacity>
                     <Text style={styles.textRadioButton}>training</Text>
 
-                    <TouchableOpacity onPress={() => setReason("enjoyment")}>
-                        <RadioButtonActivity selected={reason === "enjoyment" ? true : false} />
+                    <TouchableOpacity onPress={() => setReason("enjoy")}>
+                        <RadioButtonActivity selected={reason === "enjoy" ? true : false} />
                     </TouchableOpacity>
                     <Text style={styles.textRadioButton}>enjoyment</Text>
 
@@ -122,6 +128,7 @@ function WorkoutQuizScreen({ ...props }) {
                     <TouchableHighlight
                         underlayColor="#DDDDDD"
                         style={{ width: '100%', borderRadius: 20 }}
+                        onPress={handleSubmitPress}
                     >
                         <View style={styles.sendButton}>
                             <Text style={styles.sendText}>Submit</Text>
@@ -164,7 +171,6 @@ const styles = StyleSheet.create({
         width: '90%',
         alignSelf: 'center',
         justifyContent: 'space-evenly'
-
     },
     question: {
         fontSize: 20,
