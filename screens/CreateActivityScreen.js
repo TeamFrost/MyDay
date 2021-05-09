@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity, Image, FlatList } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
@@ -17,6 +17,8 @@ import FormMap from '../assets/others/formMap.js';
 import ExpandLessIcon from '../assets/icons/expandLessIcon.js';
 import ExpandMoreIcon from '../assets/icons/expandMoreIcon.js';
 import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
+import ProfileFemale from '../assets/profiles/profileFemale'
+import ProfileMale from '../assets/profiles/profileMale'
 
 import { colors } from '../helpers/style';
 
@@ -30,12 +32,13 @@ const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatc
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
+    doneFetchingEvents: state.events.doneFetching,
     theme: state.theme
 });
 
 function CreateActivityScreen({ ...props }) {
 
-    const { user, navigation } = props
+    const { user, doneFetchingEvents, watchEventsData, navigation } = props
 
     const today = moment().format('YYYY-MM-DD');
     const fancyToday = moment().format("dddd, DD MMMM");
@@ -55,11 +58,7 @@ function CreateActivityScreen({ ...props }) {
     const [startTime, setStartTime] = useState(timeNow);
     const [endTime, setEndTime] = useState(timeAfterOneHour);
 
-    const [friend1, setFriend1] = useState(false);
-    const [friend2, setFriend2] = useState(false);
-    const [friend3, setFriend3] = useState(false);
-    const [friend4, setFriend4] = useState(false);
-    const [friend5, setFriend5] = useState(false);
+    const [friendsArray, setFriendsArray] = useState([])
 
     const [option1, setOption1] = useState("");
     const [option2, setOption2] = useState("");
@@ -207,7 +206,8 @@ function CreateActivityScreen({ ...props }) {
             subEventsRef.add(data)
                 .then(() => {
                     watchEventsData(user.id)
-                    navigation.goBack()
+                    if (doneFetchingEvents)
+                        navigation.goBack()
                 }
                 )
                 .catch(function (error) {
@@ -216,11 +216,64 @@ function CreateActivityScreen({ ...props }) {
         }
     }
 
+
+    const handleFriendPress = (id) => {
+        if (friends.includes(id)) {
+            let res = friends.filter(item => item !== id)
+            setFriends(res)
+        }
+        else {
+            let res = [...friends, id]
+            setFriends(res)
+        }
+    }
+
+    console.log(friends)
+
+    const Item = ({ title, profile, id }) => (
+        <View style={{ alignContent: 'center', justifyContent: 'center', marginRight: 20 }}>
+            <TouchableOpacity onPress={() => handleFriendPress(id)}>
+                {profile === "M" ?
+                    <ProfileMale width={50} height={50} style={friends.includes(id) ? styles.avatar : styles.avatarGray} />
+                    :
+                    profile === "F" ?
+                        <ProfileFemale width={50} height={50} style={friends.includes(id) ? styles.avatar : styles.avatarGray} />
+                        :
+                        <Image source={{ uri: profile }} style={friends.includes(id) ? styles.avatar : styles.avatarGray} />
+                }
+            </TouchableOpacity>
+            <Text style={styles.nicknames}>{title.substring(0, 5)}</Text>
+        </View>
+    );
+
+    const renderItem = ({ item }) => (
+        <Item title={item.title} profile={item.profile} id={item.id} />
+    );
+
+    const getFriendsFromFirestore = (id, arr) => {
+        const friendRef = firebase.firestore().collection('users').doc(id);
+        friendRef.get()
+            .then(doc => {
+                const data = doc.data();
+                const friendInfo = { id: id, title: data.username, profile: data.profile }
+                arr.push(friendInfo)
+                setFriendsArray(arr)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
     useEffect(() => {
-        if (props.route.params.date.dateString != undefined) {
+        if (props.route.params != undefined) {
             let date = props.route.params.date.dateString;
             setSelectedDate(date)
             setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
+        }
+        if (user) {
+            let arr = []
+            const friendsArr = user.friends
+            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
         }
     }, [])
 
@@ -236,7 +289,6 @@ function CreateActivityScreen({ ...props }) {
                 <Text style={styles.textTop}>Create a new activity</Text>
             </View>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
-
                 <View style={styles.taskTitleDiv}>
                     <View style={styles.dividerTaskTitle}>
                         <TextInput
@@ -280,7 +332,7 @@ function CreateActivityScreen({ ...props }) {
                             <FormMap />
                         </View>
                         <View style={{ flexDirection: 'column' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }} onPress={() => alert("da")}>Location</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>Location</Text>
                             <TextInput
                                 placeholder="Location"
                                 placeholderTextColor={theme.textColor}
@@ -300,31 +352,16 @@ function CreateActivityScreen({ ...props }) {
                             <AddPerson />
                         </TouchableHighlight>
                     </View>
-                    <View style={{ ...styles.nicknameView, marginTop: 10 }}>
-                        <TouchableOpacity onPress={() => setFriend1(!friend1)}>
-                            <Image source={{ uri: profile + "men/27.jpg" }} style={friend1 ? styles.avatar : styles.avatarGray} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setFriend2(!friend2)}>
-                            <Image source={{ uri: profile + "men/88.jpg" }} style={friend2 ? styles.avatar : styles.avatarGray} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setFriend3(!friend3)}>
-                            <Image source={{ uri: profile + "women/74.jpg" }} style={friend3 ? styles.avatar : styles.avatarGray} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setFriend4(!friend4)}>
-                            <Image source={{ uri: profile + "men/20.jpg" }} style={friend4 ? styles.avatar : styles.avatarGray} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setFriend5(!friend5)}>
-                            <Image source={{ uri: profile + "lego/1.jpg" }} style={friend5 ? styles.avatar : styles.avatarGray} />
-                        </TouchableOpacity>
 
+                    <View style={{ ...styles.nicknameView, marginTop: 10 }}>
+                        <FlatList
+                            data={friendsArray}
+                            horizontal={true}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                        />
                     </View>
-                    <View style={styles.nicknameView}>
-                        <Text style={styles.nicknames}>JI</Text>
-                        <Text style={styles.nicknames}>CO</Text>
-                        <Text style={styles.nicknames}>BI</Text>
-                        <Text style={styles.nicknames}>MA</Text>
-                        <Text style={styles.nicknames}>LE</Text>
-                    </View>
+
                 </View>
 
                 <View style={{ ...styles.taskTitleDiv, justifyContent: 'flex-start', height: screenHeight / 6, marginTop: 10 }}>
@@ -335,9 +372,9 @@ function CreateActivityScreen({ ...props }) {
                         <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Lifestyle' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Lifestyle", "Birthday", "Date", "Freetime", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Lifestyle' ? theme.backgroundColor : theme.textColor }}>Lifestyle</Text></TouchableHighlight>
                     </View>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Sport' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Sport", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Sport' ? theme.backgroundColor : theme.textColor }}>Sport</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Shopping' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Shopping", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Shopping' ? theme.backgroundColor : theme.textColor }}>Shopping</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Holiday' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Holiday", "1", "2", "3", "4")}><Text style={{ ...styles.textCategoryButton, color: category === 'Holiday' ? theme.backgroundColor : theme.textColor }}>Holiday</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Sport' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Sport", "Gym Workout", "Class", "Outdoors", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Sport' ? theme.backgroundColor : theme.textColor }}>Sport</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Shopping' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Shopping", "Groceries", "Clothes", "Gifts", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Shopping' ? theme.backgroundColor : theme.textColor }}>Shopping</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Holiday' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => handleCategoryChange("Holiday", "Roadtrip", "Beach", "Mountains", "Other")}><Text style={{ ...styles.textCategoryButton, color: category === 'Holiday' ? theme.backgroundColor : theme.textColor }}>Holiday</Text></TouchableHighlight>
                     </View>
                 </View>
                 {optionVisibility ? handleCategoryPress() : null}
@@ -450,7 +487,9 @@ const styles = StyleSheet.create({
         color: theme.backgroundColor
     },
     nicknames: {
-        fontWeight: 'bold'
+        alignSelf: 'center',
+        fontWeight: 'bold',
+        marginTop: 5
     },
     nicknameView: {
         flexDirection: 'row',
