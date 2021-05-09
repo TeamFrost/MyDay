@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
@@ -11,10 +11,7 @@ import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
 import Back from '../assets/others/back.js';
 import NoNotificationsAstronaut from '../assets/others/noNotificationAstronaut';
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapDispatchToProps = (dispatch) => ({ watchNotificationsData: (userId) => dispatch(watchNotificationsData(userId)) });
 
@@ -25,9 +22,20 @@ const mapStateToProps = (state) => ({
 });
 
 function NotificationsScreen({ ...props }) {
-    const { user, navigation, notifications, watchNotificationsData } = props
+    const { user, navigation, theme, notifications, watchNotificationsData } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [notificationsArray, setNotificationsArray] = useState([])
+
+    useEffect(() => {
+        setNotificationsArray(notifications);
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const handleAcceptPress = (id, friendId, userId) => {
         const notificationRef = firebase.firestore().collection('notifications').doc(id);
@@ -67,8 +75,8 @@ function NotificationsScreen({ ...props }) {
                 <TouchableOpacity style={styles.button} onPress={() => handleAcceptPress(id, friendId, userId)}>
                     <Text style={styles.buttonText}>Accept</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ ...styles.button, borderColor: theme.red }} onPress={() => handleDeclinePress(id)}>
-                    <Text style={{ ...styles.buttonText, color: theme.red }}>Decline</Text>
+                <TouchableOpacity style={{ ...styles.button, borderColor: themeStyle.red }} onPress={() => handleDeclinePress(id)}>
+                    <Text style={{ ...styles.buttonText, color: themeStyle.red }}>Decline</Text>
                 </TouchableOpacity>
             </View>
             <Divider style={{ height: 2 }} />
@@ -78,10 +86,6 @@ function NotificationsScreen({ ...props }) {
     const renderItem = ({ item }) => (
         <Item username={item.username} id={item.id} friendId={item.friend} userId={item.user} />
     )
-
-    useEffect(() => {
-        setNotificationsArray(notifications);
-    }, [])
 
     return (
         <View style={styles.container}>
@@ -115,10 +119,10 @@ function NotificationsScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -167,12 +171,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 15,
         borderWidth: 2,
-        borderColor: theme.green,
+        borderColor: themeStyle.green,
     },
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: theme.green
+        color: themeStyle.green
     },
     containerNoEvents: {
         alignItems: 'center',
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
     },
     textNoActivities: {
         fontSize: 22,
-        color: theme.textColor,
+        color: themeStyle.textColor,
         fontWeight: '200'
     },
 });

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, TouchableHighlight, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 
 import { forwardChain } from '../../helpers/data/forwardChain'
@@ -9,15 +9,15 @@ import RadioButtonActivity from '../../screens/Components/RadioButtonActivity'
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapStateToProps = (state) => ({ theme: state.theme });
 
 function ActivityQuizScreen({ ...props }) {
-    const { navigation } = props
+    const { navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [alone, setAlone] = useState("");
     const [relaxing, setRelaxing] = useState("");
@@ -32,10 +32,18 @@ function ActivityQuizScreen({ ...props }) {
         { attribute: 'equipment', value: equipment }
     ];
 
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
+
     const handleSubmitPress = () => {
         const res = forwardChain(premises)
         navigation.navigate("ActivityResult", { conclusion: res })
     }
+
     return (
         <View style={styles.container}>
             <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
@@ -122,10 +130,10 @@ function ActivityQuizScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',
@@ -175,7 +183,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     sendButton: {
-        backgroundColor: theme.button,
+        backgroundColor: themeStyle.button,
         alignItems: 'center',
         justifyContent: 'center',
         height: 50,
@@ -192,7 +200,7 @@ const styles = StyleSheet.create({
     sendText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: theme.backgroundColor,
+        color: themeStyle.backgroundColor,
     },
     sendView: {
         flex: 2,

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -15,9 +15,7 @@ import MediumGoalIcon from '../assets/goalsVariation/mediumPriority';
 import HighGoalIcon from '../assets/goalsVariation/highPriority';
 import Rocket from "../assets/others/rocket";
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const theme = colors.light;
+import { screenWidth } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -29,9 +27,19 @@ function GoalsScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation, goals } = props
+    const { user, navigation, theme, goals } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [goalsArray, setGoalsArray] = useState(goals)
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const Item = ({ title, time, index, priority, id, completed }) => {
         const inputRange = [-1, 0, 100 * (index), 100 * (index + 2)]
@@ -48,7 +56,7 @@ function GoalsScreen({ ...props }) {
             return (
                 <Animated.View style={{ transform: [{ scale }], opacity }} >
                     <LinearGradient colors={['#F8D7F67F', '#D4C3FC7F', '#BBD4FF7F']} style={styles.card} start={[0, 0]} end={[1, 0]}>
-                        {priority === "low" ?
+                        {priority === "Low" ?
                             <LowGoalIcon height={40} width={40} />
                             :
                             priority === "Medium" ?
@@ -58,9 +66,9 @@ function GoalsScreen({ ...props }) {
                         }
                         <View style={{ flex: 1, paddingLeft: 15 }}>
                             <Text style={styles.title}>{title}</Text>
-                            <Text style={{ color: time.includes("ago") ? theme.red : theme.text }}>{time}</Text>
+                            <Text style={{ color: time.includes("ago") ? themeStyle.red : themeStyle.text }}>{time}</Text>
                         </View>
-                        <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(id)} />
+                        <Icon name="ellipsis-v" size={20} color={themeStyle.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(id)} />
                     </LinearGradient>
 
                 </Animated.View>
@@ -108,7 +116,7 @@ function GoalsScreen({ ...props }) {
             });
     }
 
-    const goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('day').fromNow(), priority: goal.priority, completed: goal.completed }))
+    const goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('hour').fromNow(), priority: goal.priority, completed: goal.completed }))
 
     return (
         <View style={styles.container}>
@@ -143,10 +151,10 @@ function GoalsScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -195,7 +203,7 @@ const styles = StyleSheet.create({
     },
     textNoGoals: {
         fontSize: 22,
-        color: theme.textColor,
+        color: themeStyle.textColor,
         fontWeight: '200'
     },
 });

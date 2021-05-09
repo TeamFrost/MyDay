@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-modern-datepicker';
 import moment from 'moment';
@@ -17,26 +17,26 @@ import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
 import ExpandLessIcon from '../assets/icons/expandLessIcon.js';
 import ExpandMoreIcon from '../assets/icons/expandMoreIcon.js';
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapDispatchToProps = (dispatch) => ({ watchGoalsData: (userId) => dispatch(watchGoalsData(userId)) });
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    doneFetchinGoals: state.goals.doneFetchin,
+    doneFetchinGoals: state.goals.doneFetching,
     theme: state.theme
 });
 
 function AddGoalScreen({ ...props }) {
 
-    const { user, navigation, watchGoalsData } = props
+    const { user, navigation, theme, watchGoalsData, doneFetchinGoals } = props
 
     const today = moment().format('YYYY-MM-DD');
     const fancyToday = moment().format("dddd, DD MMMM");
     const timeNow = moment().format('HH:mm');
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [title, setTitle] = useState("")
     const [category, setCategory] = useState("");
@@ -46,6 +46,12 @@ function AddGoalScreen({ ...props }) {
     const [selectedDate, setSelectedDate] = useState(today);
     const [showDate, setShowDate] = useState(fancyToday)
 
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const handleDatePickerPress = () => setDatePicker((value) => !value);
 
@@ -55,7 +61,7 @@ function AddGoalScreen({ ...props }) {
                 <DatePicker
                     minimumDate={today}
                     selected={selectedDate}
-                    options={{ mainColor: theme.violet }}
+                    options={{ mainColor: themeStyle.violet }}
                     onSelectedChange={date => {
                         setSelectedDate(date)
                         setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
@@ -95,7 +101,6 @@ function AddGoalScreen({ ...props }) {
                 .catch(function (error) {
                     alert(error)
                 });
-
         }
     }
 
@@ -117,7 +122,7 @@ function AddGoalScreen({ ...props }) {
                     <View style={styles.dividerTaskTitle}>
                         <TextInput
                             placeholder="Goal Title"
-                            placeholderTextColor={theme.textColor}
+                            placeholderTextColor={themeStyle.textColor}
                             style={{ fontSize: 22 }}
                             onChangeText={text => setTitle(text)}
                             value={title}
@@ -131,7 +136,7 @@ function AddGoalScreen({ ...props }) {
                             <FormClock />
                         </View>
                         <View style={{ flexDirection: 'column', width: '60%' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.linkBlue }}>{showDate}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: themeStyle.linkBlue }}>{showDate}</Text>
                             <Text style={{ fontSize: 16, marginTop: 5 }}>{time}</Text>
                         </View>
                         <TouchableOpacity onPress={handleDatePickerPress}>
@@ -145,14 +150,14 @@ function AddGoalScreen({ ...props }) {
                 <View style={{ ...styles.taskTitleDiv, justifyContent: 'flex-start', height: screenHeight / 5.5, marginTop: 10 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Category</Text>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("University")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? theme.backgroundColor : theme.textColor }}>University</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Work' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Work")}><Text style={{ ...styles.textCategoryButton, color: category === 'Work' ? theme.backgroundColor : theme.textColor }}>Work</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Lifestyle' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Lifestyle")}><Text style={{ ...styles.textCategoryButton, color: category === 'Lifestyle' ? theme.backgroundColor : theme.textColor }}>Lifestyle</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("University")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? themeStyle.backgroundColor : themeStyle.textColor }}>University</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Work' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Work")}><Text style={{ ...styles.textCategoryButton, color: category === 'Work' ? themeStyle.backgroundColor : themeStyle.textColor }}>Work</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Lifestyle' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Lifestyle")}><Text style={{ ...styles.textCategoryButton, color: category === 'Lifestyle' ? themeStyle.backgroundColor : themeStyle.textColor }}>Lifestyle</Text></TouchableHighlight>
                     </View>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Sport' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Sport")}><Text style={{ ...styles.textCategoryButton, color: category === 'Sport' ? theme.backgroundColor : theme.textColor }}>Sport</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Shopping' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Shopping")}><Text style={{ ...styles.textCategoryButton, color: category === 'Shopping' ? theme.backgroundColor : theme.textColor }}>Shopping</Text></TouchableHighlight>
-                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Holiday' ? theme.linkBlue : theme.cardLightViolet }} underlayColor={theme.linkBlue} onPress={() => setCategory("Holiday")}><Text style={{ ...styles.textCategoryButton, color: category === 'Holiday' ? theme.backgroundColor : theme.textColor }}>Holiday</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Sport' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Sport")}><Text style={{ ...styles.textCategoryButton, color: category === 'Sport' ? themeStyle.backgroundColor : themeStyle.textColor }}>Sport</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Shopping' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Shopping")}><Text style={{ ...styles.textCategoryButton, color: category === 'Shopping' ? themeStyle.backgroundColor : themeStyle.textColor }}>Shopping</Text></TouchableHighlight>
+                        <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Holiday' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Holiday")}><Text style={{ ...styles.textCategoryButton, color: category === 'Holiday' ? themeStyle.backgroundColor : themeStyle.textColor }}>Holiday</Text></TouchableHighlight>
                     </View>
                 </View>
 
@@ -192,10 +197,10 @@ function AddGoalScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -237,13 +242,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         paddingLeft: 13,
         paddingTop: 10,
-        color: theme.textGrayDark
+        color: themeStyle.textGrayDark
     },
     card: {
         width: '100%',
         height: 100,
         borderRadius: 20,
-        backgroundColor: theme.cardLightViolet,
+        backgroundColor: themeStyle.cardLightViolet,
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: '5%'
@@ -279,7 +284,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: '90%',
         height: 50,
-        backgroundColor: theme.button,
+        backgroundColor: themeStyle.button,
         borderRadius: 20,
         elevation: 5,
         alignItems: 'center',
@@ -288,7 +293,7 @@ const styles = StyleSheet.create({
     submitButtonText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: theme.backgroundColor
+        color: themeStyle.backgroundColor
     }
 });
 

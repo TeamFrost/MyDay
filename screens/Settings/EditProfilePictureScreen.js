@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import * as ImagePicker from 'expo-image-picker';
 import moment from 'moment';
@@ -15,10 +14,7 @@ import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import AddPhoto from '../../assets/others/addPhoto.js';
 import { colors } from '../../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapDispatchToProps = (dispatch) => ({ restoreSession: () => dispatch(restoreSession()) });
 
@@ -34,11 +30,13 @@ function EditProfilePictureScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, doneFetching, navigation } = props
+    const { user, doneFetching, navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
     let userId = ''
-
 
     if (user) {
         // profile = user.profile
@@ -53,6 +51,13 @@ function EditProfilePictureScreen({ ...props }) {
 
     const [image, setImage] = useState(null);
     const [imageRef, setImageRef] = useState("");
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
 
     const updateProfile = () => {
@@ -201,10 +206,10 @@ function EditProfilePictureScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },

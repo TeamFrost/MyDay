@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { CalendarList } from 'react-native-calendars';
 import moment from 'moment';
@@ -13,11 +13,7 @@ import { chooseColor, compareStartTime } from '../helpers/functions'
 import Background from '../assets/backgrounds/background'
 import Space from "../assets/others/space";
 import { colors } from '../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-
+import { screenWidth } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -29,7 +25,10 @@ function CalendarScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, events, navigation } = props
+    const { user, navigation, theme, events } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [todayEventsArray, setTodayEventsArray] = useState(events)
     const [todayEventsCards, setTodayEventsCards] = useState([])
@@ -43,13 +42,13 @@ function CalendarScreen({ ...props }) {
 
             <View style={{ ...styles.card, backgroundColor: current }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ ...styles.title, color: current === theme.cardBlue ? "white" : theme.textColor }}>{title}</Text>
-                    <Icon name="ellipsis-v" size={20} color={current === theme.cardBlue ? "white" : theme.textGray} style={styles.iconArangeGoal} onPress={() => handleDeletePress(id)} />
+                    <Text style={{ ...styles.title, color: current === themeStyle.cardBlue ? "white" : themeStyle.textColor }}>{title}</Text>
+                    <Icon name="ellipsis-v" size={20} color={current === themeStyle.cardBlue ? "white" : themeStyle.textGray} style={styles.iconArangeGoal} onPress={() => handleDeletePress(id)} />
                 </View>
-                <Text style={{ ...styles.description, color: current === theme.cardBlue ? "white" : theme.textColor }}>{description}</Text>
+                <Text style={{ ...styles.description, color: current === themeStyle.cardBlue ? "white" : themeStyle.textColor }}>{description}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                    <Icon name="map-marker-alt" size={14} color={current === theme.cardBlue ? "white" : theme.button} style={{ paddingRight: 5 }} />
-                    <Text style={{ ...styles.description, color: current === theme.cardBlue ? "white" : theme.textColor }}>{location}</Text>
+                    <Icon name="map-marker-alt" size={14} color={current === themeStyle.cardBlue ? "white" : themeStyle.button} style={{ paddingRight: 5 }} />
+                    <Text style={{ ...styles.description, color: current === themeStyle.cardBlue ? "white" : themeStyle.textColor }}>{location}</Text>
                 </View>
             </View>
 
@@ -118,7 +117,7 @@ function CalendarScreen({ ...props }) {
             startTime: ev.startTime,
             endTime: ev.endTime,
             location: ev.location,
-            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? theme.cardBlue : theme.backgroundColor
+            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? themeStyle.cardBlue : themeStyle.backgroundColor
         }));
 
     const setAgendaDay = (day) => {
@@ -131,10 +130,17 @@ function CalendarScreen({ ...props }) {
                 startTime: ev.startTime,
                 endTime: ev.endTime,
                 location: ev.location,
-                current: theme.backgroundColor
+                current: themeStyle.backgroundColor
             }));
         setTodayEventsCards(todayEvents.sort(compareStartTime))
     }
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -162,10 +168,10 @@ function CalendarScreen({ ...props }) {
                         'stylesheet.day.basic': {
                             today: {
                                 borderRadius: 4,
-                                backgroundColor: theme.lightViolet
+                                backgroundColor: themeStyle.lightViolet
                             },
                             todayText: {
-                                color: theme.backgroundColor,
+                                color: themeStyle.backgroundColor,
                                 fontWeight: 'bold',
 
                             },
@@ -198,17 +204,17 @@ function CalendarScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     calendar: {
         width: '100%',
         height: 385,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-end',
         elevation: 5,
@@ -235,7 +241,7 @@ const styles = StyleSheet.create({
     },
     leftCardTime: {
         borderRightWidth: 2,
-        borderRightColor: theme.backgroundColor,
+        borderRightColor: themeStyle.backgroundColor,
         height: '100%',
         alignItems: 'flex-end',
         justifyContent: 'flex-start',
@@ -245,7 +251,7 @@ const styles = StyleSheet.create({
     },
     card: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         marginLeft: 10,
         height: 135,
         borderRadius: 20,
@@ -269,12 +275,12 @@ const styles = StyleSheet.create({
     startTime: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: theme.textColor
+        color: themeStyle.textColor
     },
     endTime: {
         fontSize: 16,
         paddingTop: 5,
-        color: theme.textGrayDark
+        color: themeStyle.textGrayDark
     },
     headerFlatList: {
         height: 60,
@@ -297,7 +303,7 @@ const styles = StyleSheet.create({
     },
     textNoEvents: {
         fontSize: 22,
-        color: theme.textColor,
+        color: themeStyle.textColor,
         fontWeight: '200'
     },
 });

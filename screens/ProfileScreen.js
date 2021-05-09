@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import ProgressCircle from 'react-native-progress-circle'
 import { connect } from 'react-redux';
@@ -16,10 +16,7 @@ import EducatedIcon from '../assets/achievements/achivementEducated'
 import GoalsIcon from '../assets/achievements/achivementGoals'
 import SocialIcon from '../assets/achievements/achivementSocial'
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -31,15 +28,13 @@ const mapStateToProps = (state) => ({
 });
 
 function ProfileScreen({ ...props }) {
-    const { user, navigation, goals, events } = props
+    const { user, navigation, theme, goals, events } = props
 
-    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
-    let username = ''
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
-    if (user) {
-        profile = user.profile
-        username = user.username
-    }
+    const [profile, setProfile] = useState('')
+    const [username, setUsername] = useState('')
 
     const [eventsNumber, setEventsNumber] = useState(0)
     const [uniEventsNumber, setUniEventsNumber] = useState(0)
@@ -51,11 +46,15 @@ function ProfileScreen({ ...props }) {
     const [achievementGoals, setAchievementGoals] = useState(0);
     const [achievementSocial, setAchievementSocial] = useState(0);
 
-    const handleSettingsPress = () => navigation.navigate("SettingsStack")
-    const handleStatisticsPress = () => navigation.navigate("Statistics", [{ achievement: "Planner", progress: achievementPlanner }, { achievement: "University", progress: achievementUniversity }, { achievement: "Goals", progress: achievementGoals }, { achievement: "Social", progress: achievementSocial }])
-    const handleFriendsPress = () => navigation.navigate("Friends")
-
     useEffect(() => {
+        if (user) {
+            // console.log(user)
+            const userUsername = user.username
+            setUsername(userUsername)
+            const userProfile = user.profile
+            setProfile(userProfile)
+        }
+
         const eventsLength = events.length
         setEventsNumber(eventsLength)
         if (eventsLength >= 100) {
@@ -88,7 +87,17 @@ function ProfileScreen({ ...props }) {
         } else {
             setAchievementSocial(friendsLength * 10)
         }
-    }, [])
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
+
+    const handleSettingsPress = () => navigation.navigate("SettingsStack")
+    const handleStatisticsPress = () => navigation.navigate("Statistics", [{ achievement: "Planner", progress: achievementPlanner }, { achievement: "University", progress: achievementUniversity }, { achievement: "Goals", progress: achievementGoals }, { achievement: "Social", progress: achievementSocial }])
+    const handleFriendsPress = () => navigation.navigate("Friends")
+
 
     return (
         <View style={styles.container}>
@@ -105,7 +114,7 @@ function ProfileScreen({ ...props }) {
             <View style={styles.buttonView}>
                 <TouchableHighlight
                     onPress={handleStatisticsPress}
-                    underlayColor={theme.violet}
+                    underlayColor={themeStyle.violet}
                     style={styles.buttonTouch}
                 >
                     <View style={styles.button}>
@@ -115,7 +124,7 @@ function ProfileScreen({ ...props }) {
                 </TouchableHighlight>
                 <TouchableHighlight
                     onPress={handleFriendsPress}
-                    underlayColor={theme.violet}
+                    underlayColor={themeStyle.violet}
                     style={styles.buttonTouch}
                 >
                     <View style={styles.button}>
@@ -134,8 +143,8 @@ function ProfileScreen({ ...props }) {
                         radius={30}
                         borderWidth={5}
                         color="#9B8CF8"
-                        shadowColor={theme.textGray}
-                        bgColor={theme.backgroundColor}
+                        shadowColor={themeStyle.textGray}
+                        bgColor={themeStyle.backgroundColor}
                     >
                         <PlannerIcon />
                     </ProgressCircle>
@@ -152,8 +161,8 @@ function ProfileScreen({ ...props }) {
                         radius={30}
                         borderWidth={5}
                         color="#5C8DF7"
-                        shadowColor={theme.textGray}
-                        bgColor={theme.backgroundColor}
+                        shadowColor={themeStyle.textGray}
+                        bgColor={themeStyle.backgroundColor}
                     >
                         <EducatedIcon />
                     </ProgressCircle>
@@ -170,8 +179,8 @@ function ProfileScreen({ ...props }) {
                         radius={30}
                         borderWidth={5}
                         color="#564B93"
-                        shadowColor={theme.textGray}
-                        bgColor={theme.backgroundColor}
+                        shadowColor={themeStyle.textGray}
+                        bgColor={themeStyle.backgroundColor}
                     >
                         <GoalsIcon />
                     </ProgressCircle>
@@ -188,8 +197,8 @@ function ProfileScreen({ ...props }) {
                         radius={30}
                         borderWidth={5}
                         color="#D4C3FC"
-                        shadowColor={theme.textGray}
-                        bgColor={theme.backgroundColor}
+                        shadowColor={themeStyle.textGray}
+                        bgColor={themeStyle.backgroundColor}
                     >
                         <SocialIcon />
                     </ProgressCircle>
@@ -206,10 +215,10 @@ function ProfileScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -233,7 +242,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     buttonTouch: {
-        backgroundColor: theme.button,
+        backgroundColor: themeStyle.button,
         width: '40%',
         height: 45,
         borderRadius: 20,
@@ -268,7 +277,7 @@ const styles = StyleSheet.create({
     achivementText: {
         fontSize: 22,
         fontWeight: "bold",
-        color: theme.textColor
+        color: themeStyle.textColor
     },
     achivementCard: {
         flexDirection: "row",
@@ -278,15 +287,15 @@ const styles = StyleSheet.create({
     achivementCardTitle: {
         fontSize: 16,
         fontWeight: "bold",
-        color: theme.textColor
+        color: themeStyle.textColor
     },
     achivementCardSubtitle1: {
         fontSize: 14,
-        color: theme.textColor
+        color: themeStyle.textColor
     },
     achivementCardSubtitle2: {
         fontSize: 14,
-        color: theme.textGray
+        color: themeStyle.textGray
     },
     textAlignCard: {
         flexDirection: "column",

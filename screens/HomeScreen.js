@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -20,10 +20,8 @@ import GoalIcon from '../assets/others/goal'
 import QuizIcon from '../assets/settings/quizIcon.js'
 import { colors } from '../helpers/style';
 import { quotes } from '../helpers/quotes'
+import { screenHeight } from '../helpers/utils'
 
-const theme = colors.light;
-const screenHeight = Dimensions.get('screen').height;
-const screenWidth = Dimensions.get('screen').width;
 let today = moment();
 
 const mapDispatchToProps = (dispatch) => ({
@@ -45,15 +43,13 @@ const mapStateToProps = (state) => ({
 
 function HomeScreen({ ...props }) {
 
-    const { user, navigation, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData, watchNotificationsData, notifications, doneFetchingNotificationsData } = props
+    const { user, navigation, theme, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData, watchNotificationsData, notifications, doneFetchingNotificationsData } = props
 
-    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
-    let username = ''
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
-    if (user) {
-        profile = user.profile
-        username = user.username
-    }
+    const [profile, setProfile] = useState('')
+    const [username, setUsername] = useState('')
 
     const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
     const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
@@ -66,10 +62,56 @@ function HomeScreen({ ...props }) {
 
     const dayString = moment().format("dddd, MMMM Do YYYY");
 
+    useEffect(() => {
+        if (user) {
+            const userUsername = user.username
+            setUsername(userUsername)
+            const userProfile = user.profile
+            setProfile(userProfile)
+
+            const id = user.id
+            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
+                watchEventsData(id)
+            }
+            if ((Array.isArray(goals) && goals.length === 0) || goals === undefined) {
+                watchGoalsData(id)
+            }
+            if ((Array.isArray(notifications) && notifications.length === 0) || notifications === undefined) {
+                watchNotificationsData(id)
+            }
+        }
+        if (doneFetchingEventsData) {
+            setMarkedEventsArray(events)
+            setTodayEventsArray(events)
+        }
+        if (doneFetchingGoalsData) {
+            setGoalsArray(goals)
+            const filteredGoals = goals.filter(gl => gl.completed === false)
+            const goal = filteredGoals[0]
+            setNextGoal(goal.title)
+            setNextGoalDueDate(moment(new Date(goal.date)).startOf('day').fromNow())
+            const random = Math.floor(Math.random() * 11);
+            const quo = quotes[random]
+            setQuote(quo)
+        }
+        if (doneFetchingNotificationsData) {
+            setNotificationsArray(notifications)
+            const notificationsLength = notifications.length;
+            if (notificationsLength != 0)
+                setNotification(true)
+        }
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+
+    }, [doneFetchingEventsData, doneFetchingGoalsData, doneFetchingNotificationsData, theme])
+
     const notificationIcon = (notification) => notification ? <NotificationOnIcon onPress={handleNotificationPress} /> : <NotificationOffIcon onPress={handleNotificationPress} />
+    const handleNotificationPress = () => navigation.navigate("Notifications")
 
     const handleQuizPress = () => navigation.navigate("QuizStack")
-    const handleNotificationPress = () => navigation.navigate("Notifications")
 
     // const getFriendsFromFirestore = (id) => {
     //     const friendRef = firebase.firestore().collection('users').doc(id);
@@ -107,42 +149,6 @@ function HomeScreen({ ...props }) {
         })
     let todayEventsCards = todayEvents.sort(compareTime)
 
-
-    useEffect(() => {
-        if (user) {
-            let id = user.id
-            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
-                watchEventsData(id)
-            }
-            if ((Array.isArray(goals) && goals.length === 0) || goals === undefined) {
-                watchGoalsData(id)
-            }
-            if ((Array.isArray(notifications) && notifications.length === 0) || notifications === undefined) {
-                watchNotificationsData(id)
-            }
-        }
-        if (doneFetchingEventsData) {
-            setMarkedEventsArray(events)
-            setTodayEventsArray(events)
-        }
-        if (doneFetchingGoalsData) {
-            setGoalsArray(goals)
-            const filteredGoals = goals.filter(gl => gl.completed === false)
-            const goal = filteredGoals[0]
-            setNextGoal(goal.title)
-            setNextGoalDueDate(moment(new Date(goal.date)).startOf('day').fromNow())
-            const random = Math.floor(Math.random() * 11);
-            const quo = quotes[random]
-            setQuote(quo)
-        }
-        if (doneFetchingNotificationsData) {
-            setNotificationsArray(notifications)
-            const notificationsLength = notifications.length;
-            if (notificationsLength != 0)
-                setNotification(true)
-        }
-    }, [doneFetchingEventsData, doneFetchingGoalsData, doneFetchingNotificationsData])
-
     return (
         <View style={styles.container}>
             <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
@@ -153,7 +159,7 @@ function HomeScreen({ ...props }) {
                         {profilePicture(profile, 45)}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: theme.cardBlue }}> {username}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: themeStyle.cardBlue }}> {username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
@@ -165,13 +171,13 @@ function HomeScreen({ ...props }) {
                     :
                     <CalendarStrip
                         style={styles.calendarStrip}
-                        calendarColor={theme.backgroundColor}
-                        calendarHeaderStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
-                        dateNameStyle={{ color: theme.textGray, fontSize: 12 }}
-                        dateNumberStyle={{ color: theme.textColor, fontSize: 16, fontWeight: 'normal' }}
-                        highlightDateNameStyle={{ color: theme.backgroundColor, fontSize: 11 }}
-                        highlightDateNumberStyle={{ color: theme.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
-                        highlightDateContainerStyle={{ backgroundColor: theme.lightViolet, borderRadius: 10, height: "100%" }}
+                        calendarColor={themeStyle.backgroundColor}
+                        calendarHeaderStyle={{ color: themeStyle.textColor, fontSize: 16, fontWeight: 'normal', paddingBottom: 4 }}
+                        dateNameStyle={{ color: themeStyle.textGray, fontSize: 12 }}
+                        dateNumberStyle={{ color: themeStyle.textColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateNameStyle={{ color: themeStyle.backgroundColor, fontSize: 11 }}
+                        highlightDateNumberStyle={{ color: themeStyle.backgroundColor, fontSize: 16, fontWeight: 'normal' }}
+                        highlightDateContainerStyle={{ backgroundColor: themeStyle.lightViolet, borderRadius: 10, height: "100%" }}
                         iconContainer={{ flex: 0.1 }}
                         upperCaseDays={false}
                         selectedDate={today}
@@ -185,7 +191,7 @@ function HomeScreen({ ...props }) {
 
                 <View style={{ flex: 1.2, justifyContent: 'center', flexDirection: 'row' }}>
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
-                    <TouchableHighlight underlayColor={theme.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={themeStyle.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
                 {todayEventsCards.length === 0 ?
                     <View style={styles.containerNoEvents}>
@@ -204,7 +210,7 @@ function HomeScreen({ ...props }) {
                                 <Text style={styles.paperTitle}>{info.title}</Text>
                                 <Text style={styles.paperTime}>{info.time}</Text>
                                 <View style={{ ...styles.introIconArange, flexDirection: "row", alignItems: "center" }}>
-                                    <Icon name="map-marker-alt" size={14} color={theme.button} style={{ paddingRight: 5 }} />
+                                    <Icon name="map-marker-alt" size={14} color={themeStyle.button} style={{ paddingRight: 5 }} />
                                     <Text>{info.location}</Text>
                                 </View>
                                 {info.friends.length === 0 ?
@@ -239,7 +245,7 @@ function HomeScreen({ ...props }) {
                                                         <View style={{ marginLeft: -5 }}>
                                                             {profilePicture(info.friends[2].profile, 26)}
                                                         </View>
-                                                        <View style={{ ...styles.avatar, marginLeft: -5, borderWidth: 0.5, borderBottomColor: theme.textGray }}>
+                                                        <View style={{ ...styles.avatar, marginLeft: -5, borderWidth: 0.5, borderBottomColor: themeStyle.textGray }}>
                                                             <Text>{`${info.friends.length} +`}</Text>
                                                         </View>
                                                     </View>
@@ -273,7 +279,7 @@ function HomeScreen({ ...props }) {
                         <GoalIcon width={50} height={50} style={styles.iconArangeGoal} />
                         <View style={styles.viewArangeText}>
                             <Text style={{ fontSize: 18 }}>{nextGoal}</Text>
-                            <Text style={{ fontSize: 12, color: theme.textGray }}>{nextGoalDueDate}</Text>
+                            <Text style={{ fontSize: 12, color: themeStyle.textGray }}>{nextGoalDueDate}</Text>
                             <Text>{quote}</Text>
                         </View>
                     </View>
@@ -285,7 +291,7 @@ function HomeScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
@@ -332,7 +338,7 @@ const styles = StyleSheet.create({
         width: 135,
         borderRadius: 20,
         padding: 10,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         elevation: 5,
         shadowColor: "#000",
         shadowOffset: {
@@ -346,11 +352,11 @@ const styles = StyleSheet.create({
     },
     paperTitle: {
         fontSize: 18,
-        color: theme.button,
+        color: themeStyle.button,
         height: '42%'
     },
     paperTime: {
-        color: theme.textColor,
+        color: themeStyle.textColor,
         paddingTop: 5,
         paddingBottom: 5
     },
@@ -370,7 +376,7 @@ const styles = StyleSheet.create({
     },
     textNoActivities: {
         fontSize: 22,
-        color: theme.textColor,
+        color: themeStyle.textColor,
         fontWeight: '200'
     },
     botDiv: {
@@ -383,7 +389,7 @@ const styles = StyleSheet.create({
     goalCard: {
         width: '100%',
         height: '54%',
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         borderRadius: 20,
         marginBottom: 20,
         elevation: 5,
@@ -400,10 +406,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
+        marginRight: 10,
     },
     viewArangeText: {
+        flex: 1,
         flexDirection: "column",
-        flex: 1
     },
     iconArangeGoal: {
         marginLeft: 10,
@@ -429,7 +436,7 @@ const styles = StyleSheet.create({
     },
     plusButton: {
         fontSize: 24,
-        color: theme.linkBlue
+        color: themeStyle.linkBlue
     },
     calendarStrip: {
         height: "35%",
@@ -450,7 +457,7 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 85,
         alignSelf: 'center',
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         elevation: 5,
         borderRadius: 20,
         justifyContent: 'center',

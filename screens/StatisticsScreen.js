@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList, LogBox } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, FlatList, LogBox } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryScatter, VictoryPie, VictoryContainer } from "victory-native";
 import { connect } from 'react-redux';
@@ -17,10 +17,7 @@ import AchievemntsIcon from "../assets/statistics/statisticsAchievements";
 import FriendsIcon from "../assets/statistics/statisticsFriends";
 import Star from "../assets/statistics/star";
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -31,7 +28,10 @@ const mapStateToProps = (state) => ({
 
 function StatisticsScreen({ ...props }) {
 
-    const { user, navigation, events, goals } = props
+    const { user, navigation, theme, events, goals } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [activitiesNumber, setActivitiesNumber] = useState(0)
     const [activity, setActivity] = useState("")
@@ -51,24 +51,6 @@ function StatisticsScreen({ ...props }) {
     const twoDaysAgo = moment().subtract(2, 'days').format("DD/MM")
     const oneDayAgo = moment().subtract(1, 'days').format("DD/MM")
     const today = moment().format("DD/MM")
-
-    const ItemLegend = ({ color, title }) => (
-        <View style={{ height: 40, alignItems: 'center', ...styles.flatListItem }}>
-            <View
-                style={{ width: 22, height: 22, borderRadius: 20, backgroundColor: color }}
-            />
-            <View style={{ width: '70%', justifyContent: 'flex-start' }}>
-                <Text style={styles.textLegend}>{title}</Text>
-            </View>
-        </View>
-    );
-
-    const renderItemLegend = ({ item }) => (
-        <ItemLegend
-            color={item.color}
-            title={item.x}
-        />
-    );
 
     useEffect(() => {
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
@@ -176,7 +158,29 @@ function StatisticsScreen({ ...props }) {
 
         setLineChartData(lineChart)
 
-    }, [])
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
+
+    const ItemLegend = ({ color, title }) => (
+        <View style={{ height: 40, alignItems: 'center', ...styles.flatListItem }}>
+            <View
+                style={{ width: 22, height: 22, borderRadius: 20, backgroundColor: color }}
+            />
+            <View style={{ width: '70%', justifyContent: 'flex-start' }}>
+                <Text style={styles.textLegend}>{title}</Text>
+            </View>
+        </View>
+    );
+
+    const renderItemLegend = ({ item }) => (
+        <ItemLegend
+            color={item.color}
+            title={item.x}
+        />
+    );
 
     return (
         <View style={styles.container}>
@@ -257,7 +261,7 @@ function StatisticsScreen({ ...props }) {
                     >
                         <VictoryLine
                             style={{
-                                data: { stroke: theme.violet },
+                                data: { stroke: themeStyle.violet },
                                 parent: { border: "1px solid #ccc" }
                             }}
                             labels={({ datum }) => datum.y}
@@ -266,7 +270,7 @@ function StatisticsScreen({ ...props }) {
                         />
                         <VictoryScatter
                             data={lineChartData}
-                            style={{ data: { fill: theme.red } }}
+                            style={{ data: { fill: themeStyle.red } }}
                         />
                     </VictoryChart>
                 </View>
@@ -302,10 +306,10 @@ function StatisticsScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -348,7 +352,7 @@ const styles = StyleSheet.create({
         width: "100%",
         borderRadius: 20,
         padding: '4%',
-        backgroundColor: theme.lightBlue,
+        backgroundColor: themeStyle.lightBlue,
     },
     cardText: {
         flex: 4,
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     },
     belowText: {
         fontSize: 16,
-        color: theme.textColor,
+        color: themeStyle.textColor,
         marginLeft: "2%"
     },
     lineChart: {

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 
 import Activity from "../../assets/quiz/activity.js";
@@ -8,15 +8,22 @@ import Workout from "../../assets/quiz/workout.js";
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapStateToProps = (state) => ({ theme: state.theme });
 
 function QuizScreen({ ...props }) {
-    const { navigation } = props
+    const { navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -47,10 +54,10 @@ function QuizScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'space-around',
         width: '100%',
@@ -75,7 +82,7 @@ const styles = StyleSheet.create({
         width: "90%",
         alignSelf: 'center',
         height: '42%',
-        borderColor: theme.violet,
+        borderColor: themeStyle.violet,
         borderWidth: 2
     },
     content: {
@@ -86,7 +93,7 @@ const styles = StyleSheet.create({
     quizTextTitle: {
         fontWeight: 'bold',
         fontSize: 16,
-        color: theme.linkBlue,
+        color: themeStyle.linkBlue,
         textAlign: 'center',
         marginTop: 2
     },

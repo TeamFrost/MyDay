@@ -1,27 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 
 import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import Back from '../../assets/others/back.js';
 import Workout from "../../assets/quiz/workoutWithoutBackground";
 import { colors } from '../../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapStateToProps = (state) => ({ theme: state.theme });
 
 function WorkoutResultScreen({ ...props }) {
-    const { navigation } = props
+    const { navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
+
     const [result, setResult] = useState("")
 
     useEffect(() => {
         const res = props.route.params.conclusion
         setResult(res)
-    }, [])
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -44,10 +50,10 @@ function WorkoutResultScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',

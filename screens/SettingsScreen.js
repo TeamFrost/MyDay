@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Dimensions, Switch, Linking } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight, TouchableWithoutFeedback, Switch, Linking } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
@@ -12,10 +12,7 @@ import RightArrowIcon from '../assets/icons/rightArrowIcon'
 import QuizIcon from "../assets/settings/quizIcon"
 import LogoutIcon from "../assets/icons/logoutIcon"
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     doneFetching: state.auth.doneFetching,
@@ -31,9 +28,25 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 function SettingsScreen({ ...props }) {
-    const { user, navigation, doneFetching, logoutUser } = props
+    const { user, navigation, theme, doneFetching, logoutUser } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
+
     const [darkMode, setDarkMode] = useState(false);
     const [pushNoti, setPushNoti] = useState(false);
+
+    useEffect(() => {
+        if (doneFetching) {
+            if (user === null) {
+                navigation.navigate('LoginStack')
+            }
+        }
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme]);
 
     const toggleSwitch = (f) => {
         f(previousState => !previousState);
@@ -46,20 +59,9 @@ function SettingsScreen({ ...props }) {
     const handleCustomizeCategoryPress = () => navigation.navigate("CustomizeCategory")
     const handleAboutAppPress = () => navigation.navigate("AboutApp")
     const handlePrivacyPolicyPress = () => Linking.openURL('https://www.privacypolicies.com/live/3f433032-b9fd-4db7-913c-e90be36e6425')
-    const handleTermsAndConditionsPress = () => navigation.navigate("TermsAndConditions")
+    const handleTermsAndConditionsPress = () => console.log("Terms and conditions")
 
-    const handleLogoutPress = () => {
-        console.log("Logout")
-        logoutUser()
-    }
-
-    useEffect(() => {
-        if (doneFetching) {
-            if (user === null) {
-                navigation.navigate('LoginStack')
-            }
-        }
-    }, []);
+    const handleLogoutPress = () => logoutUser()
 
     return (
         <View style={styles.container}>
@@ -107,7 +109,7 @@ function SettingsScreen({ ...props }) {
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
-                        <Text style={{ ...styles.text, color: user.google ? theme.textGray : theme.textColor }}>Change password</Text>
+                        <Text style={{ ...styles.text, color: user.google ? themeStyle.textGray : themeStyle.textColor }}>Change password</Text>
                         <RightArrowIcon style={{ opacity: user.google ? 0 : 1 }} />
                     </View>
                 </TouchableHighlight>
@@ -140,8 +142,8 @@ function SettingsScreen({ ...props }) {
                         <Switch
                             value={pushNoti}
                             onValueChange={() => toggleSwitch(setPushNoti)}
-                            trackColor={{ false: theme.textGray, true: theme.linkBlue }}
-                            ios_backgroundColor={theme.textGray}
+                            trackColor={{ false: themeStyle.textGray, true: themeStyle.linkBlue }}
+                            ios_backgroundColor={themeStyle.textGray}
                             thumbColor="#fff"
                         />
                     </View>
@@ -153,8 +155,8 @@ function SettingsScreen({ ...props }) {
                         <Switch
                             value={darkMode}
                             onValueChange={() => toggleSwitch(setDarkMode)}
-                            trackColor={{ false: theme.textGray, true: theme.linkBlue }}
-                            ios_backgroundColor={theme.textGray}
+                            trackColor={{ false: themeStyle.textGray, true: themeStyle.linkBlue }}
+                            ios_backgroundColor={themeStyle.textGray}
                             thumbColor="#fff"
                         />
                     </View>
@@ -166,7 +168,7 @@ function SettingsScreen({ ...props }) {
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
-                        <Text style={{ ...styles.text, color: theme.red, fontWeight: "bold" }}>Logout</Text>
+                        <Text style={{ ...styles.text, color: themeStyle.red, fontWeight: "bold" }}>Logout</Text>
                         <LogoutIcon />
                     </View>
                 </TouchableHighlight>
@@ -217,10 +219,10 @@ function SettingsScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -247,11 +249,11 @@ const styles = StyleSheet.create({
     categoryText: {
         fontSize: 20,
         fontWeight: "bold",
-        color: theme.linkBlue
+        color: themeStyle.linkBlue
     },
     divider: {
         marginTop: "1%",
-        backgroundColor: theme.linkBlue,
+        backgroundColor: themeStyle.linkBlue,
         height: 1
     },
     touch: {
@@ -276,7 +278,7 @@ const styles = StyleSheet.create({
     text: {
         flex: 4.2,
         fontSize: 18,
-        color: theme.textColor
+        color: themeStyle.textColor
     },
 });
 

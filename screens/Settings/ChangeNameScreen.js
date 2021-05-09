@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, Dimensions, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux';
@@ -13,10 +13,7 @@ import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import ChangeName from '../../assets/settings/changeName';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapDispatchToProps = (dispatch) => ({ restoreSession: () => dispatch(restoreSession()) });
 
@@ -29,7 +26,11 @@ const mapStateToProps = (state) => ({
 });
 
 function ChangeNameScreen({ ...props }) {
-    const { user, doneFetching, navigation } = props
+    const { user, doneFetching, navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
+
     const [newName, setNewName] = useState('')
 
     let username = '';
@@ -52,6 +53,13 @@ function ChangeNameScreen({ ...props }) {
                 })
         }
     }
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -103,10 +111,10 @@ function ChangeNameScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',
@@ -149,7 +157,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         borderRadius: 30,
         height: 50,
         paddingLeft: 55,
@@ -173,7 +181,7 @@ const styles = StyleSheet.create({
         width: '90%'
     },
     sendButton: {
-        backgroundColor: theme.button,
+        backgroundColor: themeStyle.button,
         alignItems: 'center',
         justifyContent: 'center',
         height: 50,
@@ -190,7 +198,7 @@ const styles = StyleSheet.create({
     sendText: {
         fontSize: 48,
         fontWeight: 'bold',
-        color: theme.backgroundColor,
+        color: themeStyle.backgroundColor,
     },
     sendView: {
         flex: 2,

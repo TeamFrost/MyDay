@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, Dimensions, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, TextInput, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { connect } from 'react-redux';
@@ -14,10 +14,7 @@ import EyeIcon from '../../assets/icons/eyeIcon.js';
 import EyeClosedIcon from '../../assets/icons/eyeClosedIcon.js'
 import ChangePassword from '../../assets/settings/changePassword.js';
 import { colors } from '../../helpers/style';
-
-const theme = colors.light;
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
+import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -25,7 +22,10 @@ const mapStateToProps = (state) => ({
 });
 
 function ChangePasswordScreen({ ...props }) {
-    const { user, navigation } = props
+    const { navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [oldPass, setOldPass] = useState('');
     const [newPass, setNewPass] = useState('');
@@ -56,6 +56,13 @@ function ChangePasswordScreen({ ...props }) {
             alert(error)
         });
     }
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -158,10 +165,10 @@ function ChangePasswordScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         borderRadius: 30,
         height: 50,
         paddingLeft: 55,
@@ -221,7 +228,7 @@ const styles = StyleSheet.create({
         width: '90%'
     },
     sendButton: {
-        backgroundColor: theme.button,
+        backgroundColor: themeStyle.button,
         alignItems: 'center',
         justifyContent: 'center',
         height: 50,
@@ -238,7 +245,7 @@ const styles = StyleSheet.create({
     sendText: {
         fontSize: 48,
         fontWeight: 'bold',
-        color: theme.backgroundColor,
+        color: themeStyle.backgroundColor,
     },
     sendView: {
         flex: 2,

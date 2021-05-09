@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { Searchbar, Divider } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
@@ -13,10 +13,7 @@ import Back from '../assets/others/back.js';
 import Planet from '../assets/icon'
 import AddFriend from '../assets/icons/addFriend'
 import { colors } from '../helpers/style';
-
-const screenWidth = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const theme = colors.light;
+import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
@@ -24,7 +21,10 @@ const mapStateToProps = (state) => ({
 });
 
 function FriendsScreen({ ...props }) {
-    const { user, navigation } = props
+    const { user, navigation, theme } = props
+
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [searchQuery, setSearchQuery] = useState('');
     const [result, setResult] = useState('')
@@ -75,7 +75,7 @@ function FriendsScreen({ ...props }) {
         <View style={styles.item}>
             {profilePicture(profile, 50)}
             <Text style={styles.title}>{title}</Text>
-            <Icon name="ellipsis-v" size={20} color={theme.textGray} style={styles.iconArangeGoal} onPress={() => alert("geru")} />
+            <Icon name="ellipsis-v" size={20} color={themeStyle.textGray} style={styles.iconArangeGoal} onPress={() => alert("geru")} />
         </View>
     );
 
@@ -103,7 +103,11 @@ function FriendsScreen({ ...props }) {
             const friendsArr = user.friends
             friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
         }
-    }, [])
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     return (
         <View style={styles.container}>
@@ -125,7 +129,7 @@ function FriendsScreen({ ...props }) {
                     value={searchQuery}
                     onSubmitEditing={() => handleSearch(searchQuery)}
                     style={styles.searchBar}
-                    iconColor={theme.linkBlue}
+                    iconColor={themeStyle.linkBlue}
                 />
                 {resultName === 'No result' && searchQuery != '' ?
                     <Text style={styles.noResultText}>No result.</Text>
@@ -164,10 +168,10 @@ function FriendsScreen({ ...props }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
         height: 45,
         borderWidth: 1,
         borderRadius: 20,
-        borderColor: theme.button,
+        borderColor: themeStyle.button,
         elevation: 0,
     },
     item: {
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
     },
     divider: {
         marginTop: "1%",
-        backgroundColor: theme.textGray,
+        backgroundColor: themeStyle.textGray,
         height: 1,
         width: '90%',
         alignSelf: 'center'
@@ -221,13 +225,13 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 22,
         fontWeight: "bold",
-        color: theme.textColor
+        color: themeStyle.textColor
     },
     noResultText: {
         alignSelf: 'center',
         marginTop: "5%",
         fontSize: 18,
-        color: theme.textColor,
+        color: themeStyle.textColor,
     },
     planetView: {
         alignItems: 'center'
@@ -236,7 +240,7 @@ const styles = StyleSheet.create({
         marginBottom: "25%",
         fontStyle: 'italic',
         fontSize: 16,
-        color: theme.textColor,
+        color: themeStyle.textColor,
     }
 });
 
