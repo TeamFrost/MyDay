@@ -9,7 +9,8 @@ import moment from 'moment';
 import { firebase } from "../firebase/config";
 import { occuarnce, compareTime, compareProgress } from '../helpers/functions'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../assets/others/back.js';
 import ActivitiesIcon from "../assets/statistics/statisticsActivities";
 import GoalsIcon from "../assets/statistics/statisticsGoals";
@@ -23,12 +24,13 @@ const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
     goals: state.goals.goalsData,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function StatisticsScreen({ ...props }) {
 
-    const { user, navigation, theme, events, goals } = props
+    const { user, navigation, theme, dark, events, goals } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -72,9 +74,11 @@ function StatisticsScreen({ ...props }) {
         } else {
             const completedGoals = goals.filter(gl => gl.completed === true)
             const sortedGoals = completedGoals.sort(compareTime)
-            const goal = sortedGoals[goalsLength - 2];
+            const sortedGoalsLength = sortedGoals.length
+            const goal = sortedGoals[sortedGoalsLength - 1];
             setGoal(goal.title)
         }
+
 
         const achievements = props.route.params
         const completedAchievements = achievements.filter(ach => ach.progress === 100)
@@ -184,8 +188,11 @@ function StatisticsScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>
@@ -393,14 +400,15 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     subtitleText: {
         fontWeight: "bold",
         fontSize: 20,
-        alignSelf: 'flex-start'
+        alignSelf: 'flex-start',
+        color: themeStyle.textColor
     },
     statisticsLegend: {
         flex: 0.7,
         alignItems: "center",
     },
     textLegend: {
-        color: colors.textColor,
+        color: themeStyle.textColor,
         fontSize: 14,
         fontWeight: "bold"
     },

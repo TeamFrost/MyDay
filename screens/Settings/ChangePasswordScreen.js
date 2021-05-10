@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 
 import { firebase } from '../../firebase/config'
 
-import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../../assets/others/back.js';
 import LockIcon from '../../assets/icons/lockIcon.js';
 import EyeIcon from '../../assets/icons/eyeIcon.js';
@@ -18,11 +19,12 @@ import { screenWidth, screenHeight } from '../../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function ChangePasswordScreen({ ...props }) {
-    const { navigation, theme } = props
+    const { navigation, theme, dark } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -33,6 +35,13 @@ function ChangePasswordScreen({ ...props }) {
     const [invisible1, setInvisible1] = useState(true);
     const [invisible2, setInvisible2] = useState(true);
     const [invisible3, setInvisible3] = useState(true);
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const changePass = () => {
         const currentUser = firebase.auth().currentUser
@@ -57,17 +66,14 @@ function ChangePasswordScreen({ ...props }) {
         });
     }
 
-    useEffect(() => {
-        if (theme) {
-            setThemeStyle(theme.theme)
-            setStyles(styleSheetFactory(theme.theme))
-        }
-    }, [theme])
-
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
-                <HeaderGradient width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                {dark ?
+                    <HeaderGradientDark width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                    :
+                    <HeaderGradient width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                }
 
                 <View style={styles.topText}>
                     <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
@@ -87,6 +93,8 @@ function ChangePasswordScreen({ ...props }) {
                                 <View style={styles.inputView}>
                                     <TextInput
                                         placeholder="Curent Password"
+                                        placeholderTextColor={themeStyle.textGray}
+                                        color={themeStyle.textColor}
                                         autoCapitalize="none"
                                         textContentType="password"
                                         secureTextEntry={invisible1}
@@ -107,6 +115,8 @@ function ChangePasswordScreen({ ...props }) {
                                 <View style={styles.inputView}>
                                     <TextInput
                                         placeholder="New Password"
+                                        placeholderTextColor={themeStyle.textGray}
+                                        color={themeStyle.textColor}
                                         autoCapitalize="none"
                                         textContentType="newPassword"
                                         secureTextEntry={invisible2}
@@ -127,6 +137,8 @@ function ChangePasswordScreen({ ...props }) {
                                 <View style={styles.inputView}>
                                     <TextInput
                                         placeholder="Confirm New Password"
+                                        placeholderTextColor={themeStyle.textGray}
+                                        color={themeStyle.textColor}
                                         autoCapitalize="none"
                                         textContentType="password"
                                         secureTextEntry={invisible3}
@@ -245,7 +257,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     sendText: {
         fontSize: 48,
         fontWeight: 'bold',
-        color: themeStyle.backgroundColor,
+        color: "white",
     },
     sendView: {
         flex: 2,

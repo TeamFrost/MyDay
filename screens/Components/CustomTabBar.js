@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
 
 import Home from '../../assets/tabIcons/home';
 import Calendar from '../../assets/tabIcons/calendar';
@@ -8,18 +8,25 @@ import Goals from '../../assets/tabIcons/goals';
 import User from '../../assets/tabIcons/user';
 import { colors } from '../../helpers/style';
 
-const theme = colors.light;
+const mapStateToProps = (state) => ({
+    theme: state.theme,
+    dark: state.theme.dark
+});
 
-function point() {
-    return (
-        <View style={styles.point} />
-    )
-}
+function CustomTabBar({ ...props }) {
+    const { navigation, theme, dark } = props
 
-export default function CustomTabBar() {
+    const [styles, setStyles] = useState(styleSheetFactory(colors.light))
+    const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [active, setActive] = useState(1);
-    const navigation = useNavigation();
+
+    useEffect(() => {
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const move = (active) => {
         switch (active) {
@@ -29,27 +36,28 @@ export default function CustomTabBar() {
             case 4: navigation.navigate("ProfileStack"); break;
         }
     }
+    const point = () => <View style={styles.point} />
 
     return (
         <View style={styles.container}>
 
             <TouchableOpacity style={styles.button} onPress={() => { setActive(1); move(1) }}>
-                <Home fill={active == 1 ? theme.red : theme.textColor} />
+                <Home fill={active == 1 ? themeStyle.red : themeStyle.textColor} />
                 {active == 1 ? point() : <View />}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => { setActive(2); move(2) }}>
-                <Calendar fill={active == 2 ? theme.red : theme.textColor} />
+                <Calendar fill={active == 2 ? themeStyle.red : themeStyle.textColor} />
                 {active == 2 ? point() : <View />}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => { setActive(3); move(3) }}>
-                <Goals fill={active == 3 ? theme.red : theme.textColor} />
+                <Goals fill={active == 3 ? themeStyle.red : themeStyle.textColor} />
                 {active == 3 ? point() : <View />}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => { setActive(4); move(4) }}>
-                <User fill={active == 4 ? theme.red : theme.textColor} />
+                <User fill={active == 4 ? themeStyle.red : themeStyle.textColor} />
                 {active == 4 ? point() : <View />}
             </TouchableOpacity>
 
@@ -57,12 +65,12 @@ export default function CustomTabBar() {
     );
 }
 
-const styles = StyleSheet.create({
+const styleSheetFactory = (themeStyle) => StyleSheet.create({
     container: {
         flexDirection: 'row',
         height: '9%',
         width: '100%',
-        backgroundColor: theme.backgroundColor,
+        backgroundColor: themeStyle.tabBar,
         alignItems: 'center',
         justifyContent: 'center',
         paddingBottom: Platform === 'ios' ? 10 : 0,
@@ -84,8 +92,10 @@ const styles = StyleSheet.create({
     point: {
         height: 5,
         width: 5,
-        backgroundColor: theme.red,
+        backgroundColor: themeStyle.red,
         borderRadius: 20,
         marginTop: 3
     }
 });
+
+export default connect(mapStateToProps)(CustomTabBar);

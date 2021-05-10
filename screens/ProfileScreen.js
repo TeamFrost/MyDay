@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 
 import { profilePicture } from '../helpers/functions'
 
-import HeaderGradient from '../assets/backgrounds/profileGradient';
+import HeaderGradient from '../assets/backgrounds/light/profileGradient';
+import HeaderGradientDark from '../assets/backgrounds/dark/profileGradientDark';
 import SettingsIcon from '../assets/settings/settings'
 import StatisticsIcon from '../assets/icons/statisticsIcon'
 import FriendsIcon from '../assets/icons/friendsIcon'
@@ -24,11 +25,12 @@ const mapStateToProps = (state) => ({
     doneFetchingEventsData: state.events.doneFetching,
     goals: state.goals.goalsData,
     doneFetchingGoalsData: state.goals.doneFetching,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function ProfileScreen({ ...props }) {
-    const { user, navigation, theme, goals, events } = props
+    const { user, navigation, theme, dark, goals, events } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -48,11 +50,18 @@ function ProfileScreen({ ...props }) {
 
     useEffect(() => {
         if (user) {
-            // console.log(user)
             const userUsername = user.username
             setUsername(userUsername)
             const userProfile = user.profile
             setProfile(userProfile)
+
+            const friendsLength = user.friends.length
+            setFriendsNumber(friendsLength)
+            if (eventsLength >= 10) {
+                setAchievementUniversity(10)
+            } else {
+                setAchievementSocial(friendsLength * 10)
+            }
         }
 
         const eventsLength = events.length
@@ -80,14 +89,6 @@ function ProfileScreen({ ...props }) {
             setAchievementGoals(goalsLength)
         }
 
-        const friendsLength = user.friends.length
-        setFriendsNumber(friendsLength)
-        if (eventsLength >= 10) {
-            setAchievementUniversity(10)
-        } else {
-            setAchievementSocial(friendsLength * 10)
-        }
-
         if (theme) {
             setThemeStyle(theme.theme)
             setStyles(styleSheetFactory(theme.theme))
@@ -101,8 +102,12 @@ function ProfileScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.3} height={screenHeight / 2.2} style={{ flex: 1, position: 'absolute' }} />
-            <SettingsIcon onPress={handleSettingsPress} style={{ position: 'absolute', top: "8%", right: "8%" }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.3} height={screenHeight / 2.2} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.3} height={screenHeight / 2.2} style={{ flex: 1, position: 'absolute' }} />
+            }
+            <SettingsIcon onPress={handleSettingsPress} style={{ color: themeStyle.settingsIcon, position: 'absolute', top: "8%", right: "8%" }} />
             <View style={styles.profile}>
                 {profilePicture(profile, 125)}
             </View>

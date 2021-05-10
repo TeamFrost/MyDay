@@ -5,8 +5,10 @@ import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import { logoutUser } from '../redux/actions/auth/auth';
+import { changeTheme } from "../redux/actions/colorTheme/colorTheme";
 
-import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../assets/others/back.js';
 import RightArrowIcon from '../assets/icons/rightArrowIcon'
 import QuizIcon from "../assets/settings/quizIcon"
@@ -20,23 +22,31 @@ const mapStateToProps = (state) => ({
     hasError: state.auth.hasError,
     errorMessage: state.auth.errorMessage,
     user: state.auth.user,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 const mapDispatchToProps = (dispatch) => ({
     logoutUser: () => dispatch(logoutUser()),
+    changeTheme: (theme) => dispatch(changeTheme(theme))
 });
 
 function SettingsScreen({ ...props }) {
-    const { user, navigation, theme, doneFetching, logoutUser } = props
+    const { user, navigation, theme, dark, changeTheme, doneFetching, logoutUser } = props
+
+    const [googleUser, setGoogleUser] = useState(false)
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useState(dark);
     const [pushNoti, setPushNoti] = useState(false);
 
     useEffect(() => {
+        if (user) {
+            const google = user.google
+            setGoogleUser(google)
+        }
         if (doneFetching) {
             if (user === null) {
                 navigation.navigate('LoginStack')
@@ -45,12 +55,15 @@ function SettingsScreen({ ...props }) {
         if (theme) {
             setThemeStyle(theme.theme)
             setStyles(styleSheetFactory(theme.theme))
+            setDarkMode(dark)
         }
     }, [theme]);
 
     const toggleSwitch = (f) => {
         f(previousState => !previousState);
     }
+
+    const toggleSwitchDark = () => darkMode === false ? changeTheme(colors.dark) : changeTheme(colors.light)
 
     const handleEditProfilePress = () => navigation.navigate("EditProfilePicture")
     const handleChangeNamePress = () => navigation.navigate("ChangeName")
@@ -65,8 +78,11 @@ function SettingsScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>
@@ -82,57 +98,57 @@ function SettingsScreen({ ...props }) {
 
                 <TouchableHighlight
                     onPress={handleEditProfilePress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Edit profile picture</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handleChangeNamePress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Change name</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handleChangePasswordPress}
-                    underlayColor="#F6F6F6"
-                    disabled={user.google}
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
+                    disabled={googleUser}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
-                        <Text style={{ ...styles.text, color: user.google ? themeStyle.textGray : themeStyle.textColor }}>Change password</Text>
-                        <RightArrowIcon style={{ opacity: user.google ? 0 : 1 }} />
+                        <Text style={{ ...styles.text, color: googleUser ? themeStyle.textGray : themeStyle.textColor }}>Change password</Text>
+                        <RightArrowIcon style={{ color: themeStyle.textColor, opacity: googleUser ? 0 : 1 }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handleCustomizeCategoryPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Customize category options</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handleTakeQuizPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Take the quiz</Text>
-                        <QuizIcon />
+                        <QuizIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
@@ -154,7 +170,7 @@ function SettingsScreen({ ...props }) {
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Switch
                             value={darkMode}
-                            onValueChange={() => toggleSwitch(setDarkMode)}
+                            onValueChange={() => toggleSwitchDark()}
                             trackColor={{ false: themeStyle.textGray, true: themeStyle.linkBlue }}
                             ios_backgroundColor={themeStyle.textGray}
                             thumbColor="#fff"
@@ -164,7 +180,7 @@ function SettingsScreen({ ...props }) {
 
                 <TouchableHighlight
                     onPress={handleLogoutPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
@@ -181,34 +197,34 @@ function SettingsScreen({ ...props }) {
 
                 <TouchableHighlight
                     onPress={handleAboutAppPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>About app</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handlePrivacyPolicyPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Privacy policy</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 
                 <TouchableHighlight
                     onPress={handleTermsAndConditionsPress}
-                    underlayColor="#F6F6F6"
+                    underlayColor={dark ? "#323232" : "#F6F6F6"}
                     style={styles.touch}
                 >
                     <View style={styles.touchView}>
                         <Text style={styles.text}>Terms and conditions</Text>
-                        <RightArrowIcon />
+                        <RightArrowIcon style={{ color: themeStyle.textColor }} />
                     </View>
                 </TouchableHighlight>
 

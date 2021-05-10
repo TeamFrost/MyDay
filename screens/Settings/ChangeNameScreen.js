@@ -8,8 +8,9 @@ import { connect } from 'react-redux';
 import { firebase } from '../../firebase/config'
 import { restoreSession } from '../../redux/actions/auth/auth'
 
+import HeaderGradient from '../../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../../assets/backgrounds/dark/headerGradientBlueDark';
 import UserIcon from '../../assets/icons/userIcon';
-import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
 import ChangeName from '../../assets/settings/changeName';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
@@ -23,23 +24,30 @@ const mapStateToProps = (state) => ({
     hasError: state.auth.hasError,
     errorMessage: state.auth.errorMessage,
     theme: state.theme,
+    dark: state.theme.dark
 });
 
 function ChangeNameScreen({ ...props }) {
-    const { user, doneFetching, navigation, theme } = props
+    const { user, doneFetching, navigation, theme, dark } = props
+
+    const [username, setUsername] = useState("")
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [newName, setNewName] = useState('')
 
-    let username = '';
-
-    if (doneFetching) {
+    useEffect(() => {
         if (user) {
-            username = user.username
+            const userUsername = user.username
+            setUsername(userUsername)
         }
-    }
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme, doneFetching])
 
     const changeName = () => {
         if (user) {
@@ -49,22 +57,20 @@ function ChangeNameScreen({ ...props }) {
                 })
                 .then(function () {
                     restoreSession()
+                    setUsername(newName)
                     setNewName('')
                 })
         }
     }
 
-    useEffect(() => {
-        if (theme) {
-            setThemeStyle(theme.theme)
-            setStyles(styleSheetFactory(theme.theme))
-        }
-    }, [theme])
-
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={styles.awareScrollView}>
-                <HeaderGradient width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                {dark ?
+                    <HeaderGradientDark width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                    :
+                    <HeaderGradient width={screenWidth} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                }
 
                 <View style={styles.topText}>
                     <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
@@ -83,6 +89,8 @@ function ChangeNameScreen({ ...props }) {
                             <View style={styles.inputView}>
                                 <TextInput
                                     placeholder="New username"
+                                    placeholderTextColor={themeStyle.textGray}
+                                    color={themeStyle.textColor}
                                     onChangeText={name => setNewName(name)}
                                     value={newName}
                                     style={styles.input}
@@ -143,7 +151,8 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         alignSelf: 'center'
     },
     nameText: {
-        fontSize: 22
+        fontSize: 22,
+        color: themeStyle.textColor
     },
     username: {
         fontSize: 22,
@@ -198,7 +207,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     sendText: {
         fontSize: 48,
         fontWeight: 'bold',
-        color: themeStyle.backgroundColor,
+        color: "white",
     },
     sendView: {
         flex: 2,

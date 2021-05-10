@@ -10,7 +10,8 @@ import { firebase } from '../../firebase/config'
 import { restoreSession } from '../../redux/actions/auth/auth'
 import { profilePicture } from '../../helpers/functions'
 
-import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../../assets/others/back.js';
 import AddPhoto from '../../assets/others/addPhoto.js';
 import { colors } from '../../helpers/style';
@@ -24,41 +25,36 @@ const mapStateToProps = (state) => ({
     hasError: state.auth.hasError,
     errorMessage: state.auth.errorMessage,
     theme: state.theme,
+    dark: state.theme.dark
 });
 
 function EditProfilePictureScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, doneFetching, navigation, theme } = props
+    const { user, doneFetching, navigation, theme, dark } = props
+
+    const [profile, setProfile] = useState("")
+    const [userId, setUserId] = useState("")
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
-
-    let profile = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg'
-    let userId = ''
-
-    if (user) {
-        // profile = user.profile
-        userId = user.id
-    }
-
-    if (doneFetching) {
-        if (user) {
-            profile = user.profile
-        }
-    }
 
     const [image, setImage] = useState(null);
     const [imageRef, setImageRef] = useState("");
 
     useEffect(() => {
+        if (user) {
+            const id = user.id
+            setUserId(id)
+            const userProfile = user.profile
+            setProfile(userProfile)
+        }
         if (theme) {
             setThemeStyle(theme.theme)
             setStyles(styleSheetFactory(theme.theme))
         }
-    }, [theme])
-
+    }, [theme, doneFetching])
 
     const updateProfile = () => {
 
@@ -180,7 +176,11 @@ function EditProfilePictureScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
 
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
@@ -197,7 +197,7 @@ function EditProfilePictureScreen({ ...props }) {
                 </View>
                 <View style={styles.profile}>
                     <Text style={styles.profileText} onPress={updateProfile}>Upload a new picture</Text>
-                    <AddPhoto />
+                    <AddPhoto style={{ color: themeStyle.textColor }} />
                 </View>
             </View>
 
@@ -240,6 +240,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         marginTop: screenHeight / 20,
     },
     profileText: {
+        color: themeStyle.textColor,
         fontSize: 22,
         fontWeight: 'bold',
         textDecorationLine: 'underline',

@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 import { firebase } from '../firebase/config'
 import { watchNotificationsData } from '../redux/actions/data/notifications'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../assets/others/back.js';
 import NoNotificationsAstronaut from '../assets/others/noNotificationAstronaut';
 import { colors } from '../helpers/style';
@@ -18,11 +19,12 @@ const mapDispatchToProps = (dispatch) => ({ watchNotificationsData: (userId) => 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     notifications: state.notifications.notificationsData,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function NotificationsScreen({ ...props }) {
-    const { user, navigation, theme, notifications, watchNotificationsData } = props
+    const { user, navigation, theme, dark, notifications, watchNotificationsData } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -89,8 +91,11 @@ function NotificationsScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>

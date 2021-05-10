@@ -3,16 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 
-import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../../assets/others/back.js';
 import Activity from "../../assets/quiz/activityWithoutBackground";
 import { colors } from '../../helpers/style';
 import { screenWidth, screenHeight } from '../../helpers/utils'
 
-const mapStateToProps = (state) => ({ theme: state.theme });
+const mapStateToProps = (state) => ({
+    theme: state.theme,
+    dark: state.theme.dark
+});
 
 function ActivityResultScreen({ ...props }) {
-    const { navigation, theme } = props
+    const { navigation, theme, dark } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -31,8 +35,11 @@ function ActivityResultScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.navigate("Quiz")}>
                     <View style={styles.backButton}>
@@ -43,7 +50,7 @@ function ActivityResultScreen({ ...props }) {
             </View>
 
             <Activity width={screenWidth / 100 * 89} height={screenHeight / 10 * 2.27} />
-            <Text>{result}</Text>
+            <Text style={styles.textResult}>{result}</Text>
 
 
             <StatusBar style="auto" />
@@ -75,5 +82,8 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         fontSize: 26,
         fontWeight: "bold"
     },
+    textResult: {
+        color: themeStyle.textColor
+    }
 });
 export default connect(mapStateToProps)(ActivityResultScreen);

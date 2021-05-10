@@ -11,7 +11,8 @@ import { watchGoalsData } from '../redux/actions/data/goals'
 import { watchNotificationsData } from '../redux/actions/data/notifications'
 import { profilePicture, chooseColor, compareTime } from '../helpers/functions'
 
-import Background from '../assets/backgrounds/background'
+import Background from '../assets/backgrounds/light/background'
+import BackgroundDark from '../assets/backgrounds/dark/backgroundDark'
 import NotificationOffIcon from '../assets/icons/notificationIcon'
 import NotificationOnIcon from '../assets/icons/notificationWithBubbleIcon'
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -38,12 +39,13 @@ const mapStateToProps = (state) => ({
     doneFetchingGoalsData: state.goals.doneFetching,
     notifications: state.notifications.notificationsData,
     doneFetchingNotificationsData: state.notifications.doneFetching,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function HomeScreen({ ...props }) {
 
-    const { user, navigation, theme, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData, watchNotificationsData, notifications, doneFetchingNotificationsData } = props
+    const { user, navigation, theme, dark, watchEventsData, events, doneFetchingEventsData, watchGoalsData, goals, doneFetchingGoalsData, watchNotificationsData, notifications, doneFetchingNotificationsData } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -51,8 +53,8 @@ function HomeScreen({ ...props }) {
     const [profile, setProfile] = useState('')
     const [username, setUsername] = useState('')
 
-    const [markedEventsArray, setMarkedEventsArray] = useState(events === undefined ? [] : events)
-    const [todayEventsArray, setTodayEventsArray] = useState(events === undefined ? [] : events)
+    const [markedEvents, setMarkedEvents] = useState([])
+    const [todayEvents, setTodayEvents] = useState([])
     const [goalsArray, setGoalsArray] = useState(goals === undefined ? [] : goals)
     const [notificationsArray, setNotificationsArray] = useState(notifications === undefined ? [] : notifications)
     const [notification, setNotification] = useState(false);
@@ -81,9 +83,31 @@ function HomeScreen({ ...props }) {
             }
         }
         if (doneFetchingEventsData) {
-            setMarkedEventsArray(events)
-            setTodayEventsArray(events)
+            const markedDatesArray = events.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
+
+            const markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
+                (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
+                return a;
+            }, {}));
+
+            const todayEventsArray = events.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+                // .filter(ev => ev.date === '2021-04-15')
+                .map(ev => {
+                    let friendsArr = ev.friends;
+                    // let arr = friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
+                    return ({
+                        title: ev.title,
+                        time: ev.startTime + " - " + ev.endTime,
+                        location: ev.location,
+                        friends: friendsArr
+                    })
+                })
+            const todayEventsArrayCards = todayEventsArray.sort(compareTime)
+
+            setMarkedEvents(markedDatesArrayResult)
+            setTodayEvents(todayEventsArrayCards)
         }
+
         if (doneFetchingGoalsData) {
             setGoalsArray(goals)
             const filteredGoals = goals.filter(gl => gl.completed === false)
@@ -127,32 +151,13 @@ function HomeScreen({ ...props }) {
     //     return null;
     // }
 
-    let markedDatesArray = markedEventsArray === undefined ? [] : markedEventsArray.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
-
-    let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
-        (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
-        return a;
-    }, {}));
-
-    let todayEvents = todayEventsArray === undefined ? [] : todayEventsArray
-        .filter(ev => ev.date === moment().format("YYYY-MM-DD"))
-        // .filter(ev => ev.date === '2021-04-15')
-        .map(ev => {
-            let friendsArr = ev.friends;
-            // let arr = friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
-            return ({
-                title: ev.title,
-                time: ev.startTime + " - " + ev.endTime,
-                location: ev.location,
-                friends: friendsArr
-            })
-        })
-    let todayEventsCards = todayEvents.sort(compareTime)
-
     return (
         <View style={styles.container}>
-            <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <BackgroundDark width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topDiv}>
                 <View style={styles.introText}>
                     <View style={styles.introIconArange}>
@@ -166,7 +171,7 @@ function HomeScreen({ ...props }) {
 
                 </View>
 
-                {markedDatesArray.length === 0 || markedDatesArray === undefined ?
+                {markedEvents.length === 0 || markedEvents === undefined ?
                     null
                     :
                     <CalendarStrip
@@ -181,7 +186,7 @@ function HomeScreen({ ...props }) {
                         iconContainer={{ flex: 0.1 }}
                         upperCaseDays={false}
                         selectedDate={today}
-                        markedDates={markedDatesArrayResult}
+                        markedDates={markedEvents}
                         onDateSelected={() => navigation.navigate("CalendarStack")}
                     />
                 }
@@ -193,7 +198,7 @@ function HomeScreen({ ...props }) {
                     <Text style={{ ...styles.title, marginLeft: "5%", marginTop: screenHeight / 914 * 15, flex: 1 }}>Today's Events</Text>
                     <TouchableHighlight underlayColor={themeStyle.lightViolet} style={styles.addButton} onPress={() => navigation.navigate("CreateActivity")}><Text style={styles.plusButton}>+</Text></TouchableHighlight>
                 </View>
-                {todayEventsCards.length === 0 ?
+                {todayEvents.length === 0 ?
                     <View style={styles.containerNoEvents}>
                         <CountingStars width={screenHeight / 100 * 21} height={screenHeight / 100 * 21} />
                         <Text style={styles.textNoActivities}>No activities{'\n'}planned for{'\n'}today.</Text>
@@ -205,7 +210,7 @@ function HomeScreen({ ...props }) {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.containerEvents}
                     >
-                        {todayEventsCards.map((info, index) => (
+                        {todayEvents.map((info, index) => (
                             <View key={index} style={styles.paper}>
                                 <Text style={styles.paperTitle}>{info.title}</Text>
                                 <Text style={styles.paperTime}>{info.time}</Text>

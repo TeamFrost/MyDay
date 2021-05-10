@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import { firebase } from '../firebase/config'
 import { watchGoalsData } from '../redux/actions/data/goals'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientPink';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientPink';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientPinkDark';
 import Back from '../assets/others/back.js';
 import FormClock from '../assets/others/formClock.js';
 import RadioButtonActivity from '../screens/Components/RadioButtonActivity'
@@ -24,12 +25,13 @@ const mapDispatchToProps = (dispatch) => ({ watchGoalsData: (userId) => dispatch
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     doneFetchinGoals: state.goals.doneFetching,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function AddGoalScreen({ ...props }) {
 
-    const { user, navigation, theme, watchGoalsData, doneFetchinGoals } = props
+    const { user, navigation, theme, dark, watchGoalsData, doneFetchinGoals } = props
 
     const today = moment().format('YYYY-MM-DD');
     const fancyToday = moment().format("dddd, DD MMMM");
@@ -81,7 +83,6 @@ function AddGoalScreen({ ...props }) {
         }
 
         if (check === true) {
-
             const data = {
                 title: title,
                 date: selectedDate,
@@ -90,7 +91,6 @@ function AddGoalScreen({ ...props }) {
                 priority: option,
                 completed: false
             }
-
             const subGoalsRef = firebase.firestore().collection('goals').doc(user.id).collection('sub_goals');
             subGoalsRef.add(data)
                 .then(() => {
@@ -106,7 +106,11 @@ function AddGoalScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>

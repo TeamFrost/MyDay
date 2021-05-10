@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import { watchEventsData } from '../redux/actions/data/events'
 import { firebase } from '../firebase/config'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientPink';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientPink';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientPinkDark';
 import Back from '../assets/others/back.js';
 import AddPerson from '../assets/others/addPerson.js';
 import FormClock from '../assets/others/formClock.js';
@@ -27,12 +28,13 @@ const mapDispatchToProps = (dispatch) => ({ watchEventsData: (userId) => dispatc
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     doneFetchingEvents: state.events.doneFetching,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function CreateActivityScreen({ ...props }) {
 
-    const { user, navigation, theme, doneFetchingEvents, watchEventsData } = props
+    const { user, navigation, theme, dark, doneFetchingEvents, watchEventsData } = props
 
     const today = moment().format('YYYY-MM-DD');
     const fancyToday = moment().format("dddd, DD MMMM");
@@ -65,6 +67,24 @@ function CreateActivityScreen({ ...props }) {
     const [option, setOption] = useState("")
     const [optionSelect, setOptionSelect] = useState(1);
     const [optionVisibility, setOptionVisibility] = useState(false);
+
+    useEffect(() => {
+        if (props.route.params != undefined) {
+            let date = props.route.params.date.dateString;
+            setSelectedDate(date)
+            setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
+        }
+        if (user) {
+            let arr = []
+            const friendsArr = user.friends
+            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
+        }
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const handleCategoryChange = (category, option1, option2, option3, option4) => {
         setOptionVisibility(true);
@@ -213,7 +233,6 @@ function CreateActivityScreen({ ...props }) {
         }
     }
 
-
     const handleFriendPress = (id) => {
         if (friends.includes(id)) {
             let res = friends.filter(item => item !== id)
@@ -224,8 +243,6 @@ function CreateActivityScreen({ ...props }) {
             setFriends(res)
         }
     }
-
-    console.log(friends)
 
     const Item = ({ title, profile, id }) => (
         <View style={{ alignContent: 'center', justifyContent: 'center', marginRight: 20 }}>
@@ -261,27 +278,13 @@ function CreateActivityScreen({ ...props }) {
             })
     }
 
-    useEffect(() => {
-        if (props.route.params != undefined) {
-            let date = props.route.params.date.dateString;
-            setSelectedDate(date)
-            setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
-        }
-        if (user) {
-            let arr = []
-            const friendsArr = user.friends
-            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
-        }
-
-        if (theme) {
-            setThemeStyle(theme.theme)
-            setStyles(styleSheetFactory(theme.theme))
-        }
-    }, [theme])
-
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth} height={155} style={{ flex: 1, position: 'absolute', top: 0 }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth} height={155} style={{ flex: 1, position: 'absolute', top: 0 }} />
+                :
+                <HeaderGradient width={screenWidth} height={155} style={{ flex: 1, position: 'absolute', top: 0 }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>

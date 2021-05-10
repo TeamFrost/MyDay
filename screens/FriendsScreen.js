@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 import { firebase } from '../firebase/config'
 import { profilePicture } from '../helpers/functions'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../assets/others/back.js';
 import Planet from '../assets/icon'
 import AddFriend from '../assets/icons/addFriend'
@@ -17,11 +18,13 @@ import { screenWidth, screenHeight } from '../helpers/utils'
 
 const mapStateToProps = (state) => ({
     user: state.auth.user,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
+
 });
 
 function FriendsScreen({ ...props }) {
-    const { user, navigation, theme } = props
+    const { user, navigation, theme, dark } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -30,6 +33,18 @@ function FriendsScreen({ ...props }) {
     const [result, setResult] = useState('')
     const [resultName, setResultName] = useState('')
     const [friendsArray, setFriendsArray] = useState([])
+
+    useEffect(() => {
+        if (user) {
+            let arr = []
+            const friendsArr = user.friends
+            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
+        }
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const userRef = firebase.firestore().collection("users");
     const notifiactionRef = firebase.firestore().collection("notifications");
@@ -97,22 +112,13 @@ function FriendsScreen({ ...props }) {
             })
     }
 
-    useEffect(() => {
-        if (user) {
-            let arr = []
-            const friendsArr = user.friends
-            friendsArr.map(fr => { getFriendsFromFirestore(fr, arr) })
-        }
-        if (theme) {
-            setThemeStyle(theme.theme)
-            setStyles(styleSheetFactory(theme.theme))
-        }
-    }, [theme])
-
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={screenHeight / 100 * 19} style={{ flex: 1, position: 'absolute' }} />
-
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={screenHeight / 100 * 19} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={screenHeight / 100 * 19} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <View style={styles.backButton}>

@@ -14,7 +14,6 @@ function AboutAppScreen({ ...props }) {
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
-
     useEffect(() => {
         if (theme) {
             setThemeStyle(theme.theme)

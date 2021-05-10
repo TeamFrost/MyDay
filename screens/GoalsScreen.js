@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 
 import { firebase } from '../firebase/config'
 
-import HeaderGradient from '../assets/backgrounds/headerGradientPink';
+import HeaderGradient from '../assets/backgrounds/light/headerGradientPink';
+import HeaderGradientDark from '../assets/backgrounds/dark/headerGradientPinkDark';
 import LowGoalIcon from '../assets/goalsVariation/lowPriority';
 import MediumGoalIcon from '../assets/goalsVariation/mediumPriority';
 import HighGoalIcon from '../assets/goalsVariation/highPriority';
@@ -20,21 +21,27 @@ import { screenWidth } from '../helpers/utils'
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     goals: state.goals.goalsData,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function GoalsScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation, theme, goals } = props
+    const { user, navigation, theme, dark, goals } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
-    const [goalsArray, setGoalsArray] = useState(goals)
+    const [goalsArray, setGoalsArray] = useState([])
 
     useEffect(() => {
+        if (goals) {
+            const goalsArrayList = goals.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('hour').fromNow(), priority: goal.priority, completed: goal.completed }))
+            setGoalsArray(goalsArrayList)
+        }
+
         if (theme) {
             setThemeStyle(theme.theme)
             setStyles(styleSheetFactory(theme.theme))
@@ -116,17 +123,19 @@ function GoalsScreen({ ...props }) {
             });
     }
 
-    const goalsArrayList = goalsArray.map(goal => ({ key: goal.id, title: goal.title, time: moment(new Date(goal.date)).startOf('hour').fromNow(), priority: goal.priority, completed: goal.completed }))
-
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.topText}>
                 <Text style={styles.textTop}>Goals</Text>
                 <Text style={styles.subtextTop} onPress={handleAddGoalPress}>Add a new goal +</Text>
             </View>
 
-            {goalsArrayList.length === 0 ?
+            {goalsArray.length === 0 ?
                 <View style={styles.containerNoGoals}>
                     <Rocket />
                     <Text style={styles.textNoGoals}>No goals to show.</Text>
@@ -134,7 +143,7 @@ function GoalsScreen({ ...props }) {
                 :
                 <View style={styles.flatListDiv}>
                     <Animated.FlatList
-                        data={goalsArrayList}
+                        data={goalsArray}
                         onScroll={Animated.event(
                             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                             { useNativeDriver: true }

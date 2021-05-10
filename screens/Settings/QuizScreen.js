@@ -5,15 +5,19 @@ import { connect } from 'react-redux';
 
 import Activity from "../../assets/quiz/activity.js";
 import Workout from "../../assets/quiz/workout.js";
-import HeaderGradient from '../../assets/backgrounds/headerGradientBlue';
+import HeaderGradient from '../../assets/backgrounds/light/headerGradientBlue';
+import HeaderGradientDark from '../../assets/backgrounds/dark/headerGradientBlueDark';
 import Back from '../../assets/others/back.js';
 import { colors } from '../../helpers/style';
 import { screenWidth, screenHeight } from '../../helpers/utils'
 
-const mapStateToProps = (state) => ({ theme: state.theme });
+const mapStateToProps = (state) => ({
+    theme: state.theme,
+    dark: state.theme.dark
+});
 
 function QuizScreen({ ...props }) {
-    const { navigation, theme } = props
+    const { navigation, theme, dark } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
@@ -27,7 +31,11 @@ function QuizScreen({ ...props }) {
 
     return (
         <View style={styles.container}>
-            <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            {dark ?
+                <HeaderGradientDark width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <HeaderGradient width={screenWidth * 1.2} height={"22%"} style={{ flex: 1, position: 'absolute' }} />
+            }
 
             <View style={styles.topText}>
                 <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
@@ -99,7 +107,8 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     },
     quizzRedirect: {
         textDecorationLine: 'underline',
-        textAlign: 'center'
+        textAlign: 'center',
+        color: themeStyle.textColor
     }
 });
 
