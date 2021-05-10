@@ -99,7 +99,6 @@ function ProfileScreen({ ...props }) {
     const handleStatisticsPress = () => navigation.navigate("Statistics", [{ achievement: "Planner", progress: achievementPlanner }, { achievement: "University", progress: achievementUniversity }, { achievement: "Goals", progress: achievementGoals }, { achievement: "Social", progress: achievementSocial }])
     const handleFriendsPress = () => navigation.navigate("Friends")
 
-
     return (
         <View style={styles.container}>
             {dark ?
