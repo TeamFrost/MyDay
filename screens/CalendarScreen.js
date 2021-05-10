@@ -36,6 +36,30 @@ function CalendarScreen({ ...props }) {
     const [eventsArray, setEventsArray] = useState([])
     const [todayEventsCards, setTodayEventsCards] = useState([])
 
+    const [{ key, calendarTheme }, setCalendarTheme] = useState({
+        key: 'light',
+        calendarTheme: {
+            calendarBackground: themeStyle.backgroundColor,
+            dayTextColor: themeStyle.textColor,
+            monthTextColor: themeStyle.textColor,
+            textDayFontSize: 18,
+            textDayHeaderFontSize: 15,
+            textMonthFontSize: 20,
+            textMonthFontWeight: 'bold',
+            'stylesheet.day.basic': {
+                today: {
+                    borderRadius: 4,
+                    backgroundColor: themeStyle.lightViolet
+                },
+                todayText: {
+                    color: themeStyle.backgroundColor,
+                    fontWeight: 'bold',
+
+                },
+            },
+        }
+    })
+
     useEffect(() => {
         if (events) {
             setEventsArray(events)
@@ -64,6 +88,58 @@ function CalendarScreen({ ...props }) {
         if (theme) {
             setThemeStyle(theme.theme)
             setStyles(styleSheetFactory(theme.theme))
+        }
+        if (dark) {
+            const darkTheme = {
+                key: 'dark',
+                calendarTheme: {
+                    calendarBackground: "#121212",
+                    dayTextColor: "#FFFFFF",
+                    monthTextColor: "#FFFFFF",
+                    textDayFontSize: 18,
+                    textDayHeaderFontSize: 15,
+                    textMonthFontSize: 20,
+                    textMonthFontWeight: 'bold',
+                    'stylesheet.day.basic': {
+                        today: {
+                            borderRadius: 4,
+                            backgroundColor: "#D4C3FC"
+                        },
+                        todayText: {
+                            color: "#FFFFFF",
+                            fontWeight: 'bold',
+
+                        },
+                    },
+                }
+            }
+            setCalendarTheme(darkTheme)
+        }
+        else {
+            const lightTheme = {
+                key: 'light',
+                calendarTheme: {
+                    calendarBackground: "#FFFFFF",
+                    dayTextColor: "#323232",
+                    monthTextColor: "#323232",
+                    textDayFontSize: 18,
+                    textDayHeaderFontSize: 15,
+                    textMonthFontSize: 20,
+                    textMonthFontWeight: 'bold',
+                    'stylesheet.day.basic': {
+                        today: {
+                            borderRadius: 4,
+                            backgroundColor: "#D4C3FC"
+                        },
+                        todayText: {
+                            color: "#FFFFFF",
+                            fontWeight: 'bold',
+
+                        },
+                    },
+                }
+            }
+            setCalendarTheme(lightTheme)
         }
     }, [theme])
 
@@ -148,7 +224,6 @@ function CalendarScreen({ ...props }) {
                 current: themeStyle.backgroundColor
             }));
         const sortedTodayEvents = todayEvents.sort(compareStartTime)
-        console.log(todayEventsCards)
         setTodayEventsCards(sortedTodayEvents)
     }
 
@@ -174,23 +249,8 @@ function CalendarScreen({ ...props }) {
                     contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
                     onDayPress={(day) => setAgendaDay(day)}
                     onDayLongPress={(day) => navigation.navigate("CreateActivity", { date: day })}
-                    theme={{
-                        textDayFontSize: 18,
-                        textDayHeaderFontSize: 15,
-                        textMonthFontSize: 20,
-                        textMonthFontWeight: 'bold',
-                        'stylesheet.day.basic': {
-                            today: {
-                                borderRadius: 4,
-                                backgroundColor: themeStyle.lightViolet
-                            },
-                            todayText: {
-                                color: themeStyle.backgroundColor,
-                                fontWeight: 'bold',
-
-                            },
-                        },
-                    }}
+                    key={key}
+                    theme={calendarTheme}
                     markedDates={markedDates}
                     markingType={'multi-dot'}
 

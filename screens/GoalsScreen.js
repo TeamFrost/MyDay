@@ -62,7 +62,7 @@ function GoalsScreen({ ...props }) {
         if (!completed)
             return (
                 <Animated.View style={{ transform: [{ scale }], opacity }} >
-                    <LinearGradient colors={['#F8D7F67F', '#D4C3FC7F', '#BBD4FF7F']} style={styles.card} start={[0, 0]} end={[1, 0]}>
+                    <LinearGradient colors={dark ? ['#564B93', '#2A2B4E'] : ['#F8D7F67F', '#D4C3FC7F', '#BBD4FF7F']} style={styles.card} start={[0, 0]} end={[1, 0]}>
                         {priority === "Low" ?
                             <LowGoalIcon height={40} width={40} />
                             :
@@ -73,7 +73,7 @@ function GoalsScreen({ ...props }) {
                         }
                         <View style={{ flex: 1, paddingLeft: 15 }}>
                             <Text style={styles.title}>{title}</Text>
-                            <Text style={{ color: time.includes("ago") ? themeStyle.red : themeStyle.text }}>{time}</Text>
+                            <Text style={{ color: time.includes("ago") ? themeStyle.red : themeStyle.textColor }}>{time}</Text>
                         </View>
                         <Icon name="ellipsis-v" size={20} color={themeStyle.textGray} style={styles.iconArangeGoal} onPress={() => handleGoalOptionPress(id)} />
                     </LinearGradient>
@@ -200,7 +200,8 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: themeStyle.textColor,
     },
     iconArangeGoal: {
         marginLeft: 10,

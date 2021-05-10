@@ -176,7 +176,7 @@ function HomeScreen({ ...props }) {
                         {profilePicture(profile, 45)}
                     </View>
                     <View style={styles.introTextArange}>
-                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: themeStyle.cardBlue }}> {username}</Text></Text>
+                        <Text style={styles.helloText}>Hello,<Text style={{ ...styles.helloText, color: themeStyle.username }}> {username}</Text></Text>
                         <Text>{dayString}</Text>
                     </View>
                     {notificationIcon(notification)}
@@ -279,9 +279,9 @@ function HomeScreen({ ...props }) {
                         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.paperTitle}>Take a quizz</Text>
-                                <Text>Find out how to spend your time.</Text>
+                                <Text style={{ color: themeStyle.textColor }}>Find out how to spend your time.</Text>
                             </View>
-                            <QuizIcon style={{ marginRight: 10 }} />
+                            <QuizIcon style={{ marginRight: 10, color: themeStyle.textColor }} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -295,9 +295,9 @@ function HomeScreen({ ...props }) {
                     <View style={styles.viewArangeGoal}>
                         <GoalIcon width={50} height={50} style={styles.iconArangeGoal} />
                         <View style={styles.viewArangeText}>
-                            <Text style={{ fontSize: 18 }}>{nextGoal}</Text>
+                            <Text style={{ fontSize: 18, color: themeStyle.textColor }}>{nextGoal}</Text>
                             <Text style={{ fontSize: 12, color: themeStyle.textGray }}>{nextGoalDueDate}</Text>
-                            <Text>{quote}</Text>
+                            <Text style={{ color: themeStyle.textColor, fontStyle: 'italic' }}>{quote}</Text>
                         </View>
                     </View>
                 </View>
@@ -344,10 +344,11 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         paddingRight: 10
     },
     helloText: {
-        fontSize: 24
+        fontSize: 24,
     },
     title: {
         fontSize: 22,
+        color: themeStyle.textColor
     },
     paper: {
         justifyContent: 'flex-start',
@@ -436,7 +437,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     addButton: {
         width: 30,
         height: 30,
-        backgroundColor: 'white',
+        backgroundColor: themeStyle.backgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 5,

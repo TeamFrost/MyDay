@@ -131,6 +131,8 @@ function FriendsScreen({ ...props }) {
             <View style={styles.bodyView}>
                 <Searchbar
                     placeholder="Search for users"
+                    placeholderTextColor={themeStyle.textGray}
+                    color={themeStyle.textColor}
                     onChangeText={queryText => setSearchQuery(queryText)}
                     value={searchQuery}
                     onSubmitEditing={() => handleSearch(searchQuery)}
@@ -198,6 +200,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         fontWeight: "bold"
     },
     searchBar: {
+        backgroundColor: themeStyle.tabBar,
         height: 45,
         borderWidth: 1,
         borderRadius: 20,
@@ -213,6 +216,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         flex: 15,
         fontSize: 18,
         paddingLeft: 10,
+        color: themeStyle.textColor
     },
     divider: {
         marginTop: "1%",

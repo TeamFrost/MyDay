@@ -159,7 +159,8 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         height: 110
     },
     inviteText: {
-        fontSize: 18
+        color: themeStyle.textColor,
+        fontSize: 18,
     },
     buttonsView: {
         flex: 1,

@@ -63,7 +63,13 @@ function AddGoalScreen({ ...props }) {
                 <DatePicker
                     minimumDate={today}
                     selected={selectedDate}
-                    options={{ mainColor: themeStyle.violet }}
+                    options={{
+                        backgroundColor: themeStyle.backgroundColor,
+                        textHeaderColor: themeStyle.linkBlue,
+                        textDefaultColor: themeStyle.textColor,
+                        mainColor: themeStyle.violet,
+                        textSecondaryColor: themeStyle.textGray,
+                    }}
                     onSelectedChange={date => {
                         setSelectedDate(date)
                         setShowDate(moment(new Date(date)).format("dddd, DD MMMM"))
@@ -127,6 +133,7 @@ function AddGoalScreen({ ...props }) {
                         <TextInput
                             placeholder="Goal Title"
                             placeholderTextColor={themeStyle.textColor}
+                            color={themeStyle.textColor}
                             style={{ fontSize: 22 }}
                             onChangeText={text => setTitle(text)}
                             value={title}
@@ -141,7 +148,7 @@ function AddGoalScreen({ ...props }) {
                         </View>
                         <View style={{ flexDirection: 'column', width: '60%' }}>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', color: themeStyle.linkBlue }}>{showDate}</Text>
-                            <Text style={{ fontSize: 16, marginTop: 5 }}>{time}</Text>
+                            <Text style={{ fontSize: 16, marginTop: 5, color: themeStyle.textColor }}>{time}</Text>
                         </View>
                         <TouchableOpacity onPress={handleDatePickerPress}>
                             {datePicker ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -152,7 +159,7 @@ function AddGoalScreen({ ...props }) {
                 {datePicker ? showPicker() : null}
 
                 <View style={{ ...styles.taskTitleDiv, justifyContent: 'flex-start', height: screenHeight / 5.5, marginTop: 10 }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Category</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: themeStyle.textColor }}>Category</Text>
                     <View style={{ flexDirection: 'row', paddingTop: 10, justifyContent: 'space-around', width: '100%' }}>
                         <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'University' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("University")}><Text style={{ ...styles.textCategoryButton, color: category === 'University' ? themeStyle.backgroundColor : themeStyle.textColor }}>University</Text></TouchableHighlight>
                         <TouchableHighlight style={{ ...styles.categoryButton, backgroundColor: category === 'Work' ? themeStyle.linkBlue : themeStyle.cardLightViolet }} underlayColor={themeStyle.linkBlue} onPress={() => setCategory("Work")}><Text style={{ ...styles.textCategoryButton, color: category === 'Work' ? themeStyle.backgroundColor : themeStyle.textColor }}>Work</Text></TouchableHighlight>
@@ -166,7 +173,7 @@ function AddGoalScreen({ ...props }) {
                 </View>
 
                 <View style={{ height: screenHeight / 8, width: "90%", alignSelf: 'center' }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Options</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: themeStyle.textColor }}>Options</Text>
 
                     <View style={{ ...styles.radioButtonsView, marginTop: 10, }}>
                         <View style={{ ...styles.radioButtonsView, paddingLeft: 10 }}>
@@ -240,6 +247,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     },
     dividerTaskTitle: {
         borderLeftWidth: 3,
+        borderColor: themeStyle.textColor,
         paddingLeft: 10
     },
     detailsText: {
@@ -258,7 +266,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
         marginTop: '5%'
     },
     cardIcon: {
-        backgroundColor: 'white',
+        backgroundColor: themeStyle.backgroundColor,
         padding: 12,
         borderRadius: 12,
         marginLeft: '5%',
@@ -279,6 +287,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     textCategoryButton: {
         fontSize: 16,
         fontWeight: 'bold',
+        color: themeStyle.textColor
     },
     radioButtonsView: {
         flexDirection: 'row',
@@ -297,7 +306,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     submitButtonText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: themeStyle.backgroundColor
+        color: "white"
     }
 });
 
