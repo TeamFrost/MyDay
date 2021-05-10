@@ -3,7 +3,6 @@ export const colors = {
         backgroundColor: "#FFFFFF",
         textColor: "#323232",
         tabBar: "#FFFFFF",
-        // headerTextColor: "#FFFFFF",
         button: "#6B75CE", // Dark Blue 2
         googleButton: "#DB4437",
         facebookButton: "#3B5998",
@@ -19,22 +18,21 @@ export const colors = {
         cardLightViolet: "#D4C3F33F", // Light Violet 25%
         cardLightBlue: "#A5C5FC3F", // Light Blue 25%
         violet: "#9B8CF8", // Violet
-
+        username: "#5C8DF7", // Blue
     },
     // to be completed
     dark: {
         backgroundColor: "#121212",
         textColor: "#FFFFFF",
         tabBar: "#242424",
-        // headerTextColor: "#FFFFFF",
-        button: "#2A2B4E",
+        button: "#9B8CF8", // Violet
         googleButton: "#DB4437",
         facebookButton: "#3B5998",
         linkBlue: "#9B8CF8", // Violet
         textGray: "#FFFFFF", // White
         textGrayDark: "#FFFFFF", //White
         lightViolet: "#9B8CF8", // Violet
-        lightBlue: "#2A2B4E", // LightBlue
+        lightBlue: "#2A2B4E",
         red: "#F6707B",
         green: "#6ED687",
         settingsIcon: "#2A2B4E",
@@ -42,6 +40,7 @@ export const colors = {
         cardLightViolet: "#323232", // Light Violet 25%
         cardLightBlue: "#323232", // Light Blue 25%
         violet: "#564B93", // Dark Blue
+        username: "#FFFFFF", // White
     }
 }
 
