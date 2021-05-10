@@ -110,10 +110,15 @@ function HomeScreen({ ...props }) {
 
         if (doneFetchingGoalsData) {
             setGoalsArray(goals)
-            const filteredGoals = goals.filter(gl => gl.completed === false)
-            const goal = filteredGoals[0]
-            setNextGoal(goal.title)
-            setNextGoalDueDate(moment(new Date(goal.date)).startOf('day').fromNow())
+            if (goals.length === 0) {
+                setNextGoal("No goals to display.")
+            }
+            else {
+                const filteredGoals = goals.filter(gl => gl.completed === false)
+                const goal = filteredGoals[0]
+                setNextGoal(goal.title)
+                setNextGoalDueDate(moment(new Date(goal.date)).startOf('day').fromNow())
+            }
             const random = Math.floor(Math.random() * 11);
             const quo = quotes[random]
             setQuote(quo)
