@@ -90,29 +90,31 @@ function StatisticsScreen({ ...props }) {
 
         const friendsLength = user.friends.length
         setFriendsNumber(friendsLength)
-        if (friendsLength === 0) {
+        if (friendsLength === 0 || eventsLength === 0) {
             setFriend("Insufficient data")
         } else {
             const friendsArray = events.map(ev => ev.friends)
             const flattenFriendsArray = friendsArray.flat()
             const friend = occuarnce(flattenFriendsArray)
-            const userRef = firebase.firestore().collection('users').doc(friend)
-            userRef.get()
-                .then(firestoreDocument => {
-                    if (!firestoreDocument.exists) {
-                        alert("User does not exist anymore.")
-                        return;
-                    }
-                    const user = firestoreDocument.data()
-                    setFriend(user.username)
-                })
-                .catch(error => {
-                    console.log(error)
-                });
+            if (friend) {
+                const userRef = firebase.firestore().collection('users').doc(friend)
+                userRef.get()
+                    .then(firestoreDocument => {
+                        if (!firestoreDocument.exists) {
+                            alert("Doc does not exist anymore.")
+                            return;
+                        }
+                        const user = firestoreDocument.data()
+                        setFriend(user.username)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+            }
         }
 
 
-        if (eventsLength === 0) {
+        if (eventsLength != 0) {
             const uniEvents = events.filter(ev => ev.category === "University")
             const uniEventsLength = uniEvents.length;
             const workEvents = events.filter(ev => ev.category === "Work")
