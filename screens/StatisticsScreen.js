@@ -111,56 +111,59 @@ function StatisticsScreen({ ...props }) {
                 });
         }
 
-        const uniEvents = events.filter(ev => ev.category === "University")
-        const uniEventsLength = uniEvents.length;
-        const workEvents = events.filter(ev => ev.category === "Work")
-        const workEventsLength = workEvents.length;
-        const lifestyleEvents = events.filter(ev => ev.category === "Lifestyle")
-        const lifestyleEventsLength = lifestyleEvents.length;
-        const sportEvents = events.filter(ev => ev.category === "Sport")
-        const sportEventsLength = sportEvents.length;
-        const shoppingEvents = events.filter(ev => ev.category === "Shopping")
-        const shoppingEventsLength = shoppingEvents.length;
-        const holidayEvents = events.filter(ev => ev.category === "Holiday")
-        const holidayEventsLength = holidayEvents.length;
 
-        const pieChart = [
-            { x: "University", y: uniEventsLength, color: "#6B75CE" },
-            { x: "Work", y: workEventsLength, color: "#564B93" },
-            { x: "Lifestyle", y: lifestyleEventsLength, color: "#9B8CF8" },
-            { x: "Sport", y: sportEventsLength, color: "#D4C3FC" },
-            { x: "Shopping", y: shoppingEventsLength, color: "#A5C5FC" },
-            { x: "Holiday", y: holidayEventsLength, color: "#5C8DF7" },
-        ]
+        if (eventsLength === 0) {
+            const uniEvents = events.filter(ev => ev.category === "University")
+            const uniEventsLength = uniEvents.length;
+            const workEvents = events.filter(ev => ev.category === "Work")
+            const workEventsLength = workEvents.length;
+            const lifestyleEvents = events.filter(ev => ev.category === "Lifestyle")
+            const lifestyleEventsLength = lifestyleEvents.length;
+            const sportEvents = events.filter(ev => ev.category === "Sport")
+            const sportEventsLength = sportEvents.length;
+            const shoppingEvents = events.filter(ev => ev.category === "Shopping")
+            const shoppingEventsLength = shoppingEvents.length;
+            const holidayEvents = events.filter(ev => ev.category === "Holiday")
+            const holidayEventsLength = holidayEvents.length;
 
-        setPieChartData(pieChart)
+            const pieChart = [
+                { x: "University", y: uniEventsLength, color: "#6B75CE" },
+                { x: "Work", y: workEventsLength, color: "#564B93" },
+                { x: "Lifestyle", y: lifestyleEventsLength, color: "#9B8CF8" },
+                { x: "Sport", y: sportEventsLength, color: "#D4C3FC" },
+                { x: "Shopping", y: shoppingEventsLength, color: "#A5C5FC" },
+                { x: "Holiday", y: holidayEventsLength, color: "#5C8DF7" },
+            ]
 
-        const activitiesSixDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === sixDaysAgo)
-        const activitiesSixDaysAgoLength = activitiesSixDaysAgo.length;
-        const activitiesFiveDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === fiveDaysAgo)
-        const activitiesFiveDaysAgoLength = activitiesFiveDaysAgo.length;
-        const activitiesFourDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === fourDaysAgo)
-        const activitiesFourDaysAgoLength = activitiesFourDaysAgo.length;
-        const activitiesThreeDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === threeDaysAgo)
-        const activitiesThreeDaysAgoLength = activitiesThreeDaysAgo.length;
-        const activitiesTwoDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === twoDaysAgo)
-        const activitiesTwoDaysAgoLength = activitiesTwoDaysAgo.length;
-        const activitiesOneDayAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === oneDayAgo)
-        const activitiesOneDayAgoLength = activitiesOneDayAgo.length;
-        const activitiesToday = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === today)
-        const activitiesTodayLength = activitiesToday.length;
+            setPieChartData(pieChart)
 
-        const lineChart = [
-            { x: sixDaysAgo, y: activitiesSixDaysAgoLength },
-            { x: fiveDaysAgo, y: activitiesFiveDaysAgoLength },
-            { x: fourDaysAgo, y: activitiesFourDaysAgoLength },
-            { x: threeDaysAgo, y: activitiesThreeDaysAgoLength },
-            { x: twoDaysAgo, y: activitiesTwoDaysAgoLength },
-            { x: oneDayAgo, y: activitiesOneDayAgoLength },
-            { x: today, y: activitiesTodayLength },
-        ];
+            const activitiesSixDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === sixDaysAgo)
+            const activitiesSixDaysAgoLength = activitiesSixDaysAgo.length;
+            const activitiesFiveDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === fiveDaysAgo)
+            const activitiesFiveDaysAgoLength = activitiesFiveDaysAgo.length;
+            const activitiesFourDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === fourDaysAgo)
+            const activitiesFourDaysAgoLength = activitiesFourDaysAgo.length;
+            const activitiesThreeDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === threeDaysAgo)
+            const activitiesThreeDaysAgoLength = activitiesThreeDaysAgo.length;
+            const activitiesTwoDaysAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === twoDaysAgo)
+            const activitiesTwoDaysAgoLength = activitiesTwoDaysAgo.length;
+            const activitiesOneDayAgo = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === oneDayAgo)
+            const activitiesOneDayAgoLength = activitiesOneDayAgo.length;
+            const activitiesToday = events.filter(ev => moment(new Date(ev.date)).format("DD/MM") === today)
+            const activitiesTodayLength = activitiesToday.length;
 
-        setLineChartData(lineChart)
+            const lineChart = [
+                { x: sixDaysAgo, y: activitiesSixDaysAgoLength },
+                { x: fiveDaysAgo, y: activitiesFiveDaysAgoLength },
+                { x: fourDaysAgo, y: activitiesFourDaysAgoLength },
+                { x: threeDaysAgo, y: activitiesThreeDaysAgoLength },
+                { x: twoDaysAgo, y: activitiesTwoDaysAgoLength },
+                { x: oneDayAgo, y: activitiesOneDayAgoLength },
+                { x: today, y: activitiesTodayLength },
+            ];
+
+            setLineChartData(lineChart)
+        }
 
         if (theme) {
             setThemeStyle(theme.theme)
