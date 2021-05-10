@@ -33,9 +33,13 @@ function ActivityResultScreen({ ...props }) {
         }
     }, [theme])
 
-    const handleSubmitPress = () => {
+    const handleActivityPress = () => {
         navigation.navigate("CreateActivity")
     }
+    const handleHomePress = () => {
+        navigation.navigate("HomeStack")
+    }
+
     return (
         <View style={styles.container}>
             {dark ?
@@ -65,7 +69,7 @@ function ActivityResultScreen({ ...props }) {
                 <TouchableHighlight
                     underlayColor="#DDDDDD"
                     style={{ width: '100%', borderRadius: 20 }}
-                    onPress={handleSubmitPress}
+                    onPress={handleHomePress}
                 >
                     <View style={{ ...styles.sendButton, backgroundColor: themeStyle.textGrayDark }}>
                         <Text style={styles.sendText}>Home</Text>
@@ -77,7 +81,7 @@ function ActivityResultScreen({ ...props }) {
                 <TouchableHighlight
                     underlayColor="#DDDDDD"
                     style={{ width: '100%', borderRadius: 20 }}
-                    onPress={handleSubmitPress}
+                    onPress={handleActivityPress}
                 >
                     <View style={styles.sendButton}>
                         <Text style={styles.sendText}>Go to Activities</Text>
