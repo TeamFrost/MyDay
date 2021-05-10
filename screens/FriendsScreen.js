@@ -143,8 +143,8 @@ function FriendsScreen({ ...props }) {
                     <Text style={styles.noResultText}>No result.</Text>
                     :
                     resultName != '' && resultName != 'No result' ?
-                        <View style={{ ...styles.item, marginTop: 10 }}>
-                            {profilePicture(result.profile)}
+                        <View style={{ ...styles.item, marginTop: 10, }}>
+                            {profilePicture(result.profile, 45)}
                             <Text style={styles.title}>{resultName}</Text>
                             <AddFriend onPress={() => sendNotificationToAddFriend(result.id)} />
                         </View>
