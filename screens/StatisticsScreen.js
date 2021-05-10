@@ -96,19 +96,21 @@ function StatisticsScreen({ ...props }) {
             const friendsArray = events.map(ev => ev.friends)
             const flattenFriendsArray = friendsArray.flat()
             const friend = occuarnce(flattenFriendsArray)
-            const userRef = firebase.firestore().collection('users').doc(friend)
-            userRef.get()
-                .then(firestoreDocument => {
-                    if (!firestoreDocument.exists) {
-                        alert("User does not exist anymore.")
-                        return;
-                    }
-                    const user = firestoreDocument.data()
-                    setFriend(user.username)
-                })
-                .catch(error => {
-                    console.log(error)
-                });
+            if (friend) {
+                const userRef = firebase.firestore().collection('users').doc(friend)
+                userRef.get()
+                    .then(firestoreDocument => {
+                        if (!firestoreDocument.exists) {
+                            alert("Doc does not exist anymore.")
+                            return;
+                        }
+                        const user = firestoreDocument.data()
+                        setFriend(user.username)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+            }
         }
 
 
