@@ -30,7 +30,7 @@ export const colors = {
         facebookButton: "#3B5998",
         linkBlue: "#9B8CF8", // Violet
         textGray: "#FFFFFF", // White
-        textGrayDark: "#FFFFFF", //White
+        textGrayDark: "#AEAFB0", //White
         lightViolet: "#9B8CF8", // Violet
         lightBlue: "#2A2B4E",
         red: "#F6707B",
