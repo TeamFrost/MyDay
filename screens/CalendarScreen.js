@@ -33,10 +33,13 @@ function CalendarScreen({ ...props }) {
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
     const [markedDates, setMarkedDates] = useState({})
+    const [eventsArray, setEventsArray] = useState([])
     const [todayEventsCards, setTodayEventsCards] = useState([])
 
     useEffect(() => {
         if (events) {
+            setEventsArray(events)
+
             const markedDatesArray = events.map(ev => ({ date: ev.date, dots: { color: chooseColor(ev.category) } }))
             const markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
                 (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
@@ -45,7 +48,7 @@ function CalendarScreen({ ...props }) {
             const markedDatesObject = markedDatesArrayResult.reduce((a, c) => ({ ...a, [c.date]: c }), {});
             setMarkedDates(markedDatesObject)
 
-            let todayEvents = events.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+            const todayEvents = events.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
                 .map(ev => ({
                     id: ev.id,
                     title: ev.title,
@@ -133,7 +136,7 @@ function CalendarScreen({ ...props }) {
     }
 
     const setAgendaDay = (day) => {
-        todayEvents = todayEventsArray
+        const todayEvents = eventsArray
             .filter(ev => ev.date === day.dateString)
             .map(ev => ({
                 id: ev.id,
@@ -144,7 +147,9 @@ function CalendarScreen({ ...props }) {
                 location: ev.location,
                 current: themeStyle.backgroundColor
             }));
-        setTodayEventsCards(todayEvents.sort(compareStartTime))
+        const sortedTodayEvents = todayEvents.sort(compareStartTime)
+        console.log(todayEventsCards)
+        setTodayEventsCards(sortedTodayEvents)
     }
 
     return (

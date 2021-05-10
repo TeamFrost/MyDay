@@ -260,42 +260,50 @@ function StatisticsScreen({ ...props }) {
 
                 <View style={styles.lineChart}>
                     <Text style={{ ...styles.subtitleText, marginTop: "10%" }}>Number of activities in the last days</Text>
-                    <VictoryChart
-                        theme={VictoryTheme.material}
-                        height={300}
-                        domainPadding={{ x: [10, 10], y: 20 }}
-                        padding={{ top: 40, bottom: 50, right: 50, left: 50 }}
-                    >
-                        <VictoryLine
-                            style={{
-                                data: { stroke: themeStyle.violet },
-                                parent: { border: "1px solid #ccc" }
-                            }}
-                            labels={({ datum }) => datum.y}
-                            interpolation="monotoneX"
-                            data={lineChartData}
-                        />
-                        <VictoryScatter
-                            data={lineChartData}
-                            style={{ data: { fill: themeStyle.red } }}
-                        />
-                    </VictoryChart>
+                    {lineChartData.length === 0 ?
+                        null
+                        :
+                        <VictoryChart
+                            theme={VictoryTheme.material}
+                            height={300}
+                            domainPadding={{ x: [10, 10], y: 20 }}
+                            padding={{ top: 40, bottom: 50, right: 50, left: 50 }}
+                        >
+                            <VictoryLine
+                                style={{
+                                    data: { stroke: themeStyle.violet },
+                                    parent: { border: "1px solid #ccc" }
+                                }}
+                                labels={({ datum }) => datum.y}
+                                interpolation="monotoneX"
+                                data={lineChartData}
+                            />
+                            <VictoryScatter
+                                data={lineChartData}
+                                style={{ data: { fill: themeStyle.red } }}
+                            />
+                        </VictoryChart>
+                    }
                 </View>
 
                 <View style={styles.pieChart}>
                     <Text style={styles.subtitleText}>Types of activities</Text>
                     <View style={styles.defaultView}>
-                        <VictoryPie
-                            theme={VictoryTheme.material}
-                            colorScale={["#6B75CE", "#564B93", "#9B8CF8", "#D4C3FC", "#A5C5FC", "#5C8DF7"]}
-                            height={300}
-                            padding={{ bottom: 50 }}
-                            data={pieChartData}
-                            containerComponent={<VictoryContainer height={300} style={{ flex: 1 }} />}
-                            origin={{ x: screenWidth / 3.4 }}
-                            radius={screenWidth / 4}
-                            labels={() => null}
-                        />
+                        {pieChartData.length === 0 ?
+                            null
+                            :
+                            <VictoryPie
+                                theme={VictoryTheme.material}
+                                colorScale={["#6B75CE", "#564B93", "#9B8CF8", "#D4C3FC", "#A5C5FC", "#5C8DF7"]}
+                                height={300}
+                                padding={{ bottom: 50 }}
+                                data={pieChartData}
+                                containerComponent={<VictoryContainer height={300} style={{ flex: 1 }} />}
+                                origin={{ x: screenWidth / 3.4 }}
+                                radius={screenWidth / 4}
+                                labels={() => null}
+                            />
+                        }
                         <View style={styles.statisticsLegend}>
                             <FlatList
                                 data={pieChartData}

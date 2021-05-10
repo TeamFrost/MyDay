@@ -53,10 +53,12 @@ function HomeScreen({ ...props }) {
     const [profile, setProfile] = useState('')
     const [username, setUsername] = useState('')
 
+    const [eventsCheck, setEventsCheck] = useState(true)
+    const [goalsCheck, setGoalsCheck] = useState(true)
+    const [notificationsCheck, setNotificationsCheck] = useState(true)
+
     const [markedEvents, setMarkedEvents] = useState([])
     const [todayEvents, setTodayEvents] = useState([])
-    const [goalsArray, setGoalsArray] = useState(goals === undefined ? [] : goals)
-    const [notificationsArray, setNotificationsArray] = useState(notifications === undefined ? [] : notifications)
     const [notification, setNotification] = useState(false);
     const [nextGoal, setNextGoal] = useState("")
     const [nextGoalDueDate, setNextGoalDueDate] = useState("")
@@ -70,21 +72,23 @@ function HomeScreen({ ...props }) {
             setUsername(userUsername)
             const userProfile = user.profile
             setProfile(userProfile)
-
             const id = user.id
-            if ((Array.isArray(events) && events.length === 0) || events === undefined) {
+
+            if (((Array.isArray(events) && events.length === 0) || events === undefined) && eventsCheck) {
                 watchEventsData(id)
             }
-            if ((Array.isArray(goals) && goals.length === 0) || goals === undefined) {
+            if (((Array.isArray(goals) && goals.length === 0) || goals === undefined) && goalsCheck) {
                 watchGoalsData(id)
             }
-            if ((Array.isArray(notifications) && notifications.length === 0) || notifications === undefined) {
+            if (((Array.isArray(notifications) && notifications.length === 0) || notifications === undefined) && notificationsCheck) {
                 watchNotificationsData(id)
             }
         }
-        if (doneFetchingEventsData) {
-            const markedDatesArray = events.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
 
+        if (doneFetchingEventsData) {
+            setEventsCheck(false);
+
+            const markedDatesArray = events.map(ev => ({ date: moment(new Date(ev.date)), dots: { color: chooseColor(ev.category) } }))
             const markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
                 (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
                 return a;
@@ -109,8 +113,10 @@ function HomeScreen({ ...props }) {
         }
 
         if (doneFetchingGoalsData) {
-            setGoalsArray(goals)
-            if (goals.length === 0) {
+            setGoalsCheck(false);
+
+            const goalsLength = goals.length
+            if (goalsLength === 0) {
                 setNextGoal("No goals to display.")
             }
             else {
@@ -124,7 +130,8 @@ function HomeScreen({ ...props }) {
             setQuote(quo)
         }
         if (doneFetchingNotificationsData) {
-            setNotificationsArray(notifications)
+            setNotificationsCheck(false);
+
             const notificationsLength = notifications.length;
             if (notificationsLength != 0)
                 setNotification(true)
