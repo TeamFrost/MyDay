@@ -111,6 +111,8 @@ export const QuizStackScreen = () =>
         <QuizStack.Screen name="WorkoutResult" component={WorkoutResultScreen} />
         <QuizStack.Screen name="ActivityQuiz" component={ActivityQuizScreen} />
         <QuizStack.Screen name="ActivityResult" component={ActivityResultScreen} />
+        <QuizStack.Screen name="HomeStack" component={HomeStackScreen} />
+        <QuizStack.Screen name="CreateActivity" component={CreateActivityScreen} />
     </QuizStack.Navigator>
 
 export const HomeTabs = () => {
