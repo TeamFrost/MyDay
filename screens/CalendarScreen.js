@@ -10,7 +10,8 @@ import { connect } from 'react-redux';
 import { firebase } from '../firebase/config'
 import { chooseColor, compareStartTime } from '../helpers/functions'
 
-import Background from '../assets/backgrounds/background'
+import Background from '../assets/backgrounds/light/background'
+import BackgroundDark from '../assets/backgrounds/dark/backgroundDark'
 import Space from "../assets/others/space";
 import { colors } from '../helpers/style';
 import { screenWidth } from '../helpers/utils'
@@ -18,20 +19,50 @@ import { screenWidth } from '../helpers/utils'
 const mapStateToProps = (state) => ({
     user: state.auth.user,
     events: state.events.eventsData,
-    theme: state.theme
+    theme: state.theme,
+    dark: state.theme.dark
 });
 
 function CalendarScreen({ ...props }) {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const { user, navigation, theme, events } = props
+    const { user, navigation, theme, dark, events } = props
 
     const [styles, setStyles] = useState(styleSheetFactory(colors.light))
     const [themeStyle, setThemeStyle] = useState(colors.light)
 
-    const [todayEventsArray, setTodayEventsArray] = useState(events)
+    const [markedDates, setMarkedDates] = useState({})
     const [todayEventsCards, setTodayEventsCards] = useState([])
+
+    useEffect(() => {
+        if (events) {
+            const markedDatesArray = events.map(ev => ({ date: ev.date, dots: { color: chooseColor(ev.category) } }))
+            const markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
+                (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
+                return a;
+            }, {}));
+            const markedDatesObject = markedDatesArrayResult.reduce((a, c) => ({ ...a, [c.date]: c }), {});
+            setMarkedDates(markedDatesObject)
+
+            let todayEvents = events.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
+                .map(ev => ({
+                    id: ev.id,
+                    title: ev.title,
+                    description: ev.details,
+                    startTime: ev.startTime,
+                    endTime: ev.endTime,
+                    location: ev.location,
+                    current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? themeStyle.cardBlue : themeStyle.backgroundColor
+                }));
+            setTodayEventsCards(todayEvents)
+        }
+
+        if (theme) {
+            setThemeStyle(theme.theme)
+            setStyles(styleSheetFactory(theme.theme))
+        }
+    }, [theme])
 
     const Item = ({ title, description, startTime, endTime, location, current, id }) => (
         <View style={styles.item}>
@@ -101,25 +132,6 @@ function CalendarScreen({ ...props }) {
             });
     }
 
-    let markedDatesArray = events.map(ev => ({ date: ev.date, dots: { color: chooseColor(ev.category) } }))
-    let markedDatesArrayResult = Object.values(markedDatesArray.reduce((a, c) => {
-        (a[c.date] || (a[c.date] = { date: c.date, dots: [] })).dots.push(c.dots);
-        return a;
-    }, {}));
-
-    var markedDatesObject = markedDatesArrayResult.reduce((a, c) => ({ ...a, [c.date]: c }), {});
-
-    let todayEvents = todayEventsArray.filter(ev => ev.date === moment().format("YYYY-MM-DD"))
-        .map(ev => ({
-            id: ev.id,
-            title: ev.title,
-            description: ev.details,
-            startTime: ev.startTime,
-            endTime: ev.endTime,
-            location: ev.location,
-            current: ev.startTime < moment().format('HH:mm') && ev.endTime > moment().format('HH:mm') ? themeStyle.cardBlue : themeStyle.backgroundColor
-        }));
-
     const setAgendaDay = (day) => {
         todayEvents = todayEventsArray
             .filter(ev => ev.date === day.dateString)
@@ -135,16 +147,13 @@ function CalendarScreen({ ...props }) {
         setTodayEventsCards(todayEvents.sort(compareStartTime))
     }
 
-    useEffect(() => {
-        if (theme) {
-            setThemeStyle(theme.theme)
-            setStyles(styleSheetFactory(theme.theme))
-        }
-    }, [theme])
-
     return (
         <View style={styles.container}>
-            <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
+            {dark ?
+                <BackgroundDark width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
+                :
+                <Background width={'120%'} height={'100%'} style={{ flex: 1, position: 'absolute' }} />
+            }
             <View style={styles.calendar}>
 
                 <CalendarList
@@ -177,7 +186,7 @@ function CalendarScreen({ ...props }) {
                             },
                         },
                     }}
-                    markedDates={markedDatesObject}
+                    markedDates={markedDates}
                     markingType={'multi-dot'}
 
                 />
