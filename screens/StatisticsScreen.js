@@ -90,7 +90,7 @@ function StatisticsScreen({ ...props }) {
 
         const friendsLength = user.friends.length
         setFriendsNumber(friendsLength)
-        if (friendsLength === 0) {
+        if (friendsLength === 0 || eventsLength === 0) {
             setFriend("Insufficient data")
         } else {
             const friendsArray = events.map(ev => ev.friends)
@@ -112,7 +112,7 @@ function StatisticsScreen({ ...props }) {
         }
 
 
-        if (eventsLength === 0) {
+        if (eventsLength != 0) {
             const uniEvents = events.filter(ev => ev.category === "University")
             const uniEventsLength = uniEvents.length;
             const workEvents = events.filter(ev => ev.category === "Work")
