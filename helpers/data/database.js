@@ -817,7 +817,7 @@ const KB = [
             { attribute: 'inside', value: "yes" },
             { attribute: 'equipment', value: "yes" }
         ],
-        conclusion: { attribute: 'result', value: 'Sewing \ Painting' }
+        conclusion: { attribute: 'result', value: 'Sewing / Painting' }
     }, // 82
     {
         premises: [
@@ -837,7 +837,7 @@ const KB = [
             { attribute: 'inside', value: "no" },
             { attribute: 'equipment', value: "yes" }
         ],
-        conclusion: { attribute: 'result', value: 'Gardening \ Fishing' }
+        conclusion: { attribute: 'result', value: 'Gardening / Fishing' }
     }, // 84
     {
         premises: [
@@ -847,7 +847,7 @@ const KB = [
             { attribute: 'inside', value: "no" },
             { attribute: 'equipment', value: "no" }
         ],
-        conclusion: { attribute: 'result', value: 'Bird-Watching \ Hiking' }
+        conclusion: { attribute: 'result', value: 'Bird-Watching / Hiking' }
     }, // 85
     {
         premises: [
