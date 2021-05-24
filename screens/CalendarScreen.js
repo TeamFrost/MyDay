@@ -378,7 +378,7 @@ const styleSheetFactory = (themeStyle) => StyleSheet.create({
     textNoEvents: {
         fontSize: 22,
         color: themeStyle.textColor,
-        fontWeight: '200'
+        fontWeight: '200',
     },
 });
 
