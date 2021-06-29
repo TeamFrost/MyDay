@@ -56,7 +56,7 @@ function LoginScreen({ ...props }) {
         try {
             const result = await Google.logInAsync({
                 // androidClientId: "YOUR_CLIENT_ID_HERE",
-                iosClientId: '26219097559-2gq1ocfsom0tijd104od359ijsoj29t6.apps.googleusercontent.com',
+                iosClientId: "YOUR_CLIENT_ID_HERE",
                 scopes: ['profile', 'email'],
             });
 
